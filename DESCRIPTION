@@ -1,0 +1,30 @@
+Package: tidyabm
+Title: Set Up, Run, and Document Agent-Based Models (ABM) the Tidy Way
+Version: 0.0.0.9000
+Authors@R: 
+    person("Mario", "Haim", , "haim@ifkw.lmu.de", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-0643-2299"))
+Description: tidyABM is designed to streamline the process of setting up, 
+    running, and documenting Agent-Based Models (ABM) using the principles of 
+    tidy data. It thus allows researchers to easily organize, manipulate, and 
+    visualize ABMs in a structured, coherent, and intuitive manner, built on 
+    tidyverse conventions to efficiently build and explore ABMs while ensuring 
+    readability, reproducibility, and transparency.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Imports: 
+    dplyr,
+    furrr,
+    lubridate,
+    magrittr,
+    purrr,
+    rlang,
+    stats,
+    tibble,
+    tidyr
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
