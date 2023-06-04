@@ -53,5 +53,3 @@ update_values.tidyabm_agent <- function(.tidyabm,
     retain_new_data_in_prior_object(new_data) %>%
     return()
 }
-
-

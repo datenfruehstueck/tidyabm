@@ -150,14 +150,14 @@ set_characteristic.tidyabm <- function(.tidyabm,
 #' @examples
 #' create_agent() %>%
 #'   set_characteristic(age = 15) %>%
-#'   add_variable(share_same_age = function(me) {
+#'   add_variable(share_same_age = function(me, abm) {
 #'                 neighbors <- get_neighbors(me)
 #'                 return(sum(neighbors$age == me$age)/nrow(neighbors))
 #'               }) %>%
-#'   add_variable(feels_welcome = \(me) share_same_age >= .50)
+#'   add_variable(feels_welcome = \(me, abm) share_same_age >= .50)
 #'
 #' create_grid_environment(seed = 9896, size = 5) %>%
-#'   add_variable(m_age = \(me) mean(me$agents$age, na.rm = T))
+#'   add_variable(m_age = \(me, abm) mean(convert_agents_to_tibble(me)$age, na.rm = T))
 #'
 #' @export
 add_variable <- function(.tidyabm,
@@ -214,6 +214,11 @@ add_variable.tidyabm <- function(.tidyabm,
 #'
 #' @param .tidyabm a [tidyabm] object
 #' @param .label string describing the rule
+#' @param ... <[`data-masking`][rlang::args_data_masking]> expressions that
+#'   return a logical value and are defined in terms of all characteristics
+#'   and variables of `me` (which is the [tidyabm] object to which the rule
+#'   was applied to). If multiple expressions are included, they are combined
+#'   with the `&` operator.
 #' @param .consequence function to be executed if all conditions apply. Use
 #'   a function with two arguments, `me` (which is the [tidyabm] object at that
 #'   specific point in time) and `abm` (which is the whole [tidyabm] object).
@@ -228,18 +233,13 @@ add_variable.tidyabm <- function(.tidyabm,
 #'   arguments to functions, use the style of anonymized functions directly
 #'   in-line (through `function(me, abm) ... return(me)` or
 #'   `\(me, abm) ... return(me)`).
-#' @param ... <[`data-masking`][rlang::args_data_masking]> expressions that
-#'   return a logical value and are defined in terms of all characteristics
-#'   and variables of `me` (which is the [tidyabm] object to which the rule
-#'   was applied to). If multiple expressions are included, they are combined
-#'   with the `&` operator.
 #'
 #' @return a [tidyabm] object
 #'
 #' @examples
 #' create_agent() %>%
 #'   set_characteristic(age = 15) %>%
-#'   add_rule('check minority', age >= 18, \(me, abm) end(ebm))
+#'   add_rule('check minority', age >= 18, .consequence = \(me, abm) end(ebm))
 #'
 #' create_grid_environment(seed = 1268, size = 5) %>%
 #'   add_rule('no more agents', 'todo')
@@ -247,8 +247,8 @@ add_variable.tidyabm <- function(.tidyabm,
 #' @export
 add_rule <- function(.tidyabm,
                      .label,
-                     .consequence,
-                     ...) {
+                     ...,
+                     .consequence) {
   UseMethod('add_rule')
 }
 
@@ -256,8 +256,8 @@ add_rule <- function(.tidyabm,
 #' @export
 add_rule.tidyabm <- function(.tidyabm,
                              .label,
-                             .consequence,
-                             ...) {
+                             ...,
+                             .consequence) {
   stopifnot(is_tidyabm(.tidyabm))
 
   rules <- attr(.tidyabm, 'rules')
@@ -356,25 +356,6 @@ new_tidyabm <- function(data,
             variables = list(),
             rules = list()) %>%
     return()
-}
-
-#' Only update data in an already existent [tidyabm] object
-#'
-#' @param prior_object a [tidyabm] object
-#' @param new_data a [tibble]
-#'
-#' @return a [tidyabm] object, just like `prior_object`
-retain_new_data_in_prior_object <- function(prior_object,
-                                            new_data) {
-  UseMethod('retain_new_data_in_prior_object')
-}
-
-#' @rdname retain_new_data_in_prior_object
-retain_new_data_in_prior_object.tidyabm <- function(prior_object,
-                                                    new_data) {
-  out <- structure(new_data)
-  attributes(out) <- attributes(prior_object)
-  return(out)
 }
 
 

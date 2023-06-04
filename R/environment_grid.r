@@ -48,12 +48,20 @@ create_grid_environment <- function(seed,
   stopifnot(is.numeric(seed))
   set.seed(seed)
 
+  n_grid_fields <- NULL
+  if (is.null(size)) {
+    n_grid_fields <- x*y
+  } else {
+    n_grid_fields <- size*size
+  }
+
   tibble::tibble() %>%
     new_tidyabm_env('grid',
                     class_params = list(seed = seed,
                                         size = size,
                                         x = x,
-                                        y = y)) %>%
+                                        y = y,
+                                        n_fields = n_grid_fields)) %>%
     return()
 }
 
@@ -101,6 +109,13 @@ add_agents.tidyabm_env_grid <- function(.tidyabm,
                 '(depicting x and y), or a list of length n (the parameter) ',
                 'where each spot is taken by a vector of length 2 (again, ',
                 'depicting x and y)'))
+  }
+
+  if (length(attr(.tidyabm, 'agents')) >
+      attr(.tidyabm, 'class_params')[['n_fields']]) {
+    stop(paste0('This grid has ', attr(.tidyabm, 'class_params')[['n_fields']],
+                ' fields but you are trying to add too many agents (a ',
+                'then-total of ', length(attr(.tidyabm, 'agents')) + n, ')'))
   }
 
   if (initial_position == 'random') {

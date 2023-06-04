@@ -28,4 +28,9 @@ test_that('values', {
     add_variable(c = TRUE)
   expect_equal(dim(a),
                c(1, 3))
+
+  a <- a %>%
+    set_characteristic(d = c(1.2, 3.1, 2.3))
+  expect_equal(dim(a),
+               c(1, 4))
 })

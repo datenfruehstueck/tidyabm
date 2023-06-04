@@ -134,8 +134,8 @@ test_that('variables', {
 test_that('rules', {
   t <- new_tidyabm(tibble::tibble()) %>%
     add_rule('check something',
-             \(me) print('checked!'),
-             age < 18)
+             age < 18,
+             .consequence = \(me) print('checked!'))
 
   expect_length(attr(t, 'rules'),
                 1)
@@ -147,21 +147,23 @@ test_that('rules', {
               'list')
   expect_type(attr(t, 'rules')$`check something`$`then`,
               'closure')
-  expect_error(add_rule(t, 'check something', mean))
+  expect_error(add_rule(t, 'check something',
+                        .consequence = mean))
 
   t <- t %>%
     add_rule('check something else',
-             \(me) print('checked!'),
              age < 18,
-             gender == 'm')
+             gender == 'm',
+             .consequence = \(me) print('checked!'))
 
   expect_length(attr(t, 'rules'),
                 2)
   expect_length(attr(t, 'rules')$`check something else`$`if`,
                 2)
 
-  expect_error(add_rule(t, 'foo', mean,
-                        gender = 'm'))
+  expect_error(add_rule(t, 'foo',
+                        gender = 'm',
+                        .consequence = mean))
 })
 
 test_that('retaining new data in prior objects', {

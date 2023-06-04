@@ -62,9 +62,14 @@ add_agents.tidyabm_env <- function(.tidyabm,
   attr(.tidyabm, 'class_params') <- cp
 
   # add agents
-  attr(.tidyabm, 'agents') <- c(attr(.tidyabm, 'agents'),
-                                rep(list(agent),
-                                    times = n))
+  agents <- attr(.tidyabm, 'agents')
+  for (i in seq(length(agents) + 1,
+                length(agents) + n)) {
+    agents <- append(agents,
+                     list(agent %>%
+                            set_characteristic(.id = paste0('A', i))))
+  }
+  attr(.tidyabm, 'agents') <- agents
   return(.tidyabm)
 }
 
@@ -157,7 +162,8 @@ distribute_characteristic_across_agents.tidyabm_env <-
 
   agents <- attr(.tidyabm, 'agents')
   counter <- 1
-  for (i in agents_filtered$i) {
+  for (id in agents_filtered$.id) {
+    i <- as.numeric(substring(id, 2))
     value_rendered <- ifelse(is.vector(.value),
                              .value[counter],
                              do.call(.value,
@@ -264,6 +270,7 @@ reset.tidyabm_env <- function(.tidyabm) {
 #'   4. check environment rules (in the order they were added)
 #'
 #' @param .tidyabm the [tidyabm_env] object
+#' @param verbose if TRUE (the default), a status message is printed at the end
 #'
 #' @return a [tidyabm_env] object
 #' @seealso [iterate]
@@ -275,13 +282,15 @@ reset.tidyabm_env <- function(.tidyabm) {
 #'   tick()
 #'
 #' @export
-tick <- function(.tidyabm) {
+tick <- function(.tidyabm,
+                 verbose = TRUE) {
   UseMethod('tick')
 }
 
 #' @rdname tick
 #' @export
-tick.tidyabm_env <- function(.tidyabm) {
+tick.tidyabm_env <- function(.tidyabm,
+                             verbose = TRUE) {
   stopifnot(is_tidyabm_env(.tidyabm))
   if (is.null(attr(.tidyabm, 'runtime'))) {
     stop('Environment has not yet been initiated. Call "init" first.')
@@ -299,7 +308,7 @@ tick.tidyabm_env <- function(.tidyabm) {
 
   # 1. randomize agent order
   agents <- attr(.tidyabm, 'agents')
-  agents_length <- length(agents_original)
+  agents_length <- length(agents)
   agents_randomized_indices <- sample(1:agents_length,
                                       size = agents_length)
 
@@ -337,14 +346,14 @@ tick.tidyabm_env <- function(.tidyabm) {
                    agent_rule_if <- agent_rules[[agent_rule_label]][['if']]
                    agent_rule_then <- agent_rules[[agent_rule_label]][['then']]
                    if (nrow(dplyr::filter(agents[[i]],
-                                          {{ agent_rule_if }})) == 1) {
+                                          !!!agent_rule_if)) == 1) {
                      agent_temp <- do.call(agent_rule_then,
                                            list(agents[[i]],
                                                 .tidyabm))
                      if (is_tidyabm_agent(agent_temp)) {
                        agents[[i]] <<- agent_temp
                      } else {
-                       warning(paste0('Agent #', i, ': Rule "',
+                       warning(paste0('Agent ', agent_temp$.id, ': Rule "',
                                       agent_rule_label, '" was initiated but ',
                                       'did not return a valid agent object. ',
                                       'It has thus been ignored.'),
@@ -371,7 +380,7 @@ tick.tidyabm_env <- function(.tidyabm) {
                   list(.tidyabm,
                        .tidyabm))
         } else {
-          .tidyabm
+          env_variable
         }
       },
       .progress = 'Recalculating environment variables ... '
@@ -379,11 +388,15 @@ tick.tidyabm_env <- function(.tidyabm) {
 
   ## prepare an intermediate .tidyabm so that environment rules can build on it
   .tidyabm_temp <- .tidyabm %>%
-    dplyr::bind_rows(tibble::tibble(.tick = rt[['next_tick']]) %>%
-                       dplyr::bind_cols(attr(.tidyabm,
-                                             'characteristics')) %>%
-                       dplyr::bind_cols(attr(.tidyabm,
-                                             'variables_current_values')))
+    retain_new_data_in_prior_object(
+      .tidyabm %>%
+        dplyr::bind_rows(tibble::tibble(.tick = rt[['next_tick']]) %>%
+                           dplyr::bind_cols(attr(.tidyabm,
+                                                 'characteristics')) %>%
+                           dplyr::bind_cols(attr(.tidyabm,
+                                                 'variables_current_values')))
+    )
+
 
   # 4. check environment rules (in the order they were added)
   env_rules <- attr(.tidyabm, 'rules')
@@ -393,13 +406,11 @@ tick.tidyabm_env <- function(.tidyabm) {
       env_rule_if <- env_rules[[env_rule_label]][['if']]
       env_rule_then <- env_rules[[env_rule_label]][['then']]
       if (nrow(dplyr::filter(.tidyabm_temp,
-                             .tick == rt[['next_tick']],
-                             {{ env_rule_if }})) == 1) {
-
+                             .data$.tick == rt[['next_tick']],
+                             !!!env_rule_if)) == 1) {
         env_temp <- do.call(env_rule_then,
                             list(.tidyabm_temp,
                                  .tidyabm_temp))
-
         if (is_tidyabm_env(env_temp)) {
           .tidyabm <<- env_temp
         } else {
@@ -417,24 +428,42 @@ tick.tidyabm_env <- function(.tidyabm) {
   cp <- attr(.tidyabm, 'class_params')
   rt <- attr(.tidyabm, 'runtime')
 
-    tick_end <- lubridate::now()
-  tick_duration <- tick_end - tick_start
+  tick_end <- lubridate::now()
+  tick_diff <- tick_end - tick_start
+
+  new_data <- .tidyabm
+  if (nrow(new_data) > 0) {
+    # remove any intermediate leftovers
+    new_data <- new_data %>%
+      dplyr::filter(.data$.tick < rt[['next_tick']])
+  }
+
   .tidyabm <- .tidyabm %>%
-    dplyr::filter(.tick < rt[['next_tick']]) %>% # removes any intemediate
-                                                 # leftovers
-    dplyr::bind_rows(
-      tibble::tibble(.tick = rt[['next_tick']],
-                     .runtime = paste(round(tick_duration),
-                                      attr(tick_duration,
-                                           'units')),
-                     .n_agents_after_tick = length(attr(.tidyabm,
-                                                        'agents')),
-                     .finished_after_tick = is_ended(.tidyabm)) %>%
-        dplyr::bind_cols(attr(.tidyabm,
-                              'characteristics')) %>%
-        dplyr::bind_cols(attr(.tidyabm,
-                              'variables_current_values'))
+    retain_new_data_in_prior_object(
+      new_data %>%
+        dplyr::bind_rows(
+          tibble::tibble(.tick = rt[['next_tick']],
+                         .runtime = tick_diff,
+                         .n_agents_after_tick = length(attr(.tidyabm,
+                                                            'agents')),
+                         .finished_after_tick = is_ended(.tidyabm)) %>%
+            dplyr::bind_cols(attr(.tidyabm,
+                                  'characteristics')) %>%
+            dplyr::bind_cols(attr(.tidyabm,
+                                  'variables_current_values'))
+        )
     )
+
+  if (verbose) {
+    print(paste0('Tick ', rt[['next_tick']], ' finished in ',
+                 round(tick_diff, 3), ' ', attr(tick_diff, 'unit'), ':'))
+    for (var_name in colnames(.tidyabm)) {
+      if (substr(var_name, 1, 1) != '.') {
+        print(paste0('  - ', var_name, ': ',
+                     .tidyabm[[nrow(.tidyabm), var_name]]))
+      }
+    }
+  }
 
   rt[['next_tick']] <- rt[['next_tick']] + 1
   attr(.tidyabm, 'runtime') <- rt
@@ -463,6 +492,7 @@ tick.tidyabm_env <- function(.tidyabm) {
 #' @param max_iterations number of iterations after which iterations stop (if
 #'   it was not stopped earlier by other means of convergence, e.g. through
 #'   environment rules).
+#' @param verbose if TRUE (the default), a status message is printed at the end
 #'
 #' @return a [tidyabm_env] object
 #' @seealso [tick]
@@ -484,14 +514,16 @@ tick.tidyabm_env <- function(.tidyabm) {
 #'
 #' @export
 iterate <- function(.tidyabm,
-                    max_iterations = 50) {
+                    max_iterations = 50,
+                    verbose = TRUE) {
   UseMethod('iterate')
 }
 
 #' @rdname iterate
 #' @export
 iterate.tidyabm_env <- function(.tidyabm,
-                                max_iterations = 50) {
+                                max_iterations = 50,
+                                verbose = TRUE) {
   stopifnot(is_tidyabm_env(.tidyabm))
   if (is.null(attr(.tidyabm, 'runtime'))) {
     stop('Environment has not yet been initiated. Call "init" first.')
@@ -516,7 +548,7 @@ iterate.tidyabm_env <- function(.tidyabm,
              \(current_tick) {
                if (is_tickable(.tidyabm)) {
                  .tidyabm <<- .tidyabm %>%
-                   tick()
+                   tick(verbose = verbose)
                }
              },
              .progress = paste0('Iterating ticks ', starting_tick, ' to ',
@@ -527,7 +559,6 @@ iterate.tidyabm_env <- function(.tidyabm,
 }
 
 
-# todo: summary()
 # todo: visualize()
 # todo: odd()
 
@@ -541,13 +572,12 @@ is_tidyabm_env <- function(x) {
 #'
 #' @description
 #'   Returns a tibble with all agents in the same order as the agent objects
-#'   were initially added. Columns represent a running number named `i`
-#'   (or `j`, `k`, ... if `i` is taken), all agent characteristics, and all
-#'   agent variables. Not that, if not at least one tick has passed, agent
-#'   variables are `NULL`. Any characteristics that some agents have while
-#'   others do not will be `NA` for those agents who do not share this
-#'   particular characteristic.
-#'   Typically, characteristics/variables added internally through a particular
+#'   were initially added. Columns represent a unique identifier named `.id`,
+#'   all agent characteristics, and all agent variables. Not that, if not at
+#'   least one tick has passed, agent variables are `NA`. Any characteristics
+#'   that some agents have while others do not will be `NA` for those agents
+#'   who do not share this particular characteristic. Typically,
+#'   characteristics/variables added internally through a particular
 #'   environment are prefixed with `.`.
 #'
 #' @param .tidyabm the [tidyabm_env] object holding some agents
@@ -565,60 +595,19 @@ convert_agents_to_tibble <- function(.tidyabm) {
   stopifnot(is.list(agents))
   stopifnot(length(agents) > 0)
 
-  out <- NULL
+  out <- dplyr::bind_rows(agents) %>%
+      dplyr::relocate(.id)
+
+  # check for missing variables
   cp <- attr(.tidyabm, 'class_params')
-
-  # add characteristics
-  for (characteristic in cp[['agent_characteristics']]) {
-    out <- out %>%
-      dplyr::bind_cols(
-        tibble::tibble(!!characteristic := sapply(
-          agents,
-          \(x) {
-            items <- attr(x, 'characteristics')
-            if (characteristic %in% names(items)) {
-              return(items[[characteristic]])
-            } else {
-              return(NA)
-            }
-          }
-        ))
-      )
-  }
-
-  # add variables
   for (variable in cp[['agent_variables']]) {
-    out <- out %>%
-      dplyr::bind_cols(
-        tibble::tibble(!!variable := sapply(
-          agents,
-          \(x) {
-            items <- attr(x, 'variables')
-            if (variable %in% names(items)) {
-              return(items[[variable]])
-            } else {
-              return(NA)
-            }
-          }
-        ))
-      )
+    if (!(variable %in% colnames(out))) {
+      out <- out %>%
+        dplyr::mutate(!!variable := NA)
+    }
   }
 
-  # find appropriate letter for row numbering
-  rowid_letter_index <- 9 # 'i'
-  while (letters[rowid_letter_index] %in% colnames(out)) {
-    rowid_letter_index <- rowid_letter_index + 1
-  }
-
-  if (is.null(out)) {
-    tibble::tibble(!!letters[rowid_letter_index] := 1:length(agents)) %>%
-      return()
-  } else {
-    out %>%
-      tibble::rowid_to_column(var = letters[rowid_letter_index]) %>%
-      dplyr::relocate(!!letters[rowid_letter_index]) %>%
-      return()
-  }
+  return(out)
 }
 
 
@@ -651,14 +640,13 @@ get_random_agent <- function(abm,
 
 #' Claim a simulation to end
 #'
-#' @param abm the whole environment model (`abm`)
 #' @param me unnecessary but provided here for ease of use
+#' @param abm the whole environment model (`abm`)
 #'
 #' @return a [tidyabm_env] object
 #' @family utilities
 #' @export
-stop_abm <- function(abm,
-                     me = NULL) {
+stop_abm <- function(me, abm) {
   if (!is_tidyabm_env(abm)) {
     return(NULL)
   }
@@ -717,7 +705,7 @@ end <- function(.tidyabm) {
   rt <- attr(.tidyabm, 'runtime')
   rt <- append(rt,
                list(ended = lubridate::now()))
-  attr(.tidyabm, 'runtime')
+  attr(.tidyabm, 'runtime') <- rt
   return(.tidyabm)
 }
 
@@ -742,7 +730,7 @@ update_values.tidyabm_env <- function(.tidyabm,
     return(.tidyabm)
   }
 
-  current_value <- attr(.tidyabm, 'variables_current_values')
+  current_values <- attr(.tidyabm, 'variables_current_values')
   current_names <- names(current_values)
   new_names <- names(values)
 

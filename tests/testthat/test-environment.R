@@ -1,4 +1,4 @@
-context('generic environment')
+context('environment generic class')
 
 test_that('class', {
   expect_error(new_tidyabm_env(tibble::tibble()))
@@ -13,7 +13,7 @@ test_that('class', {
 test_that('add_agents', {
   a <- create_agent()
   e <- create_grid_environment(seed = 5523,
-                               size = 10) %>%
+                               size = 30) %>%
     add_agents(a,
                n = 100)
 
@@ -34,7 +34,7 @@ test_that('add_agents', {
 
 test_that('convert_agents_to_tibble', {
   t <- create_grid_environment(seed = 1658,
-                               size = 10) %>%
+                               size = 40) %>%
     add_agents(create_agent() %>%
                  set_characteristic(age = 12,
                                     vehicle = 'bike',
@@ -44,7 +44,8 @@ test_that('convert_agents_to_tibble', {
                  set_characteristic(age = 17,
                                     vehicle = 'scooter',
                                     speed = 25) %>%
-                 add_variable(got_ticketed = FALSE),
+                 add_variable(got_ticketed = FALSE) %>%
+                 add_variable(ran = \(me, abm) runif(1)>.5 ),
                n = 25) %>%
     convert_agents_to_tibble()
 
@@ -52,19 +53,22 @@ test_that('convert_agents_to_tibble', {
   expect_equal(nrow(t),
                100 + 25)
   expect_equal(colnames(t),
-               c('i',
+               c('.id',
                  'age',
                  'vehicle',
                  'birthday_fever',
                  'speed',
-                 'got_ticketed'))
+                 'got_ticketed',
+                 'ran'))
   expect_equal(sum(is.na(t$speed)),
                100)
+  expect_type(t$ran,
+              'logical')
 })
 
 test_that('distribute_characteristic_across_agents', {
   t1 <- create_grid_environment(seed = 5,
-                                    size = 20) %>%
+                                size = 20) %>%
     add_agents(create_agent(),
                n = 160) %>%
     distribute_characteristic_across_agents(
@@ -126,5 +130,78 @@ test_that('init and reset', {
 })
 
 test_that('tick and iterate', {
-  # todo
+  a <- create_agent() %>%
+    set_characteristic(bla = 2) %>%
+    add_variable(age = \(me, abm) round(runif(1, 18, 40))) %>%
+    add_rule('23-year-olds talk more',
+             age == 23,
+             .consequence = \(me, abm) {
+               me %>%
+                 set_characteristic(bla = 3,
+                                    .overwrite = TRUE) %>%
+                 return()
+             })
+  e <- create_grid_environment(seed = 90,
+                               size = 4) %>%
+    add_agents(a,
+               n = 10) %>%
+    set_characteristic(bla = 2*2) %>%
+    add_variable(mean_age = \(me, abm) {
+      agents <- convert_agents_to_tibble(me)
+      mean(agents$age)
+    }) %>%
+    add_rule('stop after 10 ticks',
+             .tick == 10,
+             .consequence = stop_abm) %>%
+    init()
+  expect_true(is_tickable(e))
+
+  suppressWarnings({
+    e <- e %>%
+      tick(verbose = FALSE)
+  })
+  expect_equal(dim(e), c(1, 6))
+  expect_equal(e$.tick, c(1))
+  expect_equal(e$.n_agents_after_tick, c(10))
+  expect_equal(e$bla, c(4))
+  expect_type(e$mean_age, 'double')
+  expect_true(all(e$mean_age > 0))
+  talkatives <- e %>%
+    convert_agents_to_tibble() %>%
+    dplyr::filter(age == 23)
+  expect_true(all(talkatives$bla == 3))
+
+  suppressWarnings({
+    e <- e %>%
+      tick(verbose = FALSE)
+  })
+  expect_equal(dim(e), c(2, 6))
+  expect_equal(e$.tick, c(1, 2))
+  expect_equal(e$.n_agents_after_tick, c(10, 10))
+  expect_equal(e$bla, c(4, 4))
+  expect_type(e$mean_age, 'double')
+  expect_true(all(e$mean_age > 0))
+  talkatives <- e %>%
+    convert_agents_to_tibble() %>%
+    dplyr::filter(age == 23)
+  expect_true(all(talkatives$bla == 3))
+
+  create_grid_environment(seed = 93,
+                          size = 4) %>%
+    add_agents(create_agent() %>%
+                 add_rule('no return',
+                          .consequence = \(me, abm) {}),
+               n = 1) %>%
+    init() %>%
+    tick(verbose = FALSE) %>%
+    expect_warning()
+
+  e <- e %>%
+    iterate(verbose = FALSE)
+  expect_equal(dim(e),
+               c(10, 6))
+  expect_equal(e$.finished_after_tick,
+               c(rep(FALSE, 9),
+                 TRUE))
+  expect_equal(e$.tick, 1:10)
 })
