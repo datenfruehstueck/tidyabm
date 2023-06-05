@@ -4,12 +4,12 @@
 \alias{stop_abm}
 \title{Claim a simulation to end}
 \usage{
-stop_abm(abm, me = NULL)
+stop_abm(me, abm)
 }
 \arguments{
-\item{abm}{the whole environment model (\code{abm})}
-
 \item{me}{unnecessary but provided here for ease of use}
+
+\item{abm}{the whole environment model (\code{abm})}
 }
 \value{
 a \link{tidyabm_env} object

@@ -48,20 +48,17 @@ create_grid_environment <- function(seed,
   stopifnot(is.numeric(seed))
   set.seed(seed)
 
-  n_grid_fields <- NULL
-  if (is.null(size)) {
-    n_grid_fields <- x*y
-  } else {
-    n_grid_fields <- size*size
+  if (!is.null(size)) {
+    x <- size
+    y <- size
   }
 
   tibble::tibble() %>%
     new_tidyabm_env('grid',
                     class_params = list(seed = seed,
-                                        size = size,
                                         x = x,
                                         y = y,
-                                        n_fields = n_grid_fields)) %>%
+                                        n_fields = x*y)) %>%
     return()
 }
 
@@ -109,25 +106,44 @@ add_agents.tidyabm_env_grid <- function(.tidyabm,
                 'then-total of ', length(attr(.tidyabm, 'agents')) + n, ')'))
   }
 
-  if (is_null(initial_position)) {
+  agents <- attr(.tidyabm, 'agents')
+  agents_new <- list()
+  if (length(agents) > n) {
+    agents_new <- agents[1:n]
+  }
 
-    # original code
-    agents <- attr(.tidyabm, 'agents')
-    for (i in seq(length(agents) + 1,
-                  length(agents) + n)) {
-      agents <- append(agents,
-                       list(agent %>%
-                              set_characteristic(.id = paste0('A', i))))
+  cp <- attr(.tidyabm, 'class_params')
+  coordinates_random <- expand.grid(x = 1:cp[['x']],
+                                    y = 1:cp[['y']]) %>%
+    dplyr::slice_sample(prop = 1)
+
+  for (i in seq(length(agents) - n + 1,
+                length(agents))) {
+    agent_placed <- agents[[i]]
+    if (is.null(initial_position)) {
+      agent_placed <- agent_placed %>%
+        set_characteristic(.x = coordinates_random[[i, 'x']],
+                           .y = coordinates_random[[i, 'y']],
+                           .overwrite = TRUE)
+    } else {
+      coordinates <- do.call(initial_position,
+                             list(agent_placed, .tidyabm))
+      if (!is.vector(coordinates) | length(coordinates) != 2) {
+        stop(paste0('The provided function in initial_position is expected to ',
+                    'return a numeric vector (length 2) but did not (returned ',
+                    typeof(coordinates), ' with length ', length(coordinates),
+                    ')'))
+      }
+      agent_placed <- agent_placed %>%
+        set_characteristic(.x = coordinates[[1]],
+                           .y = coordinates[[2]],
+                           .overwrite = TRUE)
     }
-    attr(.tidyabm, 'agents') <- agents
-
-
-    # todo (place agents by setting characteristics .x and .y per agent)
+    agents_new <- append(agents_new,
+                         list(agent_placed))
   }
 
-  if (typeof(initial_position) == 'closure') {
-    # todo (place agents by setting characteristics .x and .y per agent
-  }
+  attr(.tidyabm, 'agents') <- agents_new
 
   return(.tidyabm)
 }
@@ -169,8 +185,8 @@ grid_get_neighbors <- function(agent,
   if (which == 'o') {
     abm %>%
       convert_agents_to_tibble() %>%
-      dplyr::filter(.x %in% c(agent$.x, agent$.x - 1, agent$.x + 1),
-                    .y %in% c(agent$.y, agent$.y - 1, agent$.y + 1)) %>%
+      dplyr::filter(.data$.x %in% c(agent$.x, agent$.x - 1, agent$.x + 1),
+                    .data$.y %in% c(agent$.y, agent$.y - 1, agent$.y + 1)) %>%
       return()
   }
 
@@ -178,8 +194,8 @@ grid_get_neighbors <- function(agent,
     abm %>%
       convert_agents_to_tibble() %>%
       dplyr::filter(
-        (.y == agent$.y & .x == agent$.x - 1 | .x == agent$.x + 1) |
-        (.x == agent$.x & .y == agent$.y - 1 | .y == agent$.y + 1)
+        (.data$.y == agent$.y & .data$.x == agent$.x - 1 | .data$.x == agent$.x + 1) |
+        (.data$.x == agent$.x & .data$.y == agent$.y - 1 | .data$.y == agent$.y + 1)
       ) %>%
       return()
   }
@@ -188,8 +204,8 @@ grid_get_neighbors <- function(agent,
     offset <- length(which)
     abm %>%
       convert_agents_to_tibble() %>%
-      dplyr::filter(.y == agent$.y,
-                    .x == agent$.x - offset | .x == agent$.x + offset) %>%
+      dplyr::filter(.data$.y == agent$.y,
+                    .data$.x == agent$.x - offset | .data$.x == agent$.x + offset) %>%
       return()
   }
 
@@ -197,8 +213,8 @@ grid_get_neighbors <- function(agent,
     offset <- length(which)
     abm %>%
       convert_agents_to_tibble() %>%
-      dplyr::filter(.x == agent$.x,
-                    .y == agent$.y - offset | .y == agent$.y + offset) %>%
+      dplyr::filter(.data$.x == agent$.x,
+                    .data$.y == agent$.y - offset | .data$.y == agent$.y + offset) %>%
       return()
   }
 }
@@ -234,52 +250,51 @@ grid_get_free_neighboring_spots <- function(agent,
     return(NULL)
   }
 
+  g <- expand.grid(.x = 1:attr(abm, 'class_params')[['x']],
+                   .y = 1:attr(abm, 'class_params')[['x']]) %>%
+    dplyr::left_join(grid_get_neighbors(agent,
+                                        abm,
+                                        which) %>%
+                       dplyr::select(.data$.x, .data$.y, .data$.id),
+                     by = c('.x', '.y')) %>%
+    dplyr::filter(!is.null(.id)) %>%
+    dplyr::select(.data$.x, .data$.y)
   if (which == 'o') {
-    abm %>%
-      convert_agents_to_tibble() %>%
-      dplyr::filter(.x %in% c(agent$.x, agent$.x - 1, agent$.x + 1),
-                    .y %in% c(agent$.y, agent$.y - 1, agent$.y + 1)) %>%
+    g %>%
+      dplyr::filter(.data$.x %in% c(agent$.x, agent$.x - 1, agent$.x + 1),
+                    .data$.y %in% c(agent$.y, agent$.y - 1, agent$.y + 1)) %>%
       return()
-    # todo: invert to free spots
   }
 
   if (which == '+') {
-    abm %>%
-      convert_agents_to_tibble() %>%
+    g %>%
       dplyr::filter(
-        (.y == agent$.y & .x == agent$.x - 1 | .x == agent$.x + 1) |
-          (.x == agent$.x & .y == agent$.y - 1 | .y == agent$.y + 1)
+        (.data$.y == agent$.y & .data$.x == agent$.x - 1 | .data$.x == agent$.x + 1) |
+          (.data$.x == agent$.x & .data$.y == agent$.y - 1 | .data$.y == agent$.y + 1)
       ) %>%
       return()
-    # todo: invert to free spots
   }
 
   if (substr(which, 1, 1) == '-') {
     offset <- length(which)
-    abm %>%
-      convert_agents_to_tibble() %>%
-      dplyr::filter(.y == agent$.y,
-                    .x == agent$.x - offset | .x == agent$.x + offset) %>%
+    g %>%
+      dplyr::filter(.data$.y == agent$.y,
+                    .data$.x == agent$.x - offset | .data$.x == agent$.x + offset) %>%
       return()
-    # todo: invert to free spots
   }
 
   if (substr(which, 1, 1) == '|') {
     offset <- length(which)
-    abm %>%
-      convert_agents_to_tibble() %>%
-      dplyr::filter(.x == agent$.x,
-                    .y == agent$.y - offset | .y == agent$.y + offset) %>%
+    g %>%
+      dplyr::filter(.data$.x == agent$.x,
+                    .data$.y == agent$.y - offset | .data$.y == agent$.y + offset) %>%
       return()
-    # todo: invert to free spots
   }
 }
 
 #' Move an agent to the proposed new x/y position (if it is empty)
 #'
 #' @description
-#'   **Note**: For this action to take effect it is crucial that
-#'
 #'   If the new position is not empty or does not exist, the agent will not
 #'   move (obviously) and a warning will be issued.
 #'
@@ -297,9 +312,31 @@ grid_move <- function(agent,
     return(NULL)
   }
 
-  # todo
+  if (new_x <= 0 | new_x > attr(abm, 'class_params')[['x']] |
+      new_y <= 0 | new_y > attr(abm, 'class_params')[['y']]) {
+    warning(paste0('The new position (', new_x, '/', new_y, ') for agent ',
+                   agent$.id, ' does not exist. The agent has thus not moved.'),
+            call. = FALSE)
+    return(agent)
+  }
 
-  return(agent)
+  if (abm %>%
+        convert_agents_to_tibble() %>%
+        dplyr::filter(.data$.x == new_x,
+                      .data$.y == new_y,
+                      .data$.id != agent$.id) %>%
+        nrow() > 0) {
+    warning(paste0('The new position (', new_x, '/', new_y, ') for agent ',
+                   agent$.id, ' is not empty. The agent has thus not moved.'),
+            call. = FALSE)
+    return(agent)
+  }
+
+  agent %>%
+    set_characteristic(.x = new_x,
+                       .y = new_y,
+                       .overwrite = TRUE) %>%
+    return()
 }
 
 

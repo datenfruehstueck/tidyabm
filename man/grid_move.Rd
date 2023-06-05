@@ -15,8 +15,6 @@ grid_move(agent, abm, new_x, new_y)
 a \link{tidyabm_agent} object
 }
 \description{
-\strong{Note}: For this action to take effect it is crucial that
-
 If the new position is not empty or does not exist, the agent will not
 move (obviously) and a warning will be issued.
 }

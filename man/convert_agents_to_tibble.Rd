@@ -14,13 +14,12 @@ a \link{tibble}
 }
 \description{
 Returns a tibble with all agents in the same order as the agent objects
-were initially added. Columns represent a running number named \code{i}
-(or \code{j}, \code{k}, ... if \code{i} is taken), all agent characteristics, and all
-agent variables. Not that, if not at least one tick has passed, agent
-variables are \code{NULL}. Any characteristics that some agents have while
-others do not will be \code{NA} for those agents who do not share this
-particular characteristic.
-Typically, characteristics/variables added internally through a particular
+were initially added. Columns represent a unique identifier named \code{.id},
+all agent characteristics, and all agent variables. Not that, if not at
+least one tick has passed, agent variables are \code{NA}. Any characteristics
+that some agents have while others do not will be \code{NA} for those agents
+who do not share this particular characteristic. Typically,
+characteristics/variables added internally through a particular
 environment are prefixed with \code{.}.
 }
 \examples{

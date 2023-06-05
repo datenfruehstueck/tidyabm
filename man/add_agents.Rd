@@ -10,7 +10,7 @@ add_agents(.tidyabm, agent, n, ...)
 
 \method{add_agents}{tidyabm_env}(.tidyabm, agent, n, ...)
 
-\method{add_agents}{tidyabm_env_grid}(.tidyabm, agent, n, initial_position = "random", ...)
+\method{add_agents}{tidyabm_env_grid}(.tidyabm, agent, n, initial_position = NULL, ...)
 }
 \arguments{
 \item{.tidyabm}{the \link{tidyabm_env} object to which agents should be added}
@@ -21,21 +21,26 @@ add_agents(.tidyabm, agent, n, ...)
 
 \item{...}{other arguments to pass to sub functions}
 
-\item{initial_position}{one of the following:
-\itemize{
-\item \code{random} independently choose a random position per agent
-\item \code{ordered-rowwise} fill up the grid from the top left in the order that
-the agents have been added, filling up row by row
-\item \code{ordered-colwise} fill up the grid from the top left in the order that
-the agents have been added, filling up column by column
-\item \code{connect-four} independently choose a random column for each agent to be
-added to the grid, filling up from the bottom (just like the board game)
-\item a vector of length 2 with an \code{x} and a \code{y} position to place the
-particular agent at (note that this only works if one agent is added at
-a time)
-\item a list of length \code{n} with a vector of length 2 at each spot indicating
-\code{x} and \code{y} of the particular position of this particular agent
-}}
+\item{initial_position}{either \code{NULL} (the default) where agents are placed
+randomly and independent from each other or a function with two parameters
+\code{me} (the agent to be placed) and \code{abm} (the current environment with
+previous agents already placed) that gets called once per agent to place
+and which has to return a vector of length 2 that will be interpreted as
+\code{x} and \code{y} coordinates (i.e., \code{c(x, y)}).
+Here is an example to position agents in subsequent order via a function:
+coordinate_counter <- c(0, 1)
+create_grid_environment(seed = 892,
+size = 3) \%>\%
+add_agents(create_agent(),
+n = 3,
+initial_position = \(me, abm) {
+coordinate_counter\link{1} <- coordinate_counter\link{1} + 1
+if (coordinate_counter\link{1} > 3) {
+coordinate_counter\link{1} <- 1
+coordinate_counter\link{2} <- coordiante_counter\link{2} + 1
+}
+return(coordinate_counter)
+})}
 }
 \value{
 \link{tidyabm} object

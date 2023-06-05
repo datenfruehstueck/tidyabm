@@ -5,9 +5,9 @@
 \alias{iterate.tidyabm_env}
 \title{Take off and iterate}
 \usage{
-iterate(.tidyabm, max_iterations = 50)
+iterate(.tidyabm, max_iterations = 50, verbose = TRUE)
 
-\method{iterate}{tidyabm_env}(.tidyabm, max_iterations = 50)
+\method{iterate}{tidyabm_env}(.tidyabm, max_iterations = 50, verbose = TRUE)
 }
 \arguments{
 \item{.tidyabm}{the \link{tidyabm_env} object}
@@ -15,6 +15,8 @@ iterate(.tidyabm, max_iterations = 50)
 \item{max_iterations}{number of iterations after which iterations stop (if
 it was not stopped earlier by other means of convergence, e.g. through
 environment rules).}
+
+\item{verbose}{if TRUE (the default), a status message is printed at the end}
 }
 \value{
 a \link{tidyabm_env} object

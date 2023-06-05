@@ -5,12 +5,14 @@
 \alias{tick.tidyabm_env}
 \title{Perform one single iteration}
 \usage{
-tick(.tidyabm)
+tick(.tidyabm, verbose = TRUE)
 
-\method{tick}{tidyabm_env}(.tidyabm)
+\method{tick}{tidyabm_env}(.tidyabm, verbose = TRUE)
 }
 \arguments{
 \item{.tidyabm}{the \link{tidyabm_env} object}
+
+\item{verbose}{if TRUE (the default), a status message is printed at the end}
 }
 \value{
 a \link{tidyabm_env} object

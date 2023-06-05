@@ -207,10 +207,17 @@ add_variable.tidyabm <- function(.tidyabm,
 #' Add a rule (i.e., an action that is performed under certain conditions)
 #'
 #' @description
-#'   todo
+#'   Rules are checked and executed once per tick. Rules for agents are run
+#'   before rules for environments. For each rule, the `...` conditions are
+#'   checked and, if they prove valid, the rule's `.consequence` is run.
 #'
-#'   For helping utilities and examples, see the full documentation,
-#'   particularly per environment type.
+#'   Think of rules as the code to be run within your ABM. Rules could establish
+#'   connections or abort them, they could remove or add agents, they could
+#'   stop the whole simulation or make agents move.
+#'
+#'   For helping utilities (i.e., readily implemented helpers to be used in your
+#'   rules or as readymade consequences) and examples, see the full
+#'   documentation, particularly per environment type.
 #'
 #' @param .tidyabm a [tidyabm] object
 #' @param .label string describing the rule
@@ -239,10 +246,22 @@ add_variable.tidyabm <- function(.tidyabm,
 #' @examples
 #' create_agent() %>%
 #'   set_characteristic(age = 15) %>%
-#'   add_rule('check minority', age >= 18, .consequence = \(me, abm) end(ebm))
+#'   add_rule('minors move',
+#'            age >= 18,
+#'            .consequence = \(me, abm) {
+#'              spot <- grid_get_free_neighboring_spots(me, abm) %>%
+#'                dplyr::slice_sample(n = 1)
+#'              grid_move(me, abm,
+#'                        new_x = spot$.x,
+#'                        new_y = spot$.y) %>%
+#'                return()
+#'            })
 #'
 #' create_grid_environment(seed = 1268, size = 5) %>%
-#'   add_rule('no more agents', 'todo')
+#'   add_variable(n_agents = \(me, abm) = nrow(convert_agents_to_tibble(me))) %>%
+#'   add_rule('no more agents',
+#'            n_agents == 0,
+#'            .consequence = stop_abm)
 #'
 #' @export
 add_rule <- function(.tidyabm,
@@ -283,14 +302,24 @@ add_rule.tidyabm <- function(.tidyabm,
 #' @return a [tidyabm] object
 #'
 #' @examples
-#' create_agent() %>%
-#'   set_characteristic(age = 15) %>%
-#'   add_rule('check minority', age >= 18, stop_abm) %>%
-#'   remove_rule('check minority')
+#'   add_rule('minors move',
+#'            age >= 18,
+#'            .consequence = \(me, abm) {
+#'              spot <- grid_get_free_neighboring_spots(me, abm) %>%
+#'                dplyr::slice_sample(n = 1)
+#'              grid_move(me, abm,
+#'                        new_x = spot$.x,
+#'                        new_y = spot$.y) %>%
+#'                return()
+#'            })
+#'   remove_rule('minors move')
 #'
-#' create_grid_environment(seed = 13122, size = 5) %>%
-#'   add_rule('no more agents', 'todo') %>%
-#'   remove_rule('no more agents', 'todo')
+#' create_grid_environment(seed = 1268, size = 5) %>%
+#'   add_variable(n_agents = \(me, abm) = nrow(convert_agents_to_tibble(me))) %>%
+#'   add_rule('no more agents',
+#'            n_agents == 0,
+#'            .consequence = stop_abm) %>%
+#'   remove_rule('no more agents')
 #'
 #' @export
 remove_rule <- function(.tidyabm,

@@ -5,14 +5,20 @@
 \alias{add_rule.tidyabm}
 \title{Add a rule (i.e., an action that is performed under certain conditions)}
 \usage{
-add_rule(.tidyabm, .label, .consequence, ...)
+add_rule(.tidyabm, .label, ..., .consequence)
 
-\method{add_rule}{tidyabm}(.tidyabm, .label, .consequence, ...)
+\method{add_rule}{tidyabm}(.tidyabm, .label, ..., .consequence)
 }
 \arguments{
 \item{.tidyabm}{a \link{tidyabm} object}
 
 \item{.label}{string describing the rule}
+
+\item{...}{<\code{\link[rlang:args_data_masking]{data-masking}}> expressions that
+return a logical value and are defined in terms of all characteristics
+and variables of \code{me} (which is the \link{tidyabm} object to which the rule
+was applied to). If multiple expressions are included, they are combined
+with the \code{&} operator.}
 
 \item{.consequence}{function to be executed if all conditions apply. Use
 a function with two arguments, \code{me} (which is the \link{tidyabm} object at that
@@ -28,28 +34,41 @@ runtime. If you write your own functions or need to provide additional
 arguments to functions, use the style of anonymized functions directly
 in-line (through \verb{function(me, abm) ... return(me)} or
 \verb{\\(me, abm) ... return(me)}).}
-
-\item{...}{<\code{\link[rlang:args_data_masking]{data-masking}}> expressions that
-return a logical value and are defined in terms of all characteristics
-and variables of \code{me} (which is the \link{tidyabm} object to which the rule
-was applied to). If multiple expressions are included, they are combined
-with the \code{&} operator.}
 }
 \value{
 a \link{tidyabm} object
 }
 \description{
-todo
+Rules are checked and executed once per tick. Rules for agents are run
+before rules for environments. For each rule, the \code{...} conditions are
+checked and, if they prove valid, the rule's \code{.consequence} is run.
 
-For helping utilities and examples, see the full documentation,
-particularly per environment type.
+Think of rules as the code to be run within your ABM. Rules could establish
+connections or abort them, they could remove or add agents, they could
+stop the whole simulation or make agents move.
+
+For helping utilities (i.e., readily implemented helpers to be used in your
+rules or as readymade consequences) and examples, see the full
+documentation, particularly per environment type.
 }
 \examples{
 create_agent() \%>\%
   set_characteristic(age = 15) \%>\%
-  add_rule('check minority', age >= 18, \(me, abm) end(ebm))
+  add_rule('minors move',
+           age >= 18,
+           .consequence = \(me, abm) {
+             spot <- grid_get_free_neighboring_spots(me, abm) \%>\%
+               dplyr::slice_sample(n = 1)
+             grid_move(me, abm,
+                       new_x = spot$.x,
+                       new_y = spot$.y) \%>\%
+               return()
+           })
 
 create_grid_environment(seed = 1268, size = 5) \%>\%
-  add_rule('no more agents', 'todo')
+  add_variable(n_agents = \(me, abm) = nrow(convert_agents_to_tibble(me))) \%>\%
+  add_rule('no more agents',
+           n_agents == 0,
+           .consequence = stop_abm)
 
 }

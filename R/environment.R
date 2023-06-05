@@ -331,9 +331,7 @@ tick.tidyabm_env <- function(.tidyabm,
                      }
                    )
                   )
-               },
-               .progress = 'Calculating agent variables ... '
-    )
+               })
   }
 
   # 2b. go through agents and ... check agent rules (in added order)
@@ -362,9 +360,7 @@ tick.tidyabm_env <- function(.tidyabm,
                    }
                  }
                )
-             },
-             .progress = 'Processing agent rules ... '
-  )
+             })
 
   ## intermediate agent save for environment to be able to do things
   attr(.tidyabm, 'agents') <- agents
@@ -382,9 +378,7 @@ tick.tidyabm_env <- function(.tidyabm,
         } else {
           env_variable
         }
-      },
-      .progress = 'Recalculating environment variables ... '
-    ))
+      }))
 
   ## prepare an intermediate .tidyabm so that environment rules can build on it
   .tidyabm_temp <- .tidyabm %>%
@@ -420,9 +414,7 @@ tick.tidyabm_env <- function(.tidyabm,
                   call. = FALSE)
         }
       }
-    },
-    .progress = 'Processing environment rules ... '
-  )
+    })
 
   # wrap-up (add data, set next tick, end if adequate ...)
   cp <- attr(.tidyabm, 'class_params')

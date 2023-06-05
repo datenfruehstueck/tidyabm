@@ -55,13 +55,13 @@ requires runtime resources but is flexibly updated at every iteration.
 \examples{
 create_agent() \%>\%
   set_characteristic(age = 15) \%>\%
-  add_variable(share_same_age = function(me) {
+  add_variable(share_same_age = function(me, abm) {
                 neighbors <- get_neighbors(me)
                 return(sum(neighbors$age == me$age)/nrow(neighbors))
               }) \%>\%
-  add_variable(feels_welcome = \(me) share_same_age >= .50)
+  add_variable(feels_welcome = \(me, abm) share_same_age >= .50)
 
 create_grid_environment(seed = 9896, size = 5) \%>\%
-  add_variable(m_age = \(me) mean(me$agents$age, na.rm = T))
+  add_variable(m_age = \(me, abm) mean(convert_agents_to_tibble(me)$age, na.rm = T))
 
 }

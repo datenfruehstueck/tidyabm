@@ -21,13 +21,23 @@ a \link{tidyabm} object
 Remove a certain rule
 }
 \examples{
-create_agent() \%>\%
-  set_characteristic(age = 15) \%>\%
-  add_rule('check minority', age >= 18, stop_abm) \%>\%
-  remove_rule('check minority')
+  add_rule('minors move',
+           age >= 18,
+           .consequence = \(me, abm) {
+             spot <- grid_get_free_neighboring_spots(me, abm) \%>\%
+               dplyr::slice_sample(n = 1)
+             grid_move(me, abm,
+                       new_x = spot$.x,
+                       new_y = spot$.y) \%>\%
+               return()
+           })
+  remove_rule('minors move')
 
-create_grid_environment(seed = 13122, size = 5) \%>\%
-  add_rule('no more agents', 'todo') \%>\%
-  remove_rule('no more agents', 'todo')
+create_grid_environment(seed = 1268, size = 5) \%>\%
+  add_variable(n_agents = \(me, abm) = nrow(convert_agents_to_tibble(me))) \%>\%
+  add_rule('no more agents',
+           n_agents == 0,
+           .consequence = stop_abm) \%>\%
+  remove_rule('no more agents')
 
 }
