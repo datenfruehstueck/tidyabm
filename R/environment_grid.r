@@ -67,48 +67,39 @@ create_grid_environment <- function(seed,
 
 
 #' @rdname add_agents
-#' @param initial_position one of the following:
-#'
-#'   * `random` independently choose a random position per agent
-#'   * `ordered-rowwise` fill up the grid from the top left in the order that
-#'     the agents have been added, filling up row by row
-#'   * `ordered-colwise` fill up the grid from the top left in the order that
-#'     the agents have been added, filling up column by column
-#'   * `connect-four` independently choose a random column for each agent to be
-#'     added to the grid, filling up from the bottom (just like the board game)
-#'   * a vector of length 2 with an `x` and a `y` position to place the
-#'     particular agent at (note that this only works if one agent is added at
-#'     a time)
-#'   * a list of length `n` with a vector of length 2 at each spot indicating
-#'     `x` and `y` of the particular position of this particular agent
+#' @param initial_position either `NULL` (the default) where agents are placed
+#'   randomly and independent from each other or a function with two parameters
+#'   `me` (the agent to be placed) and `abm` (the current environment with
+#'   previous agents already placed) that gets called once per agent to place
+#'   and which has to return a vector of length 2 that will be interpreted as
+#'   `x` and `y` coordinates (i.e., `c(x, y)`).
+#'   Here is an example to position agents in subsequent order via a function:
+#'   coordinate_counter <- c(0, 1)
+#'   create_grid_environment(seed = 892,
+#'                           size = 3) %>%
+#'     add_agents(create_agent(),
+#'                n = 3,
+#'                initial_position = \(me, abm) {
+#'                  coordinate_counter[1] <- coordinate_counter[1] + 1
+#'                  if (coordinate_counter[1] > 3) {
+#'                    coordinate_counter[1] <- 1
+#'                    coordinate_counter[2] <- coordiante_counter[2] + 1
+#'                  }
+#'                  return(coordinate_counter)
+#'                })
 #'
 #' @export
 add_agents.tidyabm_env_grid <- function(.tidyabm,
                                         agent,
                                         n,
-                                        initial_position = 'random',
+                                        initial_position = NULL,
                                         ...) {
   .tidyabm <- NextMethod()
 
-  if (!initial_position %in% c('random',
-                              'ordered-rowwise',
-                              'ordered-colwise',
-                              'connect-four') &
-      !(is.vector(initial_position) &
-        is.numeric(initial_position) &
-        length(initial_position) == 2) &
-      !(is.list(initial_position) &
-        length(initial_position) == n &
-        all(sapply(initial_position,
-                   \(x){is.vector(x) &
-                       is.numeric(x) &
-                       length(x) == 2})))) {
-
-    stop(paste0('initial_position has to be one of "random", "ordered-rowwise"',
-                ' "ordered-colwise", "connect-four", a vector of length 2 ',
-                '(depicting x and y), or a list of length n (the parameter) ',
-                'where each spot is taken by a vector of length 2 (again, ',
-                'depicting x and y)'))
+  if (!is.null(initial_position) & typeof(initial_position) != 'closure') {
+    stop('initial_position has to be either NULL (default) to position agents ',
+         'randomly or a function (with parameters me and abm) to be called for',
+         ' for each agent')
   }
 
   if (length(attr(.tidyabm, 'agents')) >
@@ -118,36 +109,23 @@ add_agents.tidyabm_env_grid <- function(.tidyabm,
                 'then-total of ', length(attr(.tidyabm, 'agents')) + n, ')'))
   }
 
-  if (initial_position == 'random') {
+  if (is_null(initial_position)) {
+
+    # original code
+    agents <- attr(.tidyabm, 'agents')
+    for (i in seq(length(agents) + 1,
+                  length(agents) + n)) {
+      agents <- append(agents,
+                       list(agent %>%
+                              set_characteristic(.id = paste0('A', i))))
+    }
+    attr(.tidyabm, 'agents') <- agents
+
+
     # todo (place agents by setting characteristics .x and .y per agent)
   }
 
-  if (initial_position == 'ordered-rowwise') {
-    # todo (place agents by setting characteristics .x and .y per agent
-  }
-
-  if (initial_position == 'ordered-colwise') {
-    # todo (place agents by setting characteristics .x and .y per agent
-  }
-
-  if (initial_position == 'connect-four') {
-    # todo (place agents by setting characteristics .x and .y per agent
-  }
-
-  if (is.vector(initial_position) &
-      is.numeric(initial_position) &
-      length(initial_position) == 2) {
-
-    # todo (place agents by setting characteristics .x and .y per agent
-  }
-
-  if (is.list(initial_position) &
-      length(initial_position) == n &
-      all(sapply(initial_position,
-                 \(x){is.vector(x) &
-                     is.numeric(x) &
-                     length(x) == 2}))) {
-
+  if (typeof(initial_position) == 'closure') {
     # todo (place agents by setting characteristics .x and .y per agent
   }
 

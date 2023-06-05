@@ -156,10 +156,12 @@ test_that('tick and iterate', {
     init()
   expect_true(is_tickable(e))
 
-  suppressWarnings({
-    e <- e %>%
-      tick(verbose = FALSE)
-  })
+  expect_output(
+    suppressWarnings({
+      e <- e %>%
+        tick()
+    })
+  )
   expect_equal(dim(e), c(1, 6))
   expect_equal(e$.tick, c(1))
   expect_equal(e$.n_agents_after_tick, c(10))
@@ -171,10 +173,13 @@ test_that('tick and iterate', {
     dplyr::filter(age == 23)
   expect_true(all(talkatives$bla == 3))
 
-  suppressWarnings({
-    e <- e %>%
-      tick(verbose = FALSE)
-  })
+  expect_output(
+    suppressWarnings({
+      e <- e %>%
+        tick(verbose = FALSE)
+    }),
+    regexp = NA
+  )
   expect_equal(dim(e), c(2, 6))
   expect_equal(e$.tick, c(1, 2))
   expect_equal(e$.n_agents_after_tick, c(10, 10))
