@@ -57,6 +57,8 @@ test_that('convert_agents_to_tibble', {
                  'age',
                  'vehicle',
                  'birthday_fever',
+                 '.x',
+                 '.y',
                  'speed',
                  'got_ticketed',
                  'ran'))
@@ -77,7 +79,7 @@ test_that('distribute_characteristic_across_agents', {
     ) %>%
     convert_agents_to_tibble()
   expect_equal(dim(t1),
-               c(160, 2))
+               c(160, 4))
   expect_true(all(t1$friend >= 0))
 
   a1 <- create_agent() %>%
@@ -94,7 +96,7 @@ test_that('distribute_characteristic_across_agents', {
     ) %>%
     convert_agents_to_tibble()
   expect_equal(dim(t2),
-               c(200, 3))
+               c(200, 5))
   expect_equal(sum(is.na(t2$opinion)),
                100)
 })
@@ -201,12 +203,41 @@ test_that('tick and iterate', {
     tick(verbose = FALSE) %>%
     expect_warning()
 
-  e <- e %>%
-    iterate(verbose = FALSE)
+  suppressWarnings({
+    e <- e %>%
+      iterate(verbose = FALSE)
+  })
   expect_equal(dim(e),
                c(10, 6))
   expect_equal(e$.finished_after_tick,
                c(rep(FALSE, 9),
                  TRUE))
   expect_equal(e$.tick, 1:10)
+})
+
+test_that('utils: get_random_agent', {
+  e <- create_grid_environment(seed = 8,
+                               size = 4) %>%
+    add_agents(create_agent(),
+               n = 5)
+  me <- attr(e, 'agents')[[1]]
+
+  expect_true(is_tidyabm_agent(get_random_agent(e)))
+  expect_true(is_tidyabm_agent(get_random_agent(e, me)))
+  expect_false(get_random_agent(e, me)$.id == me$.id)
+})
+
+test_that('utils: stop_abm', {
+  e <- create_grid_environment(seed = 99,
+                               size = 4) %>%
+    add_agents(create_agent(),
+               n = 4) %>%
+    add_rule('stop after 5 ticks',
+             .tick == 5,
+             .consequence = stop_abm) %>%
+    init() %>%
+    iterate(verbose = FALSE)
+  expect_equal(dim(e), c(5, 4))
+  expect_equal(e$.tick, 1:5)
+  expect_equal(e$.finished_after_tick, c(F, F, F, F, T))
 })

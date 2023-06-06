@@ -131,24 +131,54 @@ test_that('utils: grid_get_neighbors and grid_get_free_neighboring_spots', {
   expect_equal(nrow(grid_get_neighbors(agent, e, which = '+')),
                1)
   expect_equal(nrow(grid_get_neighbors(agent, e, which = '-')),
-               1)
+               0)
   expect_equal(nrow(grid_get_neighbors(agent, e, which = '|')),
-               0)
-  expect_equal(nrow(grid_get_neighbors(agent, e, which = '--')),
                1)
-  expect_equal(nrow(grid_get_neighbors(agent, e, which = '||')),
+  expect_equal(nrow(grid_get_neighbors(agent, e, which = '--')),
                0)
+  expect_equal(nrow(grid_get_neighbors(agent, e, which = '||')),
+               1)
 
   expect_equal(nrow(grid_get_free_neighboring_spots(agent, e, which = 'o')),
                6)
   expect_equal(nrow(grid_get_free_neighboring_spots(agent, e, which = '+')),
                3)
   expect_equal(nrow(grid_get_free_neighboring_spots(agent, e, which = '-')),
-               1)
-  expect_equal(nrow(grid_get_free_neighboring_spots(agent, e, which = '|')),
                2)
+  expect_equal(nrow(grid_get_free_neighboring_spots(agent, e, which = '|')),
+               1)
   expect_equal(nrow(grid_get_free_neighboring_spots(agent, e, which = '--')),
-               3)
-  expect_equal(nrow(grid_get_free_neighboring_spots(agent, e, which = '||')),
                4)
+  expect_equal(nrow(grid_get_free_neighboring_spots(agent, e, which = '||')),
+               3)
+})
+
+test_that('visualize', {
+  e <- create_grid_environment(seed = 12,
+                               size = 5) %>%
+    add_agents(create_agent() %>%
+                 set_characteristic(party = 'a',
+                                    voter = TRUE),
+               n = 2) %>%
+    add_agents(create_agent() %>%
+                 set_characteristic(party = 'a',
+                                    voter = FALSE),
+               n = 1) %>%
+    add_agents(create_agent() %>%
+                 set_characteristic(party = 'b',
+                                    voter = TRUE),
+               n = 2) %>%
+    add_agents(create_agent() %>%
+                 set_characteristic(party = 'b',
+                                    voter = FALSE),
+               n = 3)
+
+  expect_s3_class(visualize(e),
+                  'gg')
+  expect_s3_class(visualize(e, color = party),
+                  'gg')
+  expect_s3_class(visualize(e, shape = voter),
+                  'gg')
+  expect_s3_class(visualize(e, color = party, shape = voter),
+                  'gg')
 })

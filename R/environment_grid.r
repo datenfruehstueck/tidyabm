@@ -53,12 +53,18 @@ create_grid_environment <- function(seed,
     y <- size
   }
 
+  all_coordinates_in_random_order <- expand.grid(x = 1:x,
+                                                 y = 1:y) %>%
+    dplyr::slice_sample(prop = 1)
+
   tibble::tibble() %>%
     new_tidyabm_env('grid',
                     class_params = list(seed = seed,
                                         x = x,
                                         y = y,
-                                        n_fields = x*y)) %>%
+                                        n_fields = x*y,
+                                        all_coordinates_random =
+                                          all_coordinates_in_random_order)) %>%
     return()
 }
 
@@ -107,18 +113,17 @@ add_agents.tidyabm_env_grid <- function(.tidyabm,
   }
 
   agents <- attr(.tidyabm, 'agents')
+  n_agents <- length(agents)
   agents_new <- list()
-  if (length(agents) > n) {
-    agents_new <- agents[1:n]
+  if (n_agents > n) {
+    agents_new <- agents[1:(n_agents - n)]
   }
 
   cp <- attr(.tidyabm, 'class_params')
-  coordinates_random <- expand.grid(x = 1:cp[['x']],
-                                    y = 1:cp[['y']]) %>%
-    dplyr::slice_sample(prop = 1)
+  coordinates_random <- cp[['all_coordinates_random']]
 
-  for (i in seq(length(agents) - n + 1,
-                length(agents))) {
+  for (i in seq(n_agents - n + 1,
+                n_agents)) {
     agent_placed <- agents[[i]]
     if (is.null(initial_position)) {
       agent_placed <- agent_placed %>%
@@ -146,6 +151,54 @@ add_agents.tidyabm_env_grid <- function(.tidyabm,
   attr(.tidyabm, 'agents') <- agents_new
 
   return(.tidyabm)
+}
+
+#' @rdname visualize
+#'
+#' @param color specify an agent characteristic or variable by name to color
+#'   agents according to this specific characteristic/variable (default is not
+#'   to apply any colors)
+#' @param shape specify an agent characteristic or variable by name to shape
+#'   agents according to this specific characteristic/variable (default is to
+#'   have all dots)
+#'
+#' @export
+visualize.tidyabm_env_grid <- function(.tidyabm,
+                                       color = NULL,
+                                       shape = NULL) {
+  stopifnot(is_tidyabm_env_grid(.tidyabm))
+
+  cp <- attr(.tidyabm, 'class_params')
+  point_size <- 4.5 - (0.5*floor(min(cp[['x']],
+                                     cp[['y']])/10))
+  .tidyabm %>%
+    convert_agents_to_tibble() %>%
+    ggplot2::ggplot(ggplot2::aes(x = .data$.x,
+                                 y = .data$.y,
+                                 color = {{ color }},
+                                 shape = {{ shape }})) +
+    ggplot2::geom_point(size = point_size) +
+    ggplot2::scale_x_continuous('x\n',
+                                limits = c(.5, cp[['x']] + .5),
+                                breaks = 1:cp[['x']],
+                                labels = 1:cp[['x']],
+                                minor_breaks = seq(0.5, cp[['x']] + 0.5, 1),
+                                sec.axis = ggplot2::dup_axis()) +
+    ggplot2::scale_y_reverse('y\n',
+                             limits = c(cp[['y']] + 0.5, 0.5),
+                             breaks = cp[['y']]:1,
+                             labels = cp[['y']]:1,
+                             minor_breaks = seq(cp[['y']] + 0.5, 0.5, -1),
+                             sec.axis = ggplot2::dup_axis()) +
+    ggplot2::scale_color_brewer(palette = 'Paired') +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(
+      panel.grid.major = ggplot2::element_blank(),
+      panel.grid.minor = ggplot2::element_line(color = '#c2c2c2'),
+      axis.text = ggplot2::element_text(color = '#c2c2c2'),
+      legend.position = 'bottom',
+      legend.box = 'vertical'
+    )
 }
 
 
@@ -183,39 +236,43 @@ grid_get_neighbors <- function(agent,
   }
 
   if (which == 'o') {
-    abm %>%
+    return(abm %>%
       convert_agents_to_tibble() %>%
       dplyr::filter(.data$.x %in% c(agent$.x, agent$.x - 1, agent$.x + 1),
-                    .data$.y %in% c(agent$.y, agent$.y - 1, agent$.y + 1)) %>%
-      return()
+                    .data$.y %in% c(agent$.y, agent$.y - 1, agent$.y + 1),
+                    .data$.id != agent$.id))
   }
 
   if (which == '+') {
-    abm %>%
+    return(abm %>%
       convert_agents_to_tibble() %>%
       dplyr::filter(
-        (.data$.y == agent$.y & .data$.x == agent$.x - 1 | .data$.x == agent$.x + 1) |
-        (.data$.x == agent$.x & .data$.y == agent$.y - 1 | .data$.y == agent$.y + 1)
-      ) %>%
-      return()
+        (.data$.y == agent$.y &
+           .data$.x == agent$.x - 1 | .data$.x == agent$.x + 1) |
+        (.data$.x == agent$.x &
+           .data$.y == agent$.y - 1 | .data$.y == agent$.y + 1),
+        .data$.id != agent$.id
+      ))
   }
 
   if (substr(which, 1, 1) == '-') {
-    offset <- length(which)
-    abm %>%
+    offset <- nchar(which)
+    return(abm %>%
       convert_agents_to_tibble() %>%
       dplyr::filter(.data$.y == agent$.y,
-                    .data$.x == agent$.x - offset | .data$.x == agent$.x + offset) %>%
-      return()
+                    .data$.x >= agent$.x - offset,
+                    .data$.x <= agent$.x + offset,
+                    .data$.id != agent$.id))
   }
 
   if (substr(which, 1, 1) == '|') {
-    offset <- length(which)
-    abm %>%
+    offset <- nchar(which)
+    return(abm %>%
       convert_agents_to_tibble() %>%
       dplyr::filter(.data$.x == agent$.x,
-                    .data$.y == agent$.y - offset | .data$.y == agent$.y + offset) %>%
-      return()
+                    .data$.y >= agent$.y - offset,
+                    .data$.y <= agent$.y + offset,
+                    .data$.id != agent$.id))
   }
 }
 
@@ -251,44 +308,41 @@ grid_get_free_neighboring_spots <- function(agent,
   }
 
   g <- expand.grid(.x = 1:attr(abm, 'class_params')[['x']],
-                   .y = 1:attr(abm, 'class_params')[['x']]) %>%
-    dplyr::left_join(grid_get_neighbors(agent,
-                                        abm,
-                                        which) %>%
-                       dplyr::select(.data$.x, .data$.y, .data$.id),
+                   .y = 1:attr(abm, 'class_params')[['y']]) %>%
+    dplyr::anti_join(convert_agents_to_tibble(abm),
                      by = c('.x', '.y')) %>%
-    dplyr::filter(!is.null(.id)) %>%
-    dplyr::select(.data$.x, .data$.y)
+    tibble::as_tibble()
+
   if (which == 'o') {
-    g %>%
+    return(g %>%
       dplyr::filter(.data$.x %in% c(agent$.x, agent$.x - 1, agent$.x + 1),
-                    .data$.y %in% c(agent$.y, agent$.y - 1, agent$.y + 1)) %>%
-      return()
+                    .data$.y %in% c(agent$.y, agent$.y - 1, agent$.y + 1)))
   }
 
   if (which == '+') {
-    g %>%
-      dplyr::filter(
-        (.data$.y == agent$.y & .data$.x == agent$.x - 1 | .data$.x == agent$.x + 1) |
-          (.data$.x == agent$.x & .data$.y == agent$.y - 1 | .data$.y == agent$.y + 1)
-      ) %>%
-      return()
+    return(g %>%
+      dplyr::filter(.data$.y == agent$.y,
+                    .data$.x == agent$.x - 1 | .data$.x == agent$.x + 1) %>%
+      dplyr::bind_rows(
+        g %>%
+          dplyr::filter(.data$.x == agent$.x,
+                        .data$.y == agent$.y - 1 | .data$.y == agent$.y + 1)))
   }
 
   if (substr(which, 1, 1) == '-') {
-    offset <- length(which)
-    g %>%
+    offset <- nchar(which)
+    return(g %>%
       dplyr::filter(.data$.y == agent$.y,
-                    .data$.x == agent$.x - offset | .data$.x == agent$.x + offset) %>%
-      return()
+                    .data$.x >= agent$.x - offset,
+                    .data$.x <= agent$.x + offset))
   }
 
   if (substr(which, 1, 1) == '|') {
-    offset <- length(which)
-    g %>%
+    offset <- nchar(which)
+    return(g %>%
       dplyr::filter(.data$.x == agent$.x,
-                    .data$.y == agent$.y - offset | .data$.y == agent$.y + offset) %>%
-      return()
+                    .data$.y >= agent$.y - offset,
+                    .data$.y <= agent$.y + offset))
   }
 }
 
@@ -339,6 +393,15 @@ grid_move <- function(agent,
     return()
 }
 
+
+# Formatting ----
+
+#' @export
+tbl_format_footer.tidyabm_env_grid <- function(.tidyabm, ...) {
+  default_footer <- NextMethod()
+
+  # todo: add measurements to footer
+}
 
 # Internal functions ----
 

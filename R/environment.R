@@ -316,6 +316,9 @@ tick.tidyabm_env <- function(.tidyabm,
   if (length(cp[['agent_variables']]) > 0) {
     purrr::map(agents_randomized_indices,
                \(i) {
+
+                 # todo test error somehere here
+
                  agent_variables <- attr(agents[[i]], 'variables')
                  agents[[i]] <<- agents[[i]] %>%
                    update_values(purrr::map(
@@ -448,7 +451,8 @@ tick.tidyabm_env <- function(.tidyabm,
 
   if (verbose) {
     print(paste0('Tick ', rt[['next_tick']], ' finished in ',
-                 round(tick_diff, 3), ' ', attr(tick_diff, 'unit'), ':'))
+                 round(tick_diff, 3), ' ', attr(tick_diff, 'unit'),
+                 ifelse(length(colnames(.tidyabm)) > 4, ':', '')))
     for (var_name in colnames(.tidyabm)) {
       if (substr(var_name, 1, 1) != '.') {
         print(paste0('  - ', var_name, ': ',
@@ -550,9 +554,34 @@ iterate.tidyabm_env <- function(.tidyabm,
   return(.tidyabm)
 }
 
+#' Visualize an environment's current state
+#'
+#' @description
+#'   Visualization highly depends on the particular type of environment.
+#'   For a grid environment, for example, visualization resembles a rectangle
+#'   with agents placed in it.
+#'   The function returns a [ggplot2::ggplot] object, ready to be further
+#'   visualized/styled/manipulated.
+#'
+#' @param .tidyabm the [tidyabm_env] object
+#' @param ... other arguments passed to particular types of environment
+#'
+#' @return a [ggplot2::ggplot] object
+#'
+#' @examples
+#' create_grid_environment(seed = 4583, size = 4) %>%
+#'   add_agents(create_agent(), 2) %>%
+#'   init() %>%
+#'   tick() %>%
+#'   visualize()
+#'
+#' @export
+visualize <- function(.tidyabm, ...) {
+  UseMethod('visualize')
+}
 
-# todo: visualize()
-# todo: odd()
+
+# todo odd()
 
 
 #' @export
@@ -621,11 +650,14 @@ get_random_agent <- function(abm,
   }
 
   agent <- sample(attr(abm, 'agents'),
-                  size = 1)
-  while (!is.null(me) & agent) {
+                  size = 1)[[1]]
 
+  if (!is.null(me) & is_tidyabm_agent(me)) {
+    while (agent$.id == me$.id) {
+      agent <- sample(attr(abm, 'agents'),
+                      size = 1)[[1]]
+    }
   }
-  # todo
 
   return(agent)
 }
@@ -646,6 +678,37 @@ stop_abm <- function(me, abm) {
   abm %>%
     end() %>%
     return()
+}
+
+# Formatting ----
+
+#' @export
+tbl_format_footer.tidyabm_env <- function(x, ...) {
+  default_footer <- NextMethod()
+
+  # todo
+  print('bla')
+
+  .tidyabm <- x
+  abm_type <- substring(class(e)[[1]], nchar('tidyabm_env_') + 1)
+  rt <- attr(.tidyabm, 'runtime')
+  abm_status <- ifelse(is.null(rt),
+                       'not initiated',
+                       ifelse(is_ended(.tidyabm),
+                              paste0('ended after ',
+                                     rt[['next_tick']] - 1,
+                                     ' ticks'),
+                              paste0('simulating (',
+                                     rt[['next_tick']] - 1,
+                                     ' ticks passed)')))
+  return(c(default_footer,
+           pillar::style_subtle(paste0(
+             '# ABM ', abm_type, ' environment with ',
+             length(attr(.tidyabm, 'characteristics')), ' characteristics, ',
+             length(attr(.tidyabm, 'variables')), ' variables, and ',
+             length(attr(.tidyabm, 'rules')), ' rules // ',
+             abm_status, ' // ',
+             length(attr(.tidyabm, 'agents')), ' agents'))))
 }
 
 

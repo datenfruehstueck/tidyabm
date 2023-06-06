@@ -13,7 +13,7 @@ test_that("Schelling's Segregation", {
     }) %>%
     add_rule('move',
              unhappy == TRUE,
-             .conseqeunce = \(me, abm) {
+             .consequence = \(me, abm) {
                spot <- grid_get_free_neighboring_spots(me, abm, which = 'o') %>%
                  dplyr::slice_sample(n = 1)
                grid_move(me, abm,
@@ -22,20 +22,24 @@ test_that("Schelling's Segregation", {
                  return()
              })
 
-  agent_b <- agent_a %>%
-    set_characteristic(color = 'blue',
-                       .overwrite = TRUE)
+  suppressWarnings({
+    agent_b <- agent_a %>%
+      set_characteristic(color = 'blue',
+                         .overwrite = TRUE)
+  })
+
+  # todo test error somewhere here
 
   e <- create_grid_environment(seed = 5381,
-                                   size = 40) %>%
+                               size = 40) %>%
     add_agents(agent_a,
-               n = 40*40*0.4) %>%
+               n = 40*40* 0.4) %>%
     add_agents(agent_b,
-               n = 40*40*0.4) %>%
+               n = 40*40* 0.4) %>%
     add_variable(mean_similar = \(me, abm) {
       abm %>%
         convert_agents_to_tibble() %>%
-        tidycomm::describe(similar) %>%
+        dplyr::summarise(M = mean(similar, na.rm = TRUE)) %>%
         dplyr::pull(M) %>%
         return()
     }) %>%
@@ -49,7 +53,9 @@ test_that("Schelling's Segregation", {
     add_rule('stop when all are happy',
              share_unhappy <= 0,
              .consequence = stop_abm) %>%
-    init() %>%
+    init()
+
+  e <- e %>%
     iterate()
 
   expect_true(is_tidyabm_env_grid(e))
