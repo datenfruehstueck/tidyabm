@@ -28,8 +28,6 @@ test_that("Schelling's Segregation", {
                          .overwrite = TRUE)
   })
 
-  # todo test error somewhere here
-
   e <- create_grid_environment(seed = 5381,
                                size = 40) %>%
     add_agents(agent_a,

@@ -316,9 +316,6 @@ tick.tidyabm_env <- function(.tidyabm,
   if (length(cp[['agent_variables']]) > 0) {
     purrr::map(agents_randomized_indices,
                \(i) {
-
-                 # todo test error somehere here
-
                  agent_variables <- attr(agents[[i]], 'variables')
                  agents[[i]] <<- agents[[i]] %>%
                    update_values(purrr::map(
@@ -370,18 +367,31 @@ tick.tidyabm_env <- function(.tidyabm,
 
   # 3. re-calculate environment variables (in the order they were added)
   env_variables <- attr(.tidyabm, 'variables')
-  .tidyabm <- .tidyabm %>%
-    update_values(purrr::map(
-      env_variables,
-      \(env_variable) {
-        if (typeof(env_variable) == 'closure') {
-          do.call(env_variable,
-                  list(.tidyabm,
-                       .tidyabm))
-        } else {
-          env_variable
-        }
-      }))
+  for (env_variable_name in names(env_variables)) {
+    env_variable <- env_variables[[env_variable_name]]
+    if (typeof(env_variable) == 'closure') {
+      env_variable <- do.call(env_variable,
+                              list(.tidyabm,
+                                   .tidyabm))
+    }
+    .tidyabm <- .tidyabm %>%
+      update_values(stats::setNames(list(env_variable),
+                                    c(env_variable_name)))
+  }
+
+#
+#   .tidyabm <- .tidyabm %>%
+#     update_values(purrr::map(
+#       env_variables,
+#       \(env_variable) {
+#         if (typeof(env_variable) == 'closure') {
+#           do.call(env_variable,
+#                   list(.tidyabm,
+#                        .tidyabm))
+#         } else {
+#           env_variable
+#         }
+#       }))
 
   ## prepare an intermediate .tidyabm so that environment rules can build on it
   .tidyabm_temp <- .tidyabm %>%
@@ -634,6 +644,46 @@ convert_agents_to_tibble <- function(.tidyabm) {
 
 # External Utils ----
 
+#' Get an environment's characteristic value
+#'
+#' @param me the [tidyabm_env] environment object
+#' @param characteristic character string naming the characteristic
+#'
+#' @return the characteristic value (or NULL if not found)
+#' @family utilities
+#' @export
+get_characteristic <- function(me, characteristic) {
+  if (!is_tidyabm_env(me)) {
+    return(NULL)
+  }
+  cc <- attr(me, 'characteristics')
+  if (characteristic %in% names(cc)) {
+    return(cc[[characteristic]])
+  } else {
+    return(NULL)
+  }
+}
+
+#' Get an environment's variable value
+#'
+#' @param me the [tidyabm_env] environment object
+#' @param variable character string naming the variable
+#'
+#' @return the variable value (or NULL if variable is not found)
+#' @family utilities
+#' @export
+get_variable <- function(me, variable) {
+  if (!is_tidyabm_env(me)) {
+    return(NULL)
+  }
+  vcv <- attr(me, 'variables_current_values')
+  if (variable %in% names(vcv)) {
+    return(vcv[[variable]])
+  } else {
+    return(NULL)
+  }
+}
+
 #' Get a random agent from all agents in the environment
 #'
 #' @param abm the whole environment model (`abm`)
@@ -692,6 +742,7 @@ tbl_format_footer.tidyabm_env <- function(x, ...) {
   .tidyabm <- x
   abm_type <- substring(class(e)[[1]], nchar('tidyabm_env_') + 1)
   rt <- attr(.tidyabm, 'runtime')
+  cp <- attr(.tidyabm, 'class_params')
   abm_status <- ifelse(is.null(rt),
                        'not initiated',
                        ifelse(is_ended(.tidyabm),
@@ -707,6 +758,9 @@ tbl_format_footer.tidyabm_env <- function(x, ...) {
              length(attr(.tidyabm, 'characteristics')), ' characteristics, ',
              length(attr(.tidyabm, 'variables')), ' variables, and ',
              length(attr(.tidyabm, 'rules')), ' rules // ',
+             ifelse('footer_details' %in% names(cp),
+                    ifelse(cp[['footer_details']] == '', '',
+                           paste0(cp[['footer_details']], ' // ')), ''),
              abm_status, ' // ',
              length(attr(.tidyabm, 'agents')), ' agents'))))
 }

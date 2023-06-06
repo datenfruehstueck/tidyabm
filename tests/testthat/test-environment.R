@@ -213,6 +213,29 @@ test_that('tick and iterate', {
                c(rep(FALSE, 9),
                  TRUE))
   expect_equal(e$.tick, 1:10)
+
+  a <- create_agent() %>%
+    set_characteristic(bla = 2) %>%
+    add_variable(bla_squared = \(me, abm) me$bla*me$bla,
+                 bla_sqrt = \(me, abm) sqrt(me$bla))
+  e <- create_grid_environment(seed = 77,
+                               size = 4) %>%
+    add_agents(a,
+               n = 2) %>%
+    set_characteristic(blubb = 2) %>%
+    add_variable(blubb_squared = \(me, abm) get_characteristic(me, 'blubb')^2,
+                 blubb_sqrt = \(me, abm) sqrt(get_variable(me, 'blubb_squared'))) %>%
+    init()
+
+  e <- e %>%
+    tick(verbose = FALSE) %>%
+    tick(verbose = FALSE)
+
+  expect_equal(dim(e),
+               c(2, 7))
+  expect_equal(e$.finished_after_tick,
+               c(FALSE, FALSE))
+  expect_equal(e$.tick, 1:2)
 })
 
 test_that('utils: get_random_agent', {
@@ -240,4 +263,22 @@ test_that('utils: stop_abm', {
   expect_equal(dim(e), c(5, 4))
   expect_equal(e$.tick, 1:5)
   expect_equal(e$.finished_after_tick, c(F, F, F, F, T))
+})
+
+test_that('utils: get_characteristic', {
+  e <- create_grid_environment(seed = 999,
+                               size = 4) %>%
+    set_characteristic(foo = 'bar')
+  expect_equal(get_characteristic(e, 'foo'),
+               'bar')
+})
+
+test_that('utils: get_variable', {
+  e <- create_grid_environment(seed = 999,
+                               size = 4) %>%
+    add_variable(foo = \(me, abm) 'bar') %>%
+    init() %>%
+    tick(verbose = FALSE)
+  expect_equal(get_variable(e, 'foo'),
+               'bar')
 })

@@ -64,7 +64,8 @@ create_grid_environment <- function(seed,
                                         y = y,
                                         n_fields = x*y,
                                         all_coordinates_random =
-                                          all_coordinates_in_random_order)) %>%
+                                          all_coordinates_in_random_order,
+                                        footer_details = paste0(x, 'x', y))) %>%
     return()
 }
 
@@ -393,15 +394,6 @@ grid_move <- function(agent,
     return()
 }
 
-
-# Formatting ----
-
-#' @export
-tbl_format_footer.tidyabm_env_grid <- function(.tidyabm, ...) {
-  default_footer <- NextMethod()
-
-  # todo: add measurements to footer
-}
 
 # Internal functions ----
 

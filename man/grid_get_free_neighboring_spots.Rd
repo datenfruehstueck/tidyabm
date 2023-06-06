@@ -32,7 +32,9 @@ Get a \link{tibble} with two columns (.x and .y) of spots that are free
 }
 \seealso{
 Other utilities: 
+\code{\link{get_characteristic}()},
 \code{\link{get_random_agent}()},
+\code{\link{get_variable}()},
 \code{\link{grid_get_neighbors}()},
 \code{\link{grid_move}()},
 \code{\link{stop_abm}()}

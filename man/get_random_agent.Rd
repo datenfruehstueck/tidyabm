@@ -20,6 +20,8 @@ Get a random agent from all agents in the environment
 }
 \seealso{
 Other utilities: 
+\code{\link{get_characteristic}()},
+\code{\link{get_variable}()},
 \code{\link{grid_get_free_neighboring_spots}()},
 \code{\link{grid_get_neighbors}()},
 \code{\link{grid_move}()},
