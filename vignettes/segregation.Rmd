@@ -14,11 +14,130 @@ knitr::opts_chunk$set(
 )
 ```
 
+Read about Schelling's Segregation model in the [original publication](https://doi.org/10.1080%2F0022250x.1971.9989794) of 1971 or on [Wikipedia](https://en.wikipedia.org/wiki/Schelling%27s_model_of_segregation).
+
+The version implemented here sets up a squared grid of 20 by 20 spots. Neighborhood is defined as the surrounding up-to 8 fields of a particular agent. 
+
 ```{r setup}
 library(tidyverse)
 library(tidyabm)
-library(tidycomm)
 ```
 
+Model configuration parameters are combined here:
+
+```{r configuration}
+grid_side_length <- 20
+density <- .80
+neighborhood_definition <- 'o'
+unhappy_similarity_threshold <- .15
+```
+
+Let's create the agents (or, their blueprints):
+
+```{r agents}
+agent_a <- create_agent() %>%
+  set_characteristic(color = 'red') %>%
+  add_variable(similar = function(me, abm) {
+    neighbors <- grid_get_neighbors(me, 
+                                    abm, 
+                                    which = neighborhood_definition)
+    return(sum(neighbors$color == me$color)/nrow(neighbors))
+  }) %>%
+  add_variable(unhappy = function(me, abm) {
+    return(me$similar < unhappy_similarity_threshold)
+  }) %>%
+  add_rule('move',
+           unhappy == TRUE,
+           .consequence = function(me, abm) {
+             spot <- grid_get_free_neighboring_spots(me, 
+                                                     abm,
+                                                     which = neighborhood_definition) %>%
+               slice_sample(n = 1)
+             grid_move(me, 
+                       abm,
+                       new_x = spot$.x,
+                       new_y = spot$.y) %>%
+               return()
+           })
+
+agent_b <- agent_a %>%
+  set_characteristic(color = 'blue',
+                     .overwrite = TRUE)
+```
+
+Here's the actual model (i.e., the environment):
+
 ```{r segregation}
+e <- create_grid_environment(seed = 38468,
+                             size = grid_side_length) %>%
+  add_agents(agent_a,
+             n = grid_side_length^2 * density/2) %>%
+  add_agents(agent_b,
+             n = grid_side_length^2 * density/2) %>%
+  add_variable(mean_similar = function(me, 
+                                       abm) {
+    abm %>%
+      convert_agents_to_tibble() %>%
+      summarise(M = mean(similar, na.rm = TRUE)) %>%
+      pull(M) %>%
+      return()
+  }) %>%
+  add_variable(share_unhappy = function(me, 
+                                        abm) {
+    abm %>%
+      convert_agents_to_tibble() %>%
+      summarise(share_unhappy = sum(unhappy)/dplyr::n()) %>%
+      pull(share_unhappy) %>%
+      return()
+  }) %>%
+  add_rule('stop when all are happy',
+           share_unhappy <= 0,
+           .consequence = stop_abm) %>%
+  init()
+```
+
+Finally, iteration. This is the step that takes a while (but we can watch):
+
+```{r iteration}
+e <- e %>% 
+  iterate(max_iterations = 50,
+          visualize = TRUE)
+```
+
+To manually inspect how everything went, we can just look at the environment or have it output all the agents.
+
+```{r inspection}
+e
+
+e %>% 
+  convert_agents_to_tibble()
+```
+
+Ultimately, we are interested in how average similarity and the share of unhappy agents went down:
+
+```{r visualizations}
+e %>% 
+  ggplot2(aes(x = .tick,
+              y = 100*share_unhappy)) +
+  geom_line() +
+  scale_x_continuous('Time [ticks]') +
+  scale_y_continuous('Share of unhappy agents [%]') +
+  theme_minimal() +
+  ggtitle('Unhappiness over Time')
+
+
+e %>% 
+  ggplot2(aes(x = .tick,
+              y = 100*mean_similar)) +
+  geom_line() +
+  scale_x_continuous('Time [ticks]') +
+  scale_y_continuous('Average share of similar agents in neighborhood [%]') +
+  theme_minimal() +
+  ggtitle('Mean Similarity over Time')
+```
+
+And, of course, we can compile relevant data for any publication we're preparing through the [ODD protocol](https://doi.org/10.18564/jasss.4259):
+```{r odd}
+e %>% 
+  odd()
 ```

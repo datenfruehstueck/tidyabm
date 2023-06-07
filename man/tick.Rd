@@ -5,14 +5,17 @@
 \alias{tick.tidyabm_env}
 \title{Perform one single iteration}
 \usage{
-tick(.tidyabm, verbose = TRUE)
+tick(.tidyabm, verbose = TRUE, visualize = FALSE)
 
-\method{tick}{tidyabm_env}(.tidyabm, verbose = TRUE)
+\method{tick}{tidyabm_env}(.tidyabm, verbose = TRUE, visualize = FALSE)
 }
 \arguments{
 \item{.tidyabm}{the \link{tidyabm_env} object}
 
 \item{verbose}{if TRUE (the default), a status message is printed at the end}
+
+\item{visualize}{if TRUE, each tick ends with a visualization if this has
+been implemented for the respective environment; default is FALSE}
 }
 \value{
 a \link{tidyabm_env} object

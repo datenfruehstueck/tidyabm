@@ -113,43 +113,53 @@ add_agents.tidyabm_env_grid <- function(.tidyabm,
                 'then-total of ', length(attr(.tidyabm, 'agents')) + n, ')'))
   }
 
-  agents <- attr(.tidyabm, 'agents')
-  n_agents <- length(agents)
-  agents_new <- list()
-  if (n_agents > n) {
-    agents_new <- agents[1:(n_agents - n)]
-  }
-
   cp <- attr(.tidyabm, 'class_params')
   coordinates_random <- cp[['all_coordinates_random']]
+  agents <- attr(.tidyabm, 'agents')
+  n_agents <- length(agents)
+  i <- n_agents - n + 1
 
-  for (i in seq(n_agents - n + 1,
-                n_agents)) {
-    agent_placed <- agents[[i]]
-    if (is.null(initial_position)) {
-      agent_placed <- agent_placed %>%
-        set_characteristic(.x = coordinates_random[[i, 'x']],
-                           .y = coordinates_random[[i, 'y']],
-                           .overwrite = TRUE)
-    } else {
-      coordinates <- do.call(initial_position,
-                             list(agent_placed, .tidyabm))
-      if (!is.vector(coordinates) | length(coordinates) != 2) {
-        stop(paste0('The provided function in initial_position is expected to ',
-                    'return a numeric vector (length 2) but did not (returned ',
-                    typeof(coordinates), ' with length ', length(coordinates),
-                    ')'))
+  attr(.tidyabm, 'agents') <- purrr::map_if(
+    agents,
+    c(rep(FALSE, n_agents - n),
+      rep(TRUE, n)),
+    \(agent) {
+      if (is.null(initial_position)) {
+        i <<- i + 1
+        agent %>%
+          set_characteristic(.x = coordinates_random[[i-1, 'x']],
+                             .y = coordinates_random[[i-1, 'y']],
+                             .overwrite = TRUE)
+      } else {
+        coordinates <- do.call(initial_position,
+                               list(agent, .tidyabm))
+        if (!is.vector(coordinates) | length(coordinates) != 2) {
+          stop(paste0('The provided function in initial_position is expected to ',
+                      'return a numeric vector (length 2) but did not (returned ',
+                      typeof(coordinates), ' with length ', length(coordinates),
+                      ')'))
+        }
+        agent %>%
+          set_characteristic(.x = coordinates[[1]],
+                             .y = coordinates[[2]],
+                             .overwrite = TRUE)
       }
-      agent_placed <- agent_placed %>%
-        set_characteristic(.x = coordinates[[1]],
-                           .y = coordinates[[2]],
-                           .overwrite = TRUE)
-    }
-    agents_new <- append(agents_new,
-                         list(agent_placed))
-  }
+    })
 
-  attr(.tidyabm, 'agents') <- agents_new
+  return(.tidyabm)
+}
+
+#' @rdname init
+#' @export
+init.tidyabm_env_grid <- function(.tidyabm) {
+  .tidyabm <- NextMethod()
+
+  cp <- attr(.tidyabm, 'class_params')
+  cp <- append(cp,
+               list(m = matrix(rep(0, n_fields),
+                               ncol = cp[['x']],
+                               nrow = cp[['y']])))
+  attr(.tidyabm, 'class_params') <- cp
 
   return(.tidyabm)
 }
@@ -191,7 +201,8 @@ visualize.tidyabm_env_grid <- function(.tidyabm,
                              labels = cp[['y']]:1,
                              minor_breaks = seq(cp[['y']] + 0.5, 0.5, -1),
                              sec.axis = ggplot2::dup_axis()) +
-    ggplot2::scale_color_brewer(palette = 'Paired') +
+    ggplot2::scale_color_brewer(NULL, palette = 'Paired') +
+    ggplot2::scale_shape_discrete(NULL) +
     ggplot2::theme_minimal() +
     ggplot2::theme(
       panel.grid.major = ggplot2::element_blank(),
@@ -227,6 +238,10 @@ visualize.tidyabm_env_grid <- function(.tidyabm,
 grid_get_neighbors <- function(agent,
                                abm,
                                which = 'o') {
+
+  # todo: convert to matrix
+  m <- attr(abm, 'class_params')[['m']]
+
   if (!is_tidyabm_agent(agent) |
       !is_tidyabm_env(abm) |
       !(which %in% c('o',
@@ -299,6 +314,10 @@ grid_get_neighbors <- function(agent,
 grid_get_free_neighboring_spots <- function(agent,
                                             abm,
                                             which = 'o') {
+
+  # todo: convert to matrix
+  m <- attr(abm, 'class_params')[['m']]
+
   if (!is_tidyabm_agent(agent) |
       !is_tidyabm_env(abm) |
       !(which %in% c('o',
@@ -363,6 +382,10 @@ grid_move <- function(agent,
                       abm,
                       new_x,
                       new_y) {
+
+  # todo: convert to matrix
+  m <- attr(abm, 'class_params')[['m']]
+
   if (!is_tidyabm_agent(agent)) {
     return(NULL)
   }
@@ -387,11 +410,11 @@ grid_move <- function(agent,
     return(agent)
   }
 
-  agent %>%
-    set_characteristic(.x = new_x,
-                       .y = new_y,
-                       .overwrite = TRUE) %>%
-    return()
+  return(agent %>%
+           set_characteristic(.x = new_x,
+                              .y = new_y,
+                              .overwrite = TRUE,
+                              .suppress_warnings = TRUE))
 }
 
 

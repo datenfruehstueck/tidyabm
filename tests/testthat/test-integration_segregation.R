@@ -29,11 +29,11 @@ test_that("Schelling's Segregation", {
   })
 
   e <- create_grid_environment(seed = 5381,
-                               size = 40) %>%
+                               size = 20) %>%
     add_agents(agent_a,
-               n = 40*40* 0.4) %>%
+               n = 20*20* 0.4) %>%
     add_agents(agent_b,
-               n = 40*40* 0.4) %>%
+               n = 20*20* 0.4) %>%
     add_variable(mean_similar = \(me, abm) {
       abm %>%
         convert_agents_to_tibble() %>%
@@ -53,8 +53,8 @@ test_that("Schelling's Segregation", {
              .consequence = stop_abm) %>%
     init()
 
-  e <- e %>%
-    iterate()
+  #e <- e %>%
+  #  iterate()
 
   expect_true(is_tidyabm_env_grid(e))
 

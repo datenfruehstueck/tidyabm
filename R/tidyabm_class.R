@@ -26,6 +26,8 @@
 #'   logical, vector ...).
 #' @param .overwrite if `FALSE` (the default), characteristics with the same
 #'   name will not be overwritten (a warning will be issued)
+#' @param .suppress_warnings if `TRUE`, `.overwrite` will not yield any
+#'   warnings; default is FALSE, though
 #'
 #' @return a [tidyabm] object
 #'
@@ -46,7 +48,8 @@
 #' @export
 set_characteristic <- function(.tidyabm,
                                ...,
-                               .overwrite = FALSE) {
+                               .overwrite = FALSE,
+                               .suppress_warnings = FALSE) {
   UseMethod('set_characteristic')
 }
 
@@ -54,7 +57,8 @@ set_characteristic <- function(.tidyabm,
 #' @export
 set_characteristic.tidyabm <- function(.tidyabm,
                                        ...,
-                                       .overwrite = FALSE) {
+                                       .overwrite = FALSE,
+                                       .suppress_warnings = FALSE) {
   stopifnot(is_tidyabm(.tidyabm))
 
   new_characteristics_quo <- dplyr:::dplyr_quosures(...)
@@ -77,11 +81,13 @@ set_characteristic.tidyabm <- function(.tidyabm,
   current_names <- names(current_characteristics)
 
   if (any(new_names %in% current_names)) {
-    warning(paste0('The following characteristics already existed. They were ',
-                   ifelse(.overwrite, '', 'not '), 'overwritten: ',
-                   paste(new_names[new_names %in% current_names],
-                         collapse = ', ')),
-            call. = FALSE)
+    if (!.suppress_warnings) {
+      warning(paste0('The following characteristics already existed. They were ',
+                     ifelse(.overwrite, '', 'not '), 'overwritten: ',
+                     paste(new_names[new_names %in% current_names],
+                           collapse = ', ')),
+              call. = FALSE)
+    }
 
     if (.overwrite) {
       current_characteristics <- replace(current_characteristics,

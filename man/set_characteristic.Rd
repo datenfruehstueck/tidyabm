@@ -5,9 +5,19 @@
 \alias{set_characteristic.tidyabm}
 \title{Set an initial characteristic}
 \usage{
-set_characteristic(.tidyabm, ..., .overwrite = FALSE)
+set_characteristic(
+  .tidyabm,
+  ...,
+  .overwrite = FALSE,
+  .suppress_warnings = FALSE
+)
 
-\method{set_characteristic}{tidyabm}(.tidyabm, ..., .overwrite = FALSE)
+\method{set_characteristic}{tidyabm}(
+  .tidyabm,
+  ...,
+  .overwrite = FALSE,
+  .suppress_warnings = FALSE
+)
 }
 \arguments{
 \item{.tidyabm}{a \link{tidyabm} object}
@@ -25,6 +35,9 @@ logical, vector ...).}
 
 \item{.overwrite}{if \code{FALSE} (the default), characteristics with the same
 name will not be overwritten (a warning will be issued)}
+
+\item{.suppress_warnings}{if \code{TRUE}, \code{.overwrite} will not yield any
+warnings; default is FALSE, though}
 }
 \value{
 a \link{tidyabm} object

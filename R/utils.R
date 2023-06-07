@@ -8,11 +8,8 @@ retain_new_data_in_prior_object <- function(prior_object,
                                             new_data) {
   out <- structure(new_data)
   prior_attrs <- attributes(prior_object)
-  for (attr_name in names(prior_attrs)) {
-    if (!(attr_name %in% c('row.names',
-                           'names'))) {
-      attr(out, attr_name) <- prior_attrs[[attr_name]]
-    }
-  }
+  prior_attrs[['row.names']] <- attr(out, 'row.names')
+  prior_attrs[['names']] <- attr(out, 'names')
+  attributes(out) <- prior_attrs
   return(out)
 }

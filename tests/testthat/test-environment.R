@@ -217,7 +217,7 @@ test_that('tick and iterate', {
   a <- create_agent() %>%
     set_characteristic(bla = 2) %>%
     add_variable(bla_squared = \(me, abm) me$bla*me$bla,
-                 bla_sqrt = \(me, abm) sqrt(me$bla))
+                 bla_sqrt = \(me, abm) sqrt(me$bla_squared))
   e <- create_grid_environment(seed = 77,
                                size = 4) %>%
     add_agents(a,
@@ -236,6 +236,22 @@ test_that('tick and iterate', {
   expect_equal(e$.finished_after_tick,
                c(FALSE, FALSE))
   expect_equal(e$.tick, 1:2)
+
+  ta <- convert_agents_to_tibble(e)
+  expect_equal(dim(ta),
+               c(2, 6))
+  expect_equal(ta$bla^2,
+               ta$bla_squared)
+  expect_equal(ta$bla,
+               ta$bla_sqrt)
+})
+
+test_that('odd', {
+  e_odd <- create_grid_environment(seed = 1,
+                                   size = 2) %>%
+    odd()
+  expect_equal(dim(e_odd),
+               c(7, 2))
 })
 
 test_that('utils: get_random_agent', {

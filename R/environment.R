@@ -63,13 +63,13 @@ add_agents.tidyabm_env <- function(.tidyabm,
 
   # add agents
   agents <- attr(.tidyabm, 'agents')
-  for (i in seq(length(agents) + 1,
-                length(agents) + n)) {
-    agents <- append(agents,
-                     list(agent %>%
-                            set_characteristic(.id = paste0('A', i))))
-  }
-  attr(.tidyabm, 'agents') <- agents
+  agents_new <- purrr::map(as.list(seq(length(agents) + 1,
+                                       length(agents) + n)),
+                           \(i) {
+                             agent %>%
+                               set_characteristic(.id = paste0('A', i))
+                           })
+  attr(.tidyabm, 'agents') <- append(agents, agents_new)
   return(.tidyabm)
 }
 
@@ -271,6 +271,8 @@ reset.tidyabm_env <- function(.tidyabm) {
 #'
 #' @param .tidyabm the [tidyabm_env] object
 #' @param verbose if TRUE (the default), a status message is printed at the end
+#' @param visualize if TRUE, each tick ends with a visualization if this has
+#'   been implemented for the respective environment; default is FALSE
 #'
 #' @return a [tidyabm_env] object
 #' @seealso [iterate]
@@ -283,14 +285,17 @@ reset.tidyabm_env <- function(.tidyabm) {
 #'
 #' @export
 tick <- function(.tidyabm,
-                 verbose = TRUE) {
+                 verbose = TRUE,
+                 visualize = FALSE) {
   UseMethod('tick')
 }
 
 #' @rdname tick
 #' @export
 tick.tidyabm_env <- function(.tidyabm,
-                             verbose = TRUE) {
+                             verbose = TRUE,
+                             visualize = FALSE) {
+
   stopifnot(is_tidyabm_env(.tidyabm))
   if (is.null(attr(.tidyabm, 'runtime'))) {
     stop('Environment has not yet been initiated. Call "init" first.')
@@ -314,24 +319,23 @@ tick.tidyabm_env <- function(.tidyabm,
 
   # 2a. go through agents and ... re-calculate agent variables (in added order)
   if (length(cp[['agent_variables']]) > 0) {
-    purrr::map(agents_randomized_indices,
-               \(i) {
-                 agent_variables <- attr(agents[[i]], 'variables')
-                 agents[[i]] <<- agents[[i]] %>%
-                   update_values(purrr::map(
-                     agent_variables,
-                     \(agent_variable) {
-                       if (typeof(agent_variable) == 'closure') {
-                         do.call(agent_variable,
-                                 list(agents[[i]],
-                                      .tidyabm))
-                       } else {
-                         agent_variable
-                       }
+    for (agent_variable_name in cp[['agent_variables']]) {
+      purrr::map(agents_randomized_indices,
+                 \(i) {
+                   agent_variables <- attr(agents[[i]], 'variables')
+                   if (agent_variable_name %in% names(agent_variables)) {
+                     a_variable <- agent_variables[[agent_variable_name]]
+                     if (typeof(a_variable) == 'closure') {
+                       a_variable <- do.call(a_variable,
+                                             list(agents[[i]],
+                                                  .tidyabm))
                      }
-                   )
-                  )
-               })
+                     agents[[i]] <<- agents[[i]] %>%
+                       update_values(stats::setNames(list(a_variable),
+                                                     c(agent_variable_name)))
+                   }
+                 })
+    }
   }
 
   # 2b. go through agents and ... check agent rules (in added order)
@@ -378,20 +382,6 @@ tick.tidyabm_env <- function(.tidyabm,
       update_values(stats::setNames(list(env_variable),
                                     c(env_variable_name)))
   }
-
-#
-#   .tidyabm <- .tidyabm %>%
-#     update_values(purrr::map(
-#       env_variables,
-#       \(env_variable) {
-#         if (typeof(env_variable) == 'closure') {
-#           do.call(env_variable,
-#                   list(.tidyabm,
-#                        .tidyabm))
-#         } else {
-#           env_variable
-#         }
-#       }))
 
   ## prepare an intermediate .tidyabm so that environment rules can build on it
   .tidyabm_temp <- .tidyabm %>%
@@ -474,6 +464,10 @@ tick.tidyabm_env <- function(.tidyabm,
   rt[['next_tick']] <- rt[['next_tick']] + 1
   attr(.tidyabm, 'runtime') <- rt
 
+  if (visualize) {
+    print(visualize(.tidyabm))
+  }
+
   return(.tidyabm)
 }
 
@@ -499,6 +493,8 @@ tick.tidyabm_env <- function(.tidyabm,
 #'   it was not stopped earlier by other means of convergence, e.g. through
 #'   environment rules).
 #' @param verbose if TRUE (the default), a status message is printed at the end
+#' @param visualize if TRUE, each tick ends with a visualization if this has
+#'   been implemented for the respective environment; default is FALSE
 #'
 #' @return a [tidyabm_env] object
 #' @seealso [tick]
@@ -521,7 +517,8 @@ tick.tidyabm_env <- function(.tidyabm,
 #' @export
 iterate <- function(.tidyabm,
                     max_iterations = 50,
-                    verbose = TRUE) {
+                    verbose = TRUE,
+                    visualize = FALSE) {
   UseMethod('iterate')
 }
 
@@ -529,7 +526,8 @@ iterate <- function(.tidyabm,
 #' @export
 iterate.tidyabm_env <- function(.tidyabm,
                                 max_iterations = 50,
-                                verbose = TRUE) {
+                                verbose = TRUE,
+                                visualize = FALSE) {
   stopifnot(is_tidyabm_env(.tidyabm))
   if (is.null(attr(.tidyabm, 'runtime'))) {
     stop('Environment has not yet been initiated. Call "init" first.')
@@ -554,12 +552,10 @@ iterate.tidyabm_env <- function(.tidyabm,
              \(current_tick) {
                if (is_tickable(.tidyabm)) {
                  .tidyabm <<- .tidyabm %>%
-                   tick(verbose = verbose)
+                   tick(verbose = verbose,
+                        visualize = visualize)
                }
-             },
-             .progress = paste0('Iterating ticks ', starting_tick, ' to ',
-                                max_ending_tick, ' (at most) ...')
-  )
+             })
 
   return(.tidyabm)
 }
@@ -591,8 +587,74 @@ visualize <- function(.tidyabm, ...) {
 }
 
 
-# todo odd()
+#' Extract compact information for an ODD protocol
+#'
+#' @description
+#'   ODD (Overview, Design concepts and Details) protocols are a suggested
+#'   standard for describing agent-based models (Grimm et al. 2006, 2010, 2020).
+#'   As Grimm et al. (2020) state, "ODD model descriptions [...] are based on
+#'   written text and intended to be read by humans." This function provides all
+#'   the details the environment and agent specifications contain that might be
+#'   relevant for the ODD to be written. It returns the 2020 ODD framework with
+#'   all the collected information pre-filled into the respective category.
+#'
+#' @param .tidyabm the [tidyabm_env] object
+#' @param ... other arguments passed to particular types of environment
+#'
+#' @return a [tibble] of length 7 (the ODD categories)
+#'
+#' @examples
+#' create_grid_environment(seed = 4583, size = 4) %>%
+#'   add_agents(create_agent(), 2) %>%
+#'   init() %>%
+#'   iterate() %>%
+#'   odd()
+#'
+#' @references Grimm, V., U. Berger, F. Bastiansen, S. Eliassen, V. Ginot, J.
+#'   Giske, J. Goss-Custard, T. Grand, S. Heinz, G. Huse, A. Huth, J. U. Jepsen,
+#'   C. Jørgensen, W. M. Mooij, B. Müller, G. Pe’er, C. Piou, S. F. Railsback,
+#'   A. M. Robbins, M. M. Robbins, E. Rossmanith, N. Rüger, E. Strand, S.
+#'   Souissi, R. A. Stillman, R. Vabø, U. Visser, & D. L. DeAngelis (2006). A
+#'   standard protocol for describing individual-based and agent-based models.
+#'   Ecological Modelling, 198, 115-296. 10.1016/j.ecolmodel.2006.04.023
+#'
+#'   Grimm, V., U. Berger, D. L. DeAngelis, J. G. Polhill, J. Giske, & S. F.
+#'   Railsback (2010). The ODD protocol: A review and first update. Ecological
+#'   Modelling 221, 2760-2768. 10.1016/j.ecolmodel.2010.08.019.
+#'
+#'   Grimm, V., S. F. Railsback, C. E. Vincenot, U. Berger, C. Gallagher, D. L.
+#'   DeAngelis, B. Edmonds, J. Ge, J. Giske, J. Groeneveld, A. S. A. Johnston,
+#'   A. Milles, J. Nabe-Nielsen, G. Polhill, V. Radchuk, M.-S. Rohwäder, R. A.
+#'   Stillman, J. C. Thiele, & D. Ayllón (2020). The ODD Protocol for describing
+#'   agent-based and other simulation models: A second update to improve
+#'   clarity, replication, and structural realism. Journal of Artificial
+#'   Societies and Social Simulation, 23(2), 7. 10.18564/jasss.4259
+#'
+#' @export
+odd <- function(.tidyabm, ...) {
+  UseMethod('odd')
+}
 
+#' @rdname odd
+#' @export
+odd.tidyabm_env <- function(.tidyabm) {
+  stopifnot(is_tidyabm_env(.tidyabm))
+
+  tibble::tibble(`ODD category` = c('Purpose and patterns',
+                                    'Entities, state variables, and scales',
+                                    'Process overview and scheduling',
+                                    'Design concepts',
+                                    'Initialization',
+                                    'Input data',
+                                    'Submodels'),
+                 `tidyABM information` = c('# todo',
+                                           '# todo',
+                                           '# todo',
+                                           '# todo',
+                                           '# todo',
+                                           '# todo',
+                                           '# todo'))
+}
 
 #' @export
 is_tidyabm_env <- function(x) {
@@ -627,18 +689,16 @@ convert_agents_to_tibble <- function(.tidyabm) {
   stopifnot(length(agents) > 0)
 
   out <- dplyr::bind_rows(agents) %>%
-      dplyr::relocate(.id)
+    dplyr::relocate(.id)
 
   # check for missing variables
-  cp <- attr(.tidyabm, 'class_params')
-  for (variable in cp[['agent_variables']]) {
-    if (!(variable %in% colnames(out))) {
-      out <- out %>%
-        dplyr::mutate(!!variable := NA)
-    }
-  }
+  all_variables <- attr(.tidyabm, 'class_params')[['agent_variables']]
+  missing_variables <- all_variables[!all_variables %in% colnames(out)]
 
-  return(out)
+  out %>%
+    dplyr::bind_cols(stats::setNames(as.list(rep(NA, length(missing_variables))),
+                                     missing_variables)) %>%
+    return()
 }
 
 
