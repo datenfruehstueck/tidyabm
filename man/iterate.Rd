@@ -5,9 +5,9 @@
 \alias{iterate.tidyabm_env}
 \title{Take off and iterate}
 \usage{
-iterate(.tidyabm, max_iterations = 50, verbose = TRUE, visualize = FALSE)
+iterate(.tidyabm, max_iterations = 50, verbose = TRUE, visualize = FALSE, ...)
 
-\method{iterate}{tidyabm_env}(.tidyabm, max_iterations = 50, verbose = TRUE, visualize = FALSE)
+\method{iterate}{tidyabm_env}(.tidyabm, max_iterations = 50, verbose = TRUE, visualize = FALSE, ...)
 }
 \arguments{
 \item{.tidyabm}{the \link{tidyabm_env} object}
@@ -20,6 +20,8 @@ environment rules).}
 
 \item{visualize}{if TRUE, each tick ends with a visualization if this has
 been implemented for the respective environment; default is FALSE}
+
+\item{...}{further arguments to pass on to visualize}
 }
 \value{
 a \link{tidyabm_env} object

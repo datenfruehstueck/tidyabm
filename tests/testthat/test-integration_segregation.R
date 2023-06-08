@@ -53,6 +53,7 @@ test_that("Schelling's Segregation", {
              .consequence = stop_abm) %>%
     init()
 
+  #todo
   #e <- e %>%
   #  iterate()
 

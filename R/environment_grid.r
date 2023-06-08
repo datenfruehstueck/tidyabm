@@ -149,21 +149,6 @@ add_agents.tidyabm_env_grid <- function(.tidyabm,
   return(.tidyabm)
 }
 
-#' @rdname init
-#' @export
-init.tidyabm_env_grid <- function(.tidyabm) {
-  .tidyabm <- NextMethod()
-
-  cp <- attr(.tidyabm, 'class_params')
-  cp <- append(cp,
-               list(m = matrix(rep(0, n_fields),
-                               ncol = cp[['x']],
-                               nrow = cp[['y']])))
-  attr(.tidyabm, 'class_params') <- cp
-
-  return(.tidyabm)
-}
-
 #' @rdname visualize
 #'
 #' @param color specify an agent characteristic or variable by name to color
@@ -201,8 +186,8 @@ visualize.tidyabm_env_grid <- function(.tidyabm,
                              labels = cp[['y']]:1,
                              minor_breaks = seq(cp[['y']] + 0.5, 0.5, -1),
                              sec.axis = ggplot2::dup_axis()) +
-    ggplot2::scale_color_brewer(NULL, palette = 'Paired') +
-    ggplot2::scale_shape_discrete(NULL) +
+    ggplot2::scale_color_brewer(palette = 'Paired') +
+    ggplot2::scale_shape_discrete() +
     ggplot2::theme_minimal() +
     ggplot2::theme(
       panel.grid.major = ggplot2::element_blank(),
@@ -226,10 +211,6 @@ visualize.tidyabm_env_grid <- function(.tidyabm,
 #'   - `+` to get up to 4 neighbors directly next to `me` (no diagonals)
 #'   - `-` to get up to 2 x-axis neighbors, one on each side of `me`
 #'   - `|` to get up to 2 y-axis neighbors, one above and one below `me`
-#'   - `--` to get up to 4 x-axis neighbors, two on each side of `me`
-#'     (this actually works up to `-----`)
-#'   - `||` to get up to 4 y-axis neighbors, two above and two below `me`
-#'     (this actually works up to `|||||`)
 #'
 #' @return a [tibble] of neighboring agents in no particular order with their
 #'   characteristics and variables set
@@ -238,58 +219,27 @@ visualize.tidyabm_env_grid <- function(.tidyabm,
 grid_get_neighbors <- function(agent,
                                abm,
                                which = 'o') {
-
-  # todo: convert to matrix
-  m <- attr(abm, 'class_params')[['m']]
-
   if (!is_tidyabm_agent(agent) |
       !is_tidyabm_env(abm) |
-      !(which %in% c('o',
-                     '+',
-                     '-', '--', '---', '----', '-----',
-                     '|', '||', '|||', '||||', '|||||'))) {
+      !(which %in% c('o', '+', '-', '|'))) {
     return(NULL)
   }
 
-  if (which == 'o') {
-    return(abm %>%
-      convert_agents_to_tibble() %>%
-      dplyr::filter(.data$.x %in% c(agent$.x, agent$.x - 1, agent$.x + 1),
-                    .data$.y %in% c(agent$.y, agent$.y - 1, agent$.y + 1),
-                    .data$.id != agent$.id))
-  }
+  neighbors <- matrix_get_neighbors(abm, agent$.x, agent$.y)
 
+  # if (which == 'o') {
+  # }
   if (which == '+') {
-    return(abm %>%
-      convert_agents_to_tibble() %>%
-      dplyr::filter(
-        (.data$.y == agent$.y &
-           .data$.x == agent$.x - 1 | .data$.x == agent$.x + 1) |
-        (.data$.x == agent$.x &
-           .data$.y == agent$.y - 1 | .data$.y == agent$.y + 1),
-        .data$.id != agent$.id
-      ))
+    neighbors <- neighbors[c('N', 'E', 'S', 'W')]
+  }
+  if (which == '-') {
+    neighbors <- neighbors[c('E', 'W')]
+  }
+  if (which == '|') {
+    neighbors <- neighbors[c('N', 'S')]
   }
 
-  if (substr(which, 1, 1) == '-') {
-    offset <- nchar(which)
-    return(abm %>%
-      convert_agents_to_tibble() %>%
-      dplyr::filter(.data$.y == agent$.y,
-                    .data$.x >= agent$.x - offset,
-                    .data$.x <= agent$.x + offset,
-                    .data$.id != agent$.id))
-  }
-
-  if (substr(which, 1, 1) == '|') {
-    offset <- nchar(which)
-    return(abm %>%
-      convert_agents_to_tibble() %>%
-      dplyr::filter(.data$.x == agent$.x,
-                    .data$.y >= agent$.y - offset,
-                    .data$.y <= agent$.y + offset,
-                    .data$.id != agent$.id))
-  }
+  return(dplyr::bind_rows(attr(abm, 'agents')[neighbors[neighbors > 0]]))
 }
 
 #' Get a [tibble] with two columns (.x and .y) of spots that are free
@@ -302,10 +252,6 @@ grid_get_neighbors <- function(agent,
 #'   - `+` to get up to 4 neighboring spots directly next to `me` (no diagonals)
 #'   - `-` to get up to 2 x-axis neighboring spots, one on each side of `me`
 #'   - `|` to get up to 2 y-axis neighboring spots, one above and one below `me`
-#'   - `--` to get up to 4 x-axis neighboring spots, two on each side of `me`
-#'     (this actually works up to `-----`)
-#'   - `||` to get up to 4 y-axis neighboring spots, two above and two below
-#'     `me` (this actually works up to `|||||`)
 #'
 #' @return a [tibble] of neighboring spots (with a `.x` and a `.y` column) in
 #'   no particular order that are free
@@ -316,14 +262,13 @@ grid_get_free_neighboring_spots <- function(agent,
                                             which = 'o') {
 
   # todo: convert to matrix
-  m <- attr(abm, 'class_params')[['m']]
 
   if (!is_tidyabm_agent(agent) |
       !is_tidyabm_env(abm) |
       !(which %in% c('o',
                      '+',
-                     '-', '--', '---', '----', '-----',
-                     '|', '||', '|||', '||||', '|||||'))) {
+                     '-',
+                     '|'))) {
     return(NULL)
   }
 
@@ -382,10 +327,6 @@ grid_move <- function(agent,
                       abm,
                       new_x,
                       new_y) {
-
-  # todo: convert to matrix
-  m <- attr(abm, 'class_params')[['m']]
-
   if (!is_tidyabm_agent(agent)) {
     return(NULL)
   }
@@ -422,4 +363,61 @@ grid_move <- function(agent,
 
 is_tidyabm_env_grid <- function(x) {
   inherits(x, 'tidyabm_env_grid')
+}
+
+#' Get neighbors for a given position (but inside the matrix)
+#'
+#' @param .tidyabm the [tidyabm_env_grid] object
+#' @param x numeric x of the middle
+#' @param y numeric y of the middle
+#'
+#' @return a named length-8 vector with either -1 (field does not exist), 0
+#'   (field is empty) or the index (!) of the corresponding agent (to address
+#'   them directly via `attr(.tidyabm, 'agents')[[index]]`)
+matrix_get_neighbors <- function(.tidyabm, x, y) {
+  cp <- attr(.tidyabm, 'class_params')
+  m <- convert_agents_to_padded_matrix(.tidyabm)
+  ind <- 2:(nrow(m) - 2 + 1)
+  neighbors <- rbind(N  = as.vector(m[ind - 1, ind    ]),
+                     NE = as.vector(m[ind - 1, ind + 1]),
+                     E  = as.vector(m[ind    , ind + 1]),
+                     SE = as.vector(m[ind + 1, ind + 1]),
+                     S  = as.vector(m[ind + 1, ind    ]),
+                     SW = as.vector(m[ind + 1, ind - 1]),
+                     W  = as.vector(m[ind    , ind - 1]),
+                     NW = as.vector(m[ind - 1, ind - 1]))
+  return(neighbors[, convert_xy_to_mpos(cp[['y']], x, y)])
+}
+
+convert_agents_to_padded_matrix <- function(.tidyabm) {
+  cp <- attr(.tidyabm, 'class_params')
+
+  indices <- tibble::tibble(mpos = 1:cp[['n_fields']]) %>%
+    dplyr::left_join(dplyr::bind_rows(attr(.tidyabm, 'agents')) %>%
+                       dplyr::mutate(mpos = convert_xy_to_mpos(cp[['y']],
+                                                               .data$.x,
+                                                               .data$.y),
+                                     i = 1:dplyr::n()) %>%
+                       dplyr::select(mpos, i),
+                     by = 'mpos') %>%
+    dplyr::mutate(i = tidyr::replace_na(i, 0)) %>%
+    dplyr::pull(i)
+
+  return(rbind(-1,
+               cbind(-1,
+                     matrix(indices,
+                            ncol = cp[['x']],
+                            nrow = cp[['y']]),
+                     -1),
+               -1))
+}
+
+convert_xy_to_mpos <- function(nrow_y, x, y) {
+  return((x-1)*nrow_y + y)
+}
+
+convert_mpos_to_xy <- function(nrow_y, mpos) {
+  x <- ceiling(mpos/nrow_y)
+  y <- mpos - (x-1)*nrow_y
+  return(c(x, y))
 }

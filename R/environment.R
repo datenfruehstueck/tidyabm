@@ -273,6 +273,7 @@ reset.tidyabm_env <- function(.tidyabm) {
 #' @param verbose if TRUE (the default), a status message is printed at the end
 #' @param visualize if TRUE, each tick ends with a visualization if this has
 #'   been implemented for the respective environment; default is FALSE
+#' @param ... further arguments to pass on to visualize
 #'
 #' @return a [tidyabm_env] object
 #' @seealso [iterate]
@@ -286,7 +287,8 @@ reset.tidyabm_env <- function(.tidyabm) {
 #' @export
 tick <- function(.tidyabm,
                  verbose = TRUE,
-                 visualize = FALSE) {
+                 visualize = FALSE,
+                 ...) {
   UseMethod('tick')
 }
 
@@ -294,8 +296,8 @@ tick <- function(.tidyabm,
 #' @export
 tick.tidyabm_env <- function(.tidyabm,
                              verbose = TRUE,
-                             visualize = FALSE) {
-
+                             visualize = FALSE,
+                             ...) {
   stopifnot(is_tidyabm_env(.tidyabm))
   if (is.null(attr(.tidyabm, 'runtime'))) {
     stop('Environment has not yet been initiated. Call "init" first.')
@@ -465,7 +467,7 @@ tick.tidyabm_env <- function(.tidyabm,
   attr(.tidyabm, 'runtime') <- rt
 
   if (visualize) {
-    print(visualize(.tidyabm))
+    print(visualize(.tidyabm, ...))
   }
 
   return(.tidyabm)
@@ -495,6 +497,7 @@ tick.tidyabm_env <- function(.tidyabm,
 #' @param verbose if TRUE (the default), a status message is printed at the end
 #' @param visualize if TRUE, each tick ends with a visualization if this has
 #'   been implemented for the respective environment; default is FALSE
+#' @param ... further arguments to pass on to visualize
 #'
 #' @return a [tidyabm_env] object
 #' @seealso [tick]
@@ -518,7 +521,8 @@ tick.tidyabm_env <- function(.tidyabm,
 iterate <- function(.tidyabm,
                     max_iterations = 50,
                     verbose = TRUE,
-                    visualize = FALSE) {
+                    visualize = FALSE,
+                    ...) {
   UseMethod('iterate')
 }
 
@@ -527,7 +531,8 @@ iterate <- function(.tidyabm,
 iterate.tidyabm_env <- function(.tidyabm,
                                 max_iterations = 50,
                                 verbose = TRUE,
-                                visualize = FALSE) {
+                                visualize = FALSE,
+                                ...) {
   stopifnot(is_tidyabm_env(.tidyabm))
   if (is.null(attr(.tidyabm, 'runtime'))) {
     stop('Environment has not yet been initiated. Call "init" first.')
@@ -553,7 +558,8 @@ iterate.tidyabm_env <- function(.tidyabm,
                if (is_tickable(.tidyabm)) {
                  .tidyabm <<- .tidyabm %>%
                    tick(verbose = verbose,
-                        visualize = visualize)
+                        visualize = visualize,
+                        ...)
                }
              })
 

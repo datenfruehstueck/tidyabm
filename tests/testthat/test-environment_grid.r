@@ -44,6 +44,49 @@ test_that('class', {
                10*3)
 })
 
+test_that('matrix operations', {
+  # inspiration from https://stackoverflow.com/a/29105929
+  n <- 4
+
+  expect_equal(convert_xy_to_mpos(n, 2, 2), 6)
+  expect_equal(convert_xy_to_mpos(n, 1, 4), 4)
+  expect_equal(convert_xy_to_mpos(n, 3, 1), 9)
+  expect_equal(convert_xy_to_mpos(n, 4, 4), 16)
+
+  expect_equal(convert_mpos_to_xy(n, 6), c(2, 2))
+  expect_equal(convert_mpos_to_xy(n, 4), c(1, 4))
+  expect_equal(convert_mpos_to_xy(n, 9), c(3, 1))
+  expect_equal(convert_mpos_to_xy(n, 16), c(4, 4))
+
+  e <- create_grid_environment(7328, size = n) %>%
+    add_agents(create_agent(), 5)
+  m <- e %>%
+    convert_agents_to_padded_matrix()
+
+  expect_type(m, 'double')
+  expect_true(is.matrix(m))
+  expect_equal(dim(m), c(n+2, n+2))
+  expect_equal(m[,1], rep(-1, 6))
+  expect_equal(m[,6], rep(-1, 6))
+  expect_equal(m[1,], rep(-1, 6))
+  expect_equal(m[6,], rep(-1, 6))
+
+  neighbors <- e %>%
+    matrix_get_neighbors(1, 2)
+
+  expect_length(neighbors, 8)
+  expect_equal(names(neighbors),
+               c('N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'))
+  expect_gte(neighbors[['N']], 0)
+  expect_gte(neighbors[['NE']], 0)
+  expect_gte(neighbors[['E']], 0)
+  expect_gte(neighbors[['SE']], 0)
+  expect_gte(neighbors[['S']], 0)
+  expect_equal(neighbors[['SW']], -1)
+  expect_equal(neighbors[['W']], -1)
+  expect_equal(neighbors[['NW']], -1)
+})
+
 test_that('add_agents', {
   e <- create_grid_environment(seed = 7,
                                x = 3,
@@ -134,10 +177,6 @@ test_that('utils: grid_get_neighbors and grid_get_free_neighboring_spots', {
                0)
   expect_equal(nrow(grid_get_neighbors(agent, e, which = '|')),
                1)
-  expect_equal(nrow(grid_get_neighbors(agent, e, which = '--')),
-               0)
-  expect_equal(nrow(grid_get_neighbors(agent, e, which = '||')),
-               1)
 
   expect_equal(nrow(grid_get_free_neighboring_spots(agent, e, which = 'o')),
                6)
@@ -147,10 +186,6 @@ test_that('utils: grid_get_neighbors and grid_get_free_neighboring_spots', {
                2)
   expect_equal(nrow(grid_get_free_neighboring_spots(agent, e, which = '|')),
                1)
-  expect_equal(nrow(grid_get_free_neighboring_spots(agent, e, which = '--')),
-               4)
-  expect_equal(nrow(grid_get_free_neighboring_spots(agent, e, which = '||')),
-               3)
 })
 
 test_that('visualize', {

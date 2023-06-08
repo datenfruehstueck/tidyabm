@@ -17,10 +17,6 @@ grid_get_free_neighboring_spots(agent, abm, which = "o")
 \item \code{+} to get up to 4 neighboring spots directly next to \code{me} (no diagonals)
 \item \code{-} to get up to 2 x-axis neighboring spots, one on each side of \code{me}
 \item \code{|} to get up to 2 y-axis neighboring spots, one above and one below \code{me}
-\item \verb{--} to get up to 4 x-axis neighboring spots, two on each side of \code{me}
-(this actually works up to \verb{-----})
-\item \code{||} to get up to 4 y-axis neighboring spots, two above and two below
-\code{me} (this actually works up to \verb{|||||})
 }}
 }
 \value{

@@ -19,7 +19,7 @@ Read about Schelling's Segregation model in the [original publication](https://d
 The version implemented here sets up a squared grid of 20 by 20 spots. Neighborhood is defined as the surrounding up-to 8 fields of a particular agent. 
 
 ```{r setup}
-library(tidyverse)
+library(dplyr)
 library(tidyabm)
 ```
 
@@ -41,7 +41,12 @@ agent_a <- create_agent() %>%
     neighbors <- grid_get_neighbors(me, 
                                     abm, 
                                     which = neighborhood_definition)
-    return(sum(neighbors$color == me$color)/nrow(neighbors))
+    n_neighbors <- nrow(neighbors)
+    if (n_neighbors == 0) {
+      return(0.0)
+    } else {
+      return(sum(neighbors$color == me$color)/n_neighbors)
+    }
   }) %>%
   add_variable(unhappy = function(me, abm) {
     return(me$similar < unhappy_similarity_threshold)
@@ -101,7 +106,9 @@ Finally, iteration. This is the step that takes a while (but we can watch):
 ```{r iteration}
 e <- e %>% 
   iterate(max_iterations = 50,
-          visualize = TRUE)
+          visualize = TRUE,
+          color = color,
+          shape = unhappy)
 ```
 
 To manually inspect how everything went, we can just look at the environment or have it output all the agents.
@@ -117,8 +124,8 @@ Ultimately, we are interested in how average similarity and the share of unhappy
 
 ```{r visualizations}
 e %>% 
-  ggplot2(aes(x = .tick,
-              y = 100*share_unhappy)) +
+  ggplot(aes(x = .tick,
+             y = 100*share_unhappy)) +
   geom_line() +
   scale_x_continuous('Time [ticks]') +
   scale_y_continuous('Share of unhappy agents [%]') +
@@ -127,8 +134,8 @@ e %>%
 
 
 e %>% 
-  ggplot2(aes(x = .tick,
-              y = 100*mean_similar)) +
+  ggplot(aes(x = .tick,
+             y = 100*mean_similar)) +
   geom_line() +
   scale_x_continuous('Time [ticks]') +
   scale_y_continuous('Average share of similar agents in neighborhood [%]') +

@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 
 Currently, you can only install the development version of *tidyABM* like so:
 
-```{r, eval = FALSE, echo = FALSE}
+```{r, eval = FALSE}
 remotes::install_github('datenfruehstueck/tidyabm')
 ```
 
@@ -50,7 +50,12 @@ agent_o <- create_agent() %>%
   set_characteristic(agent_group = 'orange') %>% 
   add_variable(similar = function(me, abm) {
     neighbors <- grid_get_neighbors(me, abm)
-    return(sum(neighbors$agent_group == me$agent_group)/nrow(neighbors))
+    n_neighbors <- nrow(neighbors)
+    if (n_neighbors == 0) {
+      return(0.0)
+    } else {
+      return(sum(neighbors$agent_group == me$agent_group)/n_neighbors)
+    }
   }) %>%
   add_variable(is_unhappy = function(me, abm) {
     return(me$similar < 0.30)
@@ -112,7 +117,9 @@ Next, let's run the simulation. This step takes a while. We get some status mess
 ```{r}
 e <- e %>% 
   iterate(max_iterations = 50,
-          visualize = TRUE)
+          visualize = TRUE,
+          color = agent_group,
+          shape = is_unhappy)
 ```
 
 When it's done, *tidyABM* provides us with statistics about each iteration. Oh, and since it's a tidy package, of course these statistics come in the form of [tibbles](https://tibble.tidyverse.org/).

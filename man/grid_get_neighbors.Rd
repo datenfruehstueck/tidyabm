@@ -17,10 +17,6 @@ grid_get_neighbors(agent, abm, which = "o")
 \item \code{+} to get up to 4 neighbors directly next to \code{me} (no diagonals)
 \item \code{-} to get up to 2 x-axis neighbors, one on each side of \code{me}
 \item \code{|} to get up to 2 y-axis neighbors, one above and one below \code{me}
-\item \verb{--} to get up to 4 x-axis neighbors, two on each side of \code{me}
-(this actually works up to \verb{-----})
-\item \code{||} to get up to 4 y-axis neighbors, two above and two below \code{me}
-(this actually works up to \verb{|||||})
 }}
 }
 \value{
