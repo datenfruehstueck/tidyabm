@@ -28,6 +28,28 @@ is_tidyabm_agent <- function(x) {
 }
 
 
+
+# Formatting ----
+
+#' @export
+tbl_format_footer.tidyabm_agent <- function(x, ...) {
+  default_footer <- NextMethod()
+
+  return(c(default_footer,
+           pillar::style_subtle('# ABM agent'),
+           pillar::style_subtle(paste0('* ',
+                                       length(attr(x, 'characteristics')),
+                                       ' agent characteristic(s), ')),
+           pillar::style_subtle(paste0('* ',
+                                       length(attr(x, 'variables')),
+                                       ' agent variable(s), ')),
+           pillar::style_subtle(paste0('* ',
+                                       length(attr(x, 'rules')),
+                                       ' agent rule(s), '))
+           ))
+}
+
+
 # Internal functions ----
 
 #' @rdname update_values

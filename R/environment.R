@@ -807,9 +807,6 @@ stop_abm <- function(me, abm) {
 tbl_format_footer.tidyabm_env <- function(x, ...) {
   default_footer <- NextMethod()
 
-  # todo
-  print('bla')
-
   .tidyabm <- x
   abm_type <- substring(class(e)[[1]], nchar('tidyabm_env_') + 1)
   rt <- attr(.tidyabm, 'runtime')
@@ -824,16 +821,24 @@ tbl_format_footer.tidyabm_env <- function(x, ...) {
                                      rt[['next_tick']] - 1,
                                      ' ticks passed)')))
   return(c(default_footer,
+           pillar::style_subtle(paste0('# ABM ', abm_type, ' environment')),
            pillar::style_subtle(paste0(
-             '# ABM ', abm_type, ' environment with ',
-             length(attr(.tidyabm, 'characteristics')), ' characteristics, ',
-             length(attr(.tidyabm, 'variables')), ' variables, and ',
-             length(attr(.tidyabm, 'rules')), ' rules // ',
+             '* ',
              ifelse('footer_details' %in% names(cp),
                     ifelse(cp[['footer_details']] == '', '',
-                           paste0(cp[['footer_details']], ' // ')), ''),
-             abm_status, ' // ',
-             length(attr(.tidyabm, 'agents')), ' agents'))))
+                           paste0(cp[['footer_details']], ', ')), ''),
+             length(attr(.tidyabm, 'agents')), ' agents'
+           )),
+           pillar::style_subtle(paste0('* ',
+                                       length(attr(.tidyabm, 'characteristics')),
+                                       ' environment characteristic(s), ')),
+           pillar::style_subtle(paste0('* ',
+                                       length(attr(.tidyabm, 'variables')),
+                                       ' environment variable(s), ')),
+           pillar::style_subtle(paste0('* ',
+                                       length(attr(.tidyabm, 'rules')),
+                                       ' environment rule(s), ')),
+           pillar::style_subtle(paste0('* ', abm_status))))
 }
 
 
