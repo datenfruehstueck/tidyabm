@@ -709,6 +709,7 @@ convert_agents_to_tibble <- function(.tidyabm) {
     dplyr::bind_cols(stats::setNames(as.list(rep(NA,
                                                  length(missing_variables))),
                                      missing_variables)) %>%
+    tibble::as_tibble() %>%
     return()
 }
 
