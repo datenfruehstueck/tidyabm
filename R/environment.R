@@ -643,7 +643,7 @@ odd <- function(.tidyabm, ...) {
 
 #' @rdname odd
 #' @export
-odd.tidyabm_env <- function(.tidyabm) {
+odd.tidyabm_env <- function(.tidyabm, ...) {
   stopifnot(is_tidyabm_env(.tidyabm))
 
   tibble::tibble(`ODD category` = c('Purpose and patterns',

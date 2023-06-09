@@ -84,10 +84,10 @@ create_grid_environment <- function(seed,
 #'     add_agents(create_agent(),
 #'                n = 3,
 #'                initial_position = \(me, abm) {
-#'                  coordinate_counter[1] <- coordinate_counter[1] + 1
-#'                  if (coordinate_counter[1] > 3) {
-#'                    coordinate_counter[1] <- 1
-#'                    coordinate_counter[2] <- coordiante_counter[2] + 1
+#'                  coordinate_counter\[1\] <- coordinate_counter\[1\] + 1
+#'                  if (coordinate_counter\[1\] > 3) {
+#'                    coordinate_counter\[1\] <- 1
+#'                    coordinate_counter\[2\] <- coordiante_counter\[2\] + 1
 #'                  }
 #'                  return(coordinate_counter)
 #'                })
@@ -161,7 +161,8 @@ add_agents.tidyabm_env_grid <- function(.tidyabm,
 #' @export
 visualize.tidyabm_env_grid <- function(.tidyabm,
                                        color = NULL,
-                                       shape = NULL) {
+                                       shape = NULL,
+                                       ...) {
   stopifnot(is_tidyabm_env_grid(.tidyabm))
 
   cp <- attr(.tidyabm, 'class_params')
