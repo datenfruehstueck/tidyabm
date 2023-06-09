@@ -7,7 +7,7 @@
 is_ended(.tidyabm)
 }
 \arguments{
-\item{.tidyabm}{a \link{tidyabm_env} object}
+\item{.tidyabm}{a \code{tidyabm_env} object}
 }
 \value{
 logical

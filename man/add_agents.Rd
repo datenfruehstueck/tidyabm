@@ -13,9 +13,9 @@ add_agents(.tidyabm, agent, n, ...)
 \method{add_agents}{tidyabm_env_grid}(.tidyabm, agent, n, initial_position = NULL, ...)
 }
 \arguments{
-\item{.tidyabm}{the \link{tidyabm_env} object to which agents should be added}
+\item{.tidyabm}{the \code{tidyabm_env} object to which agents should be added}
 
-\item{agent}{an \link{tidyabm_agent} object (the blueprint) to replicate from}
+\item{agent}{an \code{tidyabm_agent} object (the blueprint) to replicate from}
 
 \item{n}{number of agents in the style of \code{agent} to add}
 
@@ -43,7 +43,7 @@ return(coordinate_counter)
 })}
 }
 \value{
-\link{tidyabm} object
+\code{tidyabm} object
 }
 \description{
 Create an agent first (through \link{create_agent}). This agent can be seen as

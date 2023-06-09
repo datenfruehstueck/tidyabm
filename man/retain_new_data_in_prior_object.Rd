@@ -2,18 +2,18 @@
 % Please edit documentation in R/utils.R
 \name{retain_new_data_in_prior_object}
 \alias{retain_new_data_in_prior_object}
-\title{Only update data in an already existent \link{tidyabm} object}
+\title{Only update data in an already existent \code{tidyabm} object}
 \usage{
 retain_new_data_in_prior_object(prior_object, new_data)
 }
 \arguments{
-\item{prior_object}{a \link{tidyabm} object}
+\item{prior_object}{a \code{tidyabm} object}
 
 \item{new_data}{a \link{tibble}}
 }
 \value{
-a \link{tidyabm} object, just like \code{prior_object}
+a \code{tidyabm} object, just like \code{prior_object}
 }
 \description{
-Only update data in an already existent \link{tidyabm} object
+Only update data in an already existent \code{tidyabm} object
 }

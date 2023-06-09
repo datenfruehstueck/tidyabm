@@ -7,7 +7,7 @@
 get_characteristic(me, characteristic)
 }
 \arguments{
-\item{me}{the \link{tidyabm_env} environment object}
+\item{me}{the \code{tidyabm_env} environment object}
 
 \item{characteristic}{character string naming the characteristic}
 }

@@ -7,7 +7,7 @@
 create_agent()
 }
 \value{
-a \link{tidyabm} object of subclass \code{tidyabm_agent}
+a \code{tidyabm} object of subclass \code{tidyabm_agent}
 }
 \description{
 This function is used to create agent blueprints that have to, in a

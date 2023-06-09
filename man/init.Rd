@@ -10,10 +10,10 @@ init(.tidyabm)
 \method{init}{tidyabm_env}(.tidyabm)
 }
 \arguments{
-\item{.tidyabm}{the \link{tidyabm_env} object}
+\item{.tidyabm}{the \code{tidyabm_env} object}
 }
 \value{
-a \link{tidyabm_env} object
+a \code{tidyabm_env} object
 }
 \description{
 Initialize the environment and prepare everything for take-off

@@ -2,12 +2,12 @@
 % Please edit documentation in R/environment.R
 \name{convert_agents_to_tibble}
 \alias{convert_agents_to_tibble}
-\title{Convert the list of agent \link{tidyabm_agent} objects to a \link{tibble}}
+\title{Convert the list of agent \code{tidyabm_agent} objects to a \link{tibble}}
 \usage{
 convert_agents_to_tibble(.tidyabm)
 }
 \arguments{
-\item{.tidyabm}{the \link{tidyabm_env} object holding some agents}
+\item{.tidyabm}{the \code{tidyabm_env} object holding some agents}
 }
 \value{
 a \link{tibble}

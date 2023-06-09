@@ -12,7 +12,7 @@ stop_abm(me, abm)
 \item{abm}{the whole environment model (\code{abm})}
 }
 \value{
-a \link{tidyabm_env} object
+a \code{tidyabm_env} object
 }
 \description{
 Claim a simulation to end

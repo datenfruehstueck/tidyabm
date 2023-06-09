@@ -10,12 +10,12 @@ remove_rule(.tidyabm, label)
 \method{remove_rule}{tidyabm}(.tidyabm, label)
 }
 \arguments{
-\item{.tidyabm}{a \link{tidyabm} object}
+\item{.tidyabm}{a \code{tidyabm} object}
 
 \item{label}{string used to describe the rule}
 }
 \value{
-a \link{tidyabm} object
+a \code{tidyabm} object
 }
 \description{
 Remove a certain rule
@@ -33,8 +33,8 @@ Remove a certain rule
            })
   remove_rule('minors move')
 
-create_grid_environment(seed = 1268, size = 5) \%>\%
-  add_variable(n_agents = \(me, abm) = nrow(convert_agents_to_tibble(me))) \%>\%
+create_grid_environment(seed = 1271, size = 5) \%>\%
+  add_variable(n_agents = \(me, abm) nrow(convert_agents_to_tibble(me))) \%>\%
   add_rule('no more agents',
            n_agents == 0,
            .consequence = stop_abm) \%>\%

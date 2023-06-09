@@ -20,7 +20,7 @@ set_characteristic(
 )
 }
 \arguments{
-\item{.tidyabm}{a \link{tidyabm} object}
+\item{.tidyabm}{a \code{tidyabm} object}
 
 \item{...}{<\code{\link[rlang:args_data_masking]{data-masking}}> name-value pairs.
 The name lets you identify the characteristic. To avoid misunderstandings
@@ -40,7 +40,7 @@ name will not be overwritten (a warning will be issued)}
 warnings; default is FALSE, though}
 }
 \value{
-a \link{tidyabm} object
+a \code{tidyabm} object
 }
 \description{
 A characteristic is appended to the respective object right from the start.

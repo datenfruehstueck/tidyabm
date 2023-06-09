@@ -7,7 +7,7 @@
 matrix_get_neighbors(.tidyabm, x, y)
 }
 \arguments{
-\item{.tidyabm}{the \link{tidyabm_env_grid} object}
+\item{.tidyabm}{the \code{tidyabm_env_grid} object}
 
 \item{x}{numeric x of the middle}
 

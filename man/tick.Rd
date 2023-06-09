@@ -10,7 +10,7 @@ tick(.tidyabm, verbose = TRUE, visualize = FALSE, ...)
 \method{tick}{tidyabm_env}(.tidyabm, verbose = TRUE, visualize = FALSE, ...)
 }
 \arguments{
-\item{.tidyabm}{the \link{tidyabm_env} object}
+\item{.tidyabm}{the \code{tidyabm_env} object}
 
 \item{verbose}{if TRUE (the default), a status message is printed at the end}
 
@@ -20,7 +20,7 @@ been implemented for the respective environment; default is FALSE}
 \item{...}{further arguments to pass on to visualize}
 }
 \value{
-a \link{tidyabm_env} object
+a \code{tidyabm_env} object
 }
 \description{
 A single iterations does the following (in this order):

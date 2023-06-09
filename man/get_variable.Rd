@@ -7,7 +7,7 @@
 get_variable(me, variable)
 }
 \arguments{
-\item{me}{the \link{tidyabm_env} environment object}
+\item{me}{the \code{tidyabm_env} environment object}
 
 \item{variable}{character string naming the variable}
 }

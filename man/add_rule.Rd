@@ -10,25 +10,25 @@ add_rule(.tidyabm, .label, ..., .consequence)
 \method{add_rule}{tidyabm}(.tidyabm, .label, ..., .consequence)
 }
 \arguments{
-\item{.tidyabm}{a \link{tidyabm} object}
+\item{.tidyabm}{a \code{tidyabm} object}
 
 \item{.label}{string describing the rule}
 
 \item{...}{<\code{\link[rlang:args_data_masking]{data-masking}}> expressions that
 return a logical value and are defined in terms of all characteristics
-and variables of \code{me} (which is the \link{tidyabm} object to which the rule
+and variables of \code{me} (which is the \code{tidyabm} object to which the rule
 was applied to). If multiple expressions are included, they are combined
 with the \code{&} operator.}
 
 \item{.consequence}{function to be executed if all conditions apply. Use
-a function with two arguments, \code{me} (which is the \link{tidyabm} object at that
-specific point in time) and \code{abm} (which is the whole \link{tidyabm} object).
-Note that for \link{tidyabm_env} objects these two arguments are the same but
-for \link{tidyabm_agent} objects they are different in that the first (\code{me}) is
+a function with two arguments, \code{me} (which is the \code{tidyabm} object at that
+specific point in time) and \code{abm} (which is the whole \code{tidyabm} object).
+Note that for \code{tidyabm_env} objects these two arguments are the same but
+for \code{tidyabm_agent} objects they are different in that the first (\code{me}) is
 the current agent and the second (\code{abm}) is the whole environment model.
 \strong{Importantly}, for any changes to apply the function has to return the
-updated \code{me} (i.e., a \link{tidyabm_agent} object for agent rules and a
-\link{tidyabm_env} object for environment rules). If the function misses to do
+updated \code{me} (i.e., a \code{tidyabm_agent} object for agent rules and a
+\code{tidyabm_env} object for environment rules). If the function misses to do
 so, any changes will be ignored and a warning will be issued during
 runtime. If you write your own functions or need to provide additional
 arguments to functions, use the style of anonymized functions directly
@@ -36,7 +36,7 @@ in-line (through \verb{function(me, abm) ... return(me)} or
 \verb{\\(me, abm) ... return(me)}).}
 }
 \value{
-a \link{tidyabm} object
+a \code{tidyabm} object
 }
 \description{
 Rules are checked and executed once per tick. Rules for agents are run
@@ -65,8 +65,8 @@ create_agent() \%>\%
                return()
            })
 
-create_grid_environment(seed = 1268, size = 5) \%>\%
-  add_variable(n_agents = \(me, abm) = nrow(convert_agents_to_tibble(me))) \%>\%
+create_grid_environment(seed = 1269, size = 5) \%>\%
+  add_variable(n_agents = \(me, abm) nrow(convert_agents_to_tibble(me))) \%>\%
   add_rule('no more agents',
            n_agents == 0,
            .consequence = stop_abm)

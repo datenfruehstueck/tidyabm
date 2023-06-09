@@ -10,7 +10,7 @@ odd(.tidyabm, ...)
 \method{odd}{tidyabm_env}(.tidyabm)
 }
 \arguments{
-\item{.tidyabm}{the \link{tidyabm_env} object}
+\item{.tidyabm}{the \code{tidyabm_env} object}
 
 \item{...}{other arguments passed to particular types of environment}
 }

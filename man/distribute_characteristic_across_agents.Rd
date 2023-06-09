@@ -22,7 +22,7 @@ distribute_characteristic_across_agents(
 )
 }
 \arguments{
-\item{.tidyabm}{the \link{tidyabm_env} holding the (range of) agents}
+\item{.tidyabm}{the \code{tidyabm_env} holding the (range of) agents}
 
 \item{.name}{character string representing the name of the new characteristic}
 
@@ -30,7 +30,7 @@ distribute_characteristic_across_agents(
 (anonymous) function to be called for each agent.
 For functions you may use a function which gets called for every agent
 with three arguments: \code{i} (a numeric iterator ranging from 1 for the first
-agent to n for the last agent), \code{agent} (the respective \link{tidyabm} agent),
+agent to n for the last agent), \code{agent} (the respective \code{tidyabm} agent),
 and \code{agents} (a \link{tibble} resembling all filtered agents \emph{before}
 distribution of this characteristic started but \emph{after} filter expressions
 were applied, see \code{...}). The function should only return one value of
@@ -50,7 +50,7 @@ with the \code{&} operator.}
 name will not be overwritten (a warning will be issued)}
 }
 \value{
-\link{tidyabm} object
+\code{tidyabm} object
 }
 \description{
 This function allows you to set a characteristic for a set of agents that

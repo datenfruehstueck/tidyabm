@@ -10,7 +10,7 @@ add_variable(.tidyabm, ..., .overwrite = FALSE)
 \method{add_variable}{tidyabm}(.tidyabm, ..., .overwrite = FALSE)
 }
 \arguments{
-\item{.tidyabm}{a \link{tidyabm} object}
+\item{.tidyabm}{a \code{tidyabm} object}
 
 \item{...}{<\code{\link[rlang:args_data_masking]{data-masking}}> Name-value pairs.
 The name gives the name of the variable. To avoid misunderstandings use
@@ -31,10 +31,10 @@ Keep in mind that for single values that are not expected to change,
 every iteration of the modelling process.
 
 For functions you may use a function which gets called at every iteration
-with two arguments, \code{me} (which is the \link{tidyabm} object at that specific
-point in time) and \code{abm} (which is the whole \link{tidyabm} object). Note that
-for \link{tidyabm_env} objects these two arguments are the same but for
-\link{tidyabm_agent} objects they are different in that the first (\code{me}) is
+with two arguments, \code{me} (which is the \code{tidyabm} object at that specific
+point in time) and \code{abm} (which is the whole \code{tidyabm} object). Note that
+for \code{tidyabm_env} objects these two arguments are the same but for
+\code{tidyabm_agent} objects they are different in that the first (\code{me}) is
 the current agent and the second (\code{abm}) is the whole environment model.
 If you write your own functions or need to provide additional arguments to
 functions, use the style of anonymized functions directly in-line (through
@@ -44,7 +44,7 @@ functions, use the style of anonymized functions directly in-line (through
 will not be overwritten (a warning will be issued)}
 }
 \value{
-a \link{tidyabm} object
+a \code{tidyabm} object
 }
 \description{
 A variable is expected to updated at various (if not all) iterations. It

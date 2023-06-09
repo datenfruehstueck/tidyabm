@@ -16,7 +16,7 @@ create_grid_environment(seed, size = NULL, x = NULL, y = NULL)
 \item{y}{numeric side length of side y (omitted if \code{size} is set)}
 }
 \value{
-\link{tidyabm} object
+\code{tidyabm} object
 }
 \description{
 Creates an environment with a specified two-dimensional grid. Either define

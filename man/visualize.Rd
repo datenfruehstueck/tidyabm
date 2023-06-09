@@ -10,7 +10,7 @@ visualize(.tidyabm, ...)
 \method{visualize}{tidyabm_env_grid}(.tidyabm, color = NULL, shape = NULL)
 }
 \arguments{
-\item{.tidyabm}{the \link{tidyabm_env} object}
+\item{.tidyabm}{the \code{tidyabm_env} object}
 
 \item{...}{other arguments passed to particular types of environment}
 

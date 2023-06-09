@@ -10,7 +10,7 @@ iterate(.tidyabm, max_iterations = 50, verbose = TRUE, visualize = FALSE, ...)
 \method{iterate}{tidyabm_env}(.tidyabm, max_iterations = 50, verbose = TRUE, visualize = FALSE, ...)
 }
 \arguments{
-\item{.tidyabm}{the \link{tidyabm_env} object}
+\item{.tidyabm}{the \code{tidyabm_env} object}
 
 \item{max_iterations}{number of iterations after which iterations stop (if
 it was not stopped earlier by other means of convergence, e.g. through
@@ -24,7 +24,7 @@ been implemented for the respective environment; default is FALSE}
 \item{...}{further arguments to pass on to visualize}
 }
 \value{
-a \link{tidyabm_env} object
+a \code{tidyabm_env} object
 }
 \description{
 This is the main function to run through your model (i.e., the

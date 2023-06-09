@@ -29,7 +29,7 @@ name to use, even before the suffixed sub class name (\code{NULL} meaning no
 particular sub class is the default)}
 }
 \value{
-a \link{tidyabm} object with optional subclass of \code{particular_sub_class}
+a \code{tidyabm} object with optional subclass of \code{particular_sub_class}
 and subclass of \verb{tidyabm_*suffix*}
 }
 \description{

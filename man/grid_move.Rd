@@ -10,9 +10,13 @@ grid_move(agent, abm, new_x, new_y)
 \item{agent}{the agent for whom the neighbors should be collected (\code{me})}
 
 \item{abm}{the whole environment model (\code{abm})}
+
+\item{new_x}{numeric new x position}
+
+\item{new_y}{numeric new y position}
 }
 \value{
-a \link{tidyabm_agent} object
+a \code{tidyabm_agent} object
 }
 \description{
 If the new position is not empty or does not exist, the agent will not

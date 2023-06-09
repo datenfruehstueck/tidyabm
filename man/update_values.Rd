@@ -13,7 +13,7 @@
 update_values(.tidyabm, values, is_characteristic = FALSE)
 }
 \arguments{
-\item{.tidyabm}{a \link{tidyabm} object}
+\item{.tidyabm}{a \code{tidyabm} object}
 
 \item{values}{a named list where names reference charactistics/variables}
 
@@ -21,7 +21,7 @@ update_values(.tidyabm, values, is_characteristic = FALSE)
 belong to variables rather than characteristics}
 }
 \value{
-a \link{tidyabm} object
+a \code{tidyabm} object
 }
 \description{
 Update an actual value from a characteristic or a variable

@@ -13,7 +13,7 @@ get_random_agent(abm, me = NULL)
 be this one (i.e., \code{me} is omitted)}
 }
 \value{
-a \link{tidyabm_agent} object
+a \code{tidyabm_agent} object
 }
 \description{
 Get a random agent from all agents in the environment

@@ -10,10 +10,10 @@ reset(.tidyabm)
 \method{reset}{tidyabm_env}(.tidyabm)
 }
 \arguments{
-\item{.tidyabm}{the \link{tidyabm_env} object}
+\item{.tidyabm}{the \code{tidyabm_env} object}
 }
 \value{
-a \link{tidyabm_env} object
+a \code{tidyabm_env} object
 }
 \description{
 This function erases any model runs, runtime information, and any results.
