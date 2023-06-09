@@ -235,7 +235,7 @@ init.tidyabm_env <- function(.tidyabm) {
 #'   init() %>%
 #'   tick() %>%
 #'   reset() %>%
-#'   init()
+#'   init() %>%
 #'   tick()
 #'
 #' @export

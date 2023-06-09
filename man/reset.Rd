@@ -26,7 +26,7 @@ create_grid_environment(seed = 46444, size = 4) \%>\%
   init() \%>\%
   tick() \%>\%
   reset() \%>\%
-  init()
+  init() \%>\%
   tick()
 
 }
