@@ -136,7 +136,7 @@ one tick).
 ``` r
 e <- e %>% 
   tick()
-#> [1] "Tick 1 finished in 0.401 secs:"
+#> [1] "Tick 1 finished in 0.489 secs:"
 #> [1] "  share_unhappy: 0.3"
 ```
 
@@ -152,41 +152,48 @@ e <- e %>%
           visualize = TRUE,
           color = agent_group,
           shape = is_unhappy)
-#> [1] "Tick 2 finished in 0.365 secs:"
+#> [1] "Tick 2 finished in 0.344 secs:"
 #> [1] "  share_unhappy: 0.25"
 ```
 
 <img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
 
-    #> [1] "Tick 3 finished in 0.311 secs:"
+    #> [1] "Tick 3 finished in 0.257 secs:"
     #> [1] "  share_unhappy: 0.05"
 
 <img src="man/figures/README-unnamed-chunk-9-2.png" width="100%" />
 
-    #> [1] "Tick 4 finished in 0.289 secs:"
+    #> [1] "Tick 4 finished in 0.263 secs:"
     #> [1] "  share_unhappy: 0.05"
 
 <img src="man/figures/README-unnamed-chunk-9-3.png" width="100%" />
 
-    #> [1] "Tick 5 finished in 0.264 secs:"
+    #> [1] "Tick 5 finished in 0.246 secs:"
     #> [1] "  share_unhappy: 0"
 
 <img src="man/figures/README-unnamed-chunk-9-4.png" width="100%" />
 
 When it’s done, *tidyABM* provides us with statistics about each
 iteration. Oh, and since it’s a tidy package, of course these statistics
-come in the form of [tibbles](https://tibble.tidyverse.org/).
+come in the form of [tibbles](https://tibble.tidyverse.org/). And they
+include some meta information as well.
 
 ``` r
 e
 #> # A tibble: 5 × 5
 #>   .tick .runtime       .n_agents_after_tick .finished_after_tick share_unhappy
 #> * <dbl> <drtn>                        <int> <lgl>                        <dbl>
-#> 1     1 0.4011991 secs                   20 FALSE                         0.3 
-#> 2     2 0.3649149 secs                   20 FALSE                         0.25
-#> 3     3 0.3109348 secs                   20 FALSE                         0.05
-#> 4     4 0.2885301 secs                   20 FALSE                         0.05
-#> 5     5 0.2644858 secs                   20 TRUE                          0
+#> 1     1 0.4892099 secs                   20 FALSE                         0.3 
+#> 2     2 0.3436558 secs                   20 FALSE                         0.25
+#> 3     3 0.2565448 secs                   20 FALSE                         0.05
+#> 4     4 0.2629578 secs                   20 FALSE                         0.05
+#> 5     5 0.2458620 secs                   20 TRUE                          0   
+#> # ABM grid environment
+#> * 10x10, 20 agents
+#> * 0 environment characteristic(s), 
+#> * 1 environment variable(s), 
+#> * 1 environment rule(s), 
+#> * ended after 5 ticks
 ```
 
 We can also take a look at all the agents (not only the two blueprints

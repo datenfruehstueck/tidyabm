@@ -126,7 +126,7 @@ e <- e %>%
           shape = is_unhappy)
 ```
 
-When it's done, *tidyABM* provides us with statistics about each iteration. Oh, and since it's a tidy package, of course these statistics come in the form of [tibbles](https://tibble.tidyverse.org/).
+When it's done, *tidyABM* provides us with statistics about each iteration. Oh, and since it's a tidy package, of course these statistics come in the form of [tibbles](https://tibble.tidyverse.org/). And they include some meta information as well.
 
 ```{r}
 e
