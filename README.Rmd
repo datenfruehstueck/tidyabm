@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/datenfruehstueck/tidyabm/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/datenfruehstueck/tidyabm/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/datenfruehstueck/tidyabm/branch/master/graph/badge.svg)](https://app.codecov.io/gh/datenfruehstueck/tidyabm?branch=master)
 <!-- badges: end -->
 
 *tidyABM* is designed to streamline the process of setting up, running, and documenting Agent-Based Models (ABM) using the principles of [tidy data](https://r4ds.had.co.nz/tidy-data.html). It thus allows researchers to easily organize, manipulate, and visualize ABMs in a structured, coherent, and intuitive manner, built on [tidyverse](https://www.tidyverse.org/) conventions to efficiently build and explore ABMs while ensuring readability, reproducibility, and transparency.
