@@ -32,6 +32,7 @@ Other utilities:
 \code{\link{get_random_agent}()},
 \code{\link{get_variable}()},
 \code{\link{grid_get_free_neighboring_spots}()},
+\code{\link{grid_get_free_spots}()},
 \code{\link{grid_move}()},
 \code{\link{stop_abm}()}
 }

@@ -169,6 +169,9 @@ test_that('utils: grid_get_neighbors and grid_get_free_neighboring_spots', {
 
   agent <- attr(e, 'agents')[[1]]
 
+  #e %>%
+  #  visualize(color = .id == 'A1')
+
   expect_equal(nrow(grid_get_neighbors(agent, e, which = 'o')),
                2)
   expect_equal(nrow(grid_get_neighbors(agent, e, which = '+')),

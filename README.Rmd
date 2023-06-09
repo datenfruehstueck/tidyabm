@@ -43,27 +43,23 @@ e <- create_grid_environment(seed = 826347,
                              y = 10)
 ```
 
-Next, we create two kinds of agents, the orange ones and the violet ones. We (or, more specifically: they) enjoy neighborhoods where there are similar agents. Specifically, they get unhappy if at least 30% of their neighbors are unsimilar to themselves. As such, they tend to check their hood and, if there's not enough similarity, move to other places.  
+Next, we create two kinds of agents, the orange ones and the violet ones. We (or, more specifically: they) enjoy neighborhoods where there are similar agents. Specifically, they get unhappy if not one of their four direct neighbors is similar to themselves. As such, they tend to check their hood and, if there's not enough similarity, move to other places.  
 
 ```{r}
 agent_o <- create_agent() %>% 
   set_characteristic(agent_group = 'orange') %>% 
-  add_variable(similar = function(me, abm) {
-    neighbors <- grid_get_neighbors(me, abm)
-    n_neighbors <- nrow(neighbors)
-    if (n_neighbors == 0) {
-      return(0.0)
-    } else {
-      return(sum(neighbors$agent_group == me$agent_group)/n_neighbors)
-    }
-  }) %>%
   add_variable(is_unhappy = function(me, abm) {
-    return(me$similar < 0.30)
+    neighbors <- grid_get_neighbors(me, abm, which = '+')
+    if (nrow(neighbors) == 0) {
+      return(FALSE)
+    } else {
+      return(sum(neighbors$agent_group == me$agent_group) == 0)
+    }
   }) %>%
   add_rule('move',
            is_unhappy == TRUE,
            .consequence = function(me, abm) {
-               spot <- grid_get_free_neighboring_spots(me, abm, which = '+') %>%
+               spot <- grid_get_free_neighboring_spots(me, abm) %>%
                  dplyr::slice_sample(n = 1)
                grid_move(me, abm,
                          new_x = spot$.x,
@@ -112,11 +108,18 @@ e %>%
   visualize(color = agent_group)
 ```
 
-Next, let's run the simulation. This step takes a while. We get some status messages in between. If we also want to take a look at the visual development, we can tell *tidyABM* to also visualize each iteration.
+Next, let's run the simulation. We can simply run one iteration (i.e., one tick).
 
 ```{r}
 e <- e %>% 
-  iterate(max_iterations = 50,
+  tick()
+```
+
+Or, we can iterate the whole thing. In this case, iteration starts at the second tick as we have already manually just done the first one. The iteration step takes a while. We get some status messages in between. If we also want to take a look at the visual development, we can tell *tidyABM* to also visualize each iteration.
+
+```{r}
+e <- e %>% 
+  iterate(max_iterations = 30,
           visualize = TRUE,
           color = agent_group,
           shape = is_unhappy)
@@ -137,7 +140,7 @@ e %>%
 
 There's of course more to explore and the possibilities are huge, particularly with the flexible triangle of characteristics, variables, and rules. For example, *tidyABM* is not only capable of handling grid environments but also others and each environment comes with their own helping utilities to inform variables and rules. Also, *tidyABM* can help write-up your [ODD protocols](https://doi.org/10.18564/jasss.4259). And it comes with quite a few vignettes for common ABM introductory simulations such as Schelling's seggregation we kind-of looked into here. 
 
-```{r}
+```{r, eval = FALSE}
 browseVignettes('tidyabm')
 ```
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/environment_grid.r
 \name{grid_get_free_neighboring_spots}
 \alias{grid_get_free_neighboring_spots}
-\title{Get a \link{tibble} with two columns (.x and .y) of spots that are free}
+\title{Get a \link{tibble} with two columns (.x and .y) of neighboring free spots}
 \usage{
 grid_get_free_neighboring_spots(agent, abm, which = "o")
 }
@@ -24,13 +24,14 @@ a \link{tibble} of neighboring spots (with a \code{.x} and a \code{.y} column) i
 no particular order that are free
 }
 \description{
-Get a \link{tibble} with two columns (.x and .y) of spots that are free
+Get a \link{tibble} with two columns (.x and .y) of neighboring free spots
 }
 \seealso{
 Other utilities: 
 \code{\link{get_characteristic}()},
 \code{\link{get_random_agent}()},
 \code{\link{get_variable}()},
+\code{\link{grid_get_free_spots}()},
 \code{\link{grid_get_neighbors}()},
 \code{\link{grid_move}()},
 \code{\link{stop_abm}()}

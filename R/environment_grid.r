@@ -242,7 +242,7 @@ grid_get_neighbors <- function(agent,
   return(dplyr::bind_rows(attr(abm, 'agents')[neighbors[neighbors > 0]]))
 }
 
-#' Get a [tibble] with two columns (.x and .y) of spots that are free
+#' Get a [tibble] with two columns (.x and .y) of neighboring free spots
 #'
 #' @param agent the agent for whom the neighbors should be collected (`me`)
 #' @param abm the whole environment model
@@ -260,56 +260,62 @@ grid_get_neighbors <- function(agent,
 grid_get_free_neighboring_spots <- function(agent,
                                             abm,
                                             which = 'o') {
-
-  # todo: convert to matrix
-
   if (!is_tidyabm_agent(agent) |
       !is_tidyabm_env(abm) |
-      !(which %in% c('o',
-                     '+',
-                     '-',
-                     '|'))) {
+      !(which %in% c('o', '+', '-', '|'))) {
     return(NULL)
   }
 
-  g <- expand.grid(.x = 1:attr(abm, 'class_params')[['x']],
-                   .y = 1:attr(abm, 'class_params')[['y']]) %>%
-    dplyr::anti_join(convert_agents_to_tibble(abm),
-                     by = c('.x', '.y')) %>%
-    tibble::as_tibble()
+  x <- agent$.x
+  y <- agent$.y
+  neighbors <- matrix_get_neighbors(abm, x, y)
+  free_spots <- names(neighbors[neighbors == 0])
 
-  if (which == 'o') {
-    return(g %>%
-      dplyr::filter(.data$.x %in% c(agent$.x, agent$.x - 1, agent$.x + 1),
-                    .data$.y %in% c(agent$.y, agent$.y - 1, agent$.y + 1)))
-  }
-
+  #if (which == 'o') {
+  #}
   if (which == '+') {
-    return(g %>%
-      dplyr::filter(.data$.y == agent$.y,
-                    .data$.x == agent$.x - 1 | .data$.x == agent$.x + 1) %>%
-      dplyr::bind_rows(
-        g %>%
-          dplyr::filter(.data$.x == agent$.x,
-                        .data$.y == agent$.y - 1 | .data$.y == agent$.y + 1)))
+    free_spots <- free_spots[free_spots %in% c('N', 'E', 'S', 'W')]
+  }
+  if (which == '-') {
+    free_spots <- free_spots[free_spots %in% c('E', 'W')]
+  }
+  if (which == '|') {
+    free_spots <- free_spots[free_spots %in% c('N', 'S')]
   }
 
-  if (substr(which, 1, 1) == '-') {
-    offset <- nchar(which)
-    return(g %>%
-      dplyr::filter(.data$.y == agent$.y,
-                    .data$.x >= agent$.x - offset,
-                    .data$.x <= agent$.x + offset))
-  }
-
-  if (substr(which, 1, 1) == '|') {
-    offset <- nchar(which)
-    return(g %>%
-      dplyr::filter(.data$.x == agent$.x,
-                    .data$.y >= agent$.y - offset,
-                    .data$.y <= agent$.y + offset))
-  }
+  tibble::tibble(orientation = c('N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'),
+                 .x = c(x, x + 1, x + 1, x + 1, x, x - 1, x - 1, x - 1),
+                 .y = c(y - 1, y - 1, y, y + 1, y + 1, y + 1, y, y - 1)) %>%
+    dplyr::filter(orientation %in% free_spots) %>%
+    dplyr::select(-orientation) %>%
+    return()
 }
+
+#' Get a [tibble] with two columns (.x and .y) of all free spots
+#'
+#' @param abm the whole environment model
+#'
+#' @return a [tibble] of spots (with a `.x` and a `.y` column) in no particular
+#'   order that are free
+#' @family utilities
+#' @export
+grid_get_free_spots <- function(abm) {
+  if (!is_tidyabm_env(abm)) {
+    return(NULL)
+  }
+
+  cp <- attr(abm, 'class_params')
+  expand.grid(x = 1:cp[['x']],
+              y = 1:cp[['y']]) %>%
+    tibble::as_tibble() %>%
+    dplyr::anti_join(attr(abm, 'agents') %>%
+                       lapply(\(x) c(x = x$.x, y = x$.y)) %>%
+                       rbind() %>%
+                       dplyr::bind_rows(),
+                     by = c('x', 'y')) %>%
+    return()
+}
+
 
 #' Move an agent to the proposed new x/y position (if it is empty)
 #'
@@ -331,20 +337,18 @@ grid_move <- function(agent,
     return(NULL)
   }
 
-  if (new_x <= 0 | new_x > attr(abm, 'class_params')[['x']] |
-      new_y <= 0 | new_y > attr(abm, 'class_params')[['y']]) {
+  cp <- attr(abm, 'class_params')
+  if (new_x <= 0 | new_x > cp[['x']] |
+      new_y <= 0 | new_y > cp[['y']]) {
     warning(paste0('The new position (', new_x, '/', new_y, ') for agent ',
                    agent$.id, ' does not exist. The agent has thus not moved.'),
             call. = FALSE)
     return(agent)
   }
 
-  if (abm %>%
-        convert_agents_to_tibble() %>%
-        dplyr::filter(.data$.x == new_x,
-                      .data$.y == new_y,
-                      .data$.id != agent$.id) %>%
-        nrow() > 0) {
+  if (any(sapply(attr(abm, 'agents'), \(a) all(a$.x == new_x,
+                                               a$.y == new_y,
+                                               a$.id != agent$.id)))) {
     warning(paste0('The new position (', new_x, '/', new_y, ') for agent ',
                    agent$.id, ' is not empty. The agent has thus not moved.'),
             call. = FALSE)

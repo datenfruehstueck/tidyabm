@@ -1,24 +1,24 @@
 context('Integration test: Segregation')
 
-test_that("Schelling's Segregation", {
-
+test_that("convergence and all", {
   agent_a <- create_agent() %>%
     set_characteristic(color = 'red') %>%
-    add_variable(similar = \(me, abm) {
-      neighbors <- grid_get_neighbors(me, abm, which = 'o')
-      return(sum(neighbors$color == me$color)/nrow(neighbors))
-    }) %>%
-    add_variable(unhappy = \(me, abm) {
-      return(me$similar < .15)
+    add_variable(unhappy = function(me, abm) {
+      neighbors <- grid_get_neighbors(me, abm, which = '+')
+      if (nrow(neighbors) == 0) {
+        return(FALSE)
+      } else {
+        return(sum(neighbors$color == me$color) == 0)
+      }
     }) %>%
     add_rule('move',
              unhappy == TRUE,
              .consequence = \(me, abm) {
-               spot <- grid_get_free_neighboring_spots(me, abm, which = 'o') %>%
+               spot <- grid_get_free_spots(abm) %>%
                  dplyr::slice_sample(n = 1)
                grid_move(me, abm,
-                         new_x = spot$.x,
-                         new_y = spot$.y) %>%
+                         new_x = spot$x,
+                         new_y = spot$y) %>%
                  return()
              })
 
@@ -29,18 +29,11 @@ test_that("Schelling's Segregation", {
   })
 
   e <- create_grid_environment(seed = 5381,
-                               size = 20) %>%
+                               size = 10) %>%
     add_agents(agent_a,
-               n = 20*20* 0.4) %>%
+               n = 10) %>%
     add_agents(agent_b,
-               n = 20*20* 0.4) %>%
-    add_variable(mean_similar = \(me, abm) {
-      abm %>%
-        convert_agents_to_tibble() %>%
-        dplyr::summarise(M = mean(similar, na.rm = TRUE)) %>%
-        dplyr::pull(M) %>%
-        return()
-    }) %>%
+               n = 10) %>%
     add_variable(share_unhappy = \(me, abm) {
       abm %>%
         convert_agents_to_tibble() %>%
@@ -53,10 +46,11 @@ test_that("Schelling's Segregation", {
              .consequence = stop_abm) %>%
     init()
 
-  #todo
-  #e <- e %>%
-  #  iterate()
+  e <- e %>%
+    iterate(verbose = FALSE,
+            max_iterations = 15)
 
   expect_true(is_tidyabm_env_grid(e))
-
+  expect_true(any(e$.finished_after_tick))
+  expect_lte(length(e$.tick), 15)
 })

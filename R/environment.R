@@ -457,7 +457,7 @@ tick.tidyabm_env <- function(.tidyabm,
                  ifelse(length(colnames(.tidyabm)) > 4, ':', '')))
     for (var_name in colnames(.tidyabm)) {
       if (substr(var_name, 1, 1) != '.') {
-        print(paste0('  - ', var_name, ': ',
+        print(paste0('  ', var_name, ': ',
                      .tidyabm[[nrow(.tidyabm), var_name]]))
       }
     }
@@ -702,7 +702,8 @@ convert_agents_to_tibble <- function(.tidyabm) {
   missing_variables <- all_variables[!all_variables %in% colnames(out)]
 
   out %>%
-    dplyr::bind_cols(stats::setNames(as.list(rep(NA, length(missing_variables))),
+    dplyr::bind_cols(stats::setNames(as.list(rep(NA,
+                                                 length(missing_variables))),
                                      missing_variables)) %>%
     return()
 }
