@@ -8,6 +8,8 @@
 [![R-CMD-check](https://github.com/datenfruehstueck/tidyabm/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/datenfruehstueck/tidyabm/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/datenfruehstueck/tidyabm/branch/master/graph/badge.svg)](https://app.codecov.io/gh/datenfruehstueck/tidyabm?branch=master)
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
 *tidyABM* is designed to streamline the process of setting up, running,
@@ -136,7 +138,7 @@ one tick).
 ``` r
 e <- e %>% 
   tick()
-#> [1] "Tick 1 finished in 0.489 secs:"
+#> [1] "Tick 1 finished in 0.498 secs:"
 #> [1] "  share_unhappy: 0.3"
 ```
 
@@ -152,23 +154,23 @@ e <- e %>%
           visualize = TRUE,
           color = agent_group,
           shape = is_unhappy)
-#> [1] "Tick 2 finished in 0.344 secs:"
+#> [1] "Tick 2 finished in 0.366 secs:"
 #> [1] "  share_unhappy: 0.25"
 ```
 
 <img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
 
-    #> [1] "Tick 3 finished in 0.257 secs:"
+    #> [1] "Tick 3 finished in 0.285 secs:"
     #> [1] "  share_unhappy: 0.05"
 
 <img src="man/figures/README-unnamed-chunk-9-2.png" width="100%" />
 
-    #> [1] "Tick 4 finished in 0.263 secs:"
+    #> [1] "Tick 4 finished in 0.291 secs:"
     #> [1] "  share_unhappy: 0.05"
 
 <img src="man/figures/README-unnamed-chunk-9-3.png" width="100%" />
 
-    #> [1] "Tick 5 finished in 0.246 secs:"
+    #> [1] "Tick 5 finished in 0.31 secs:"
     #> [1] "  share_unhappy: 0"
 
 <img src="man/figures/README-unnamed-chunk-9-4.png" width="100%" />
@@ -183,11 +185,11 @@ e
 #> # A tibble: 5 × 5
 #>   .tick .runtime       .n_agents_after_tick .finished_after_tick share_unhappy
 #> * <dbl> <drtn>                        <int> <lgl>                        <dbl>
-#> 1     1 0.4892099 secs                   20 FALSE                         0.3 
-#> 2     2 0.3436558 secs                   20 FALSE                         0.25
-#> 3     3 0.2565448 secs                   20 FALSE                         0.05
-#> 4     4 0.2629578 secs                   20 FALSE                         0.05
-#> 5     5 0.2458620 secs                   20 TRUE                          0   
+#> 1     1 0.4980071 secs                   20 FALSE                         0.3 
+#> 2     2 0.3659480 secs                   20 FALSE                         0.25
+#> 3     3 0.2851899 secs                   20 FALSE                         0.05
+#> 4     4 0.2908959 secs                   20 FALSE                         0.05
+#> 5     5 0.3095770 secs                   20 TRUE                          0   
 #> # ABM grid environment
 #> * 10x10, 20 agents
 #> * 0 environment characteristic(s), 
