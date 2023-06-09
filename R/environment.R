@@ -8,12 +8,12 @@
 #'   blueprint agent as necessary. They will be added independently so that they
 #'   do not interfere with each other throughout runtime.
 #'
-#' @param .tidyabm the [tidyabm_env] object to which agents should be added
-#' @param agent an [tidyabm_agent] object (the blueprint) to replicate from
+#' @param .tidyabm the `tidyabm_env` object to which agents should be added
+#' @param agent an `tidyabm_agent` object (the blueprint) to replicate from
 #' @param n number of agents in the style of `agent` to add
 #' @param ... other arguments to pass to sub functions
 #'
-#' @return [tidyabm] object
+#' @return `tidyabm` object
 #'
 #' @examples
 #' a1 <- create_agent() %>%
@@ -81,13 +81,13 @@ add_agents.tidyabm_env <- function(.tidyabm,
 #'   characteristic). If you just want to set an individual characteristic to
 #'   agents, use [set_characteristic] instead as it is much faster.
 #'
-#' @param .tidyabm the [tidyabm_env] holding the (range of) agents
+#' @param .tidyabm the `tidyabm_env` holding the (range of) agents
 #' @param .name character string representing the name of the new characteristic
 #' @param .value a vector of the same length as the range of agents or a
 #'   (anonymous) function to be called for each agent.
 #'   For functions you may use a function which gets called for every agent
 #'   with three arguments: `i` (a numeric iterator ranging from 1 for the first
-#'   agent to n for the last agent), `agent` (the respective [tidyabm] agent),
+#'   agent to n for the last agent), `agent` (the respective `tidyabm` agent),
 #'   and `agents` (a [tibble] resembling all filtered agents *before*
 #'   distribution of this characteristic started but *after* filter expressions
 #'   were applied, see `...`). The function should only return one value of
@@ -104,7 +104,7 @@ add_agents.tidyabm_env <- function(.tidyabm,
 #' @param .overwrite if `FALSE` (the default), characteristics with the same
 #'   name will not be overwritten (a warning will be issued)
 #'
-#' @return [tidyabm] object
+#' @return `tidyabm` object
 #'
 #' @examples
 #' create_grid_environment(seed = 168, size = 20) %>%
@@ -188,9 +188,9 @@ distribute_characteristic_across_agents.tidyabm_env <-
 
 #' Initialize the environment and prepare everything for take-off
 #'
-#' @param .tidyabm the [tidyabm_env] object
+#' @param .tidyabm the `tidyabm_env` object
 #'
-#' @return a [tidyabm_env] object
+#' @return a `tidyabm_env` object
 #'
 #' @examples
 #' create_grid_environment(seed = 46444, size = 4) %>%
@@ -225,9 +225,9 @@ init.tidyabm_env <- function(.tidyabm) {
 #'  It works a bit like [init] but for already started/run/initiated
 #'  environments. After a reset, an additional [init] is necessary.
 #'
-#' @param .tidyabm the [tidyabm_env] object
+#' @param .tidyabm the `tidyabm_env` object
 #'
-#' @return a [tidyabm_env] object
+#' @return a `tidyabm_env` object
 #'
 #' @examples
 #' create_grid_environment(seed = 46444, size = 4) %>%
@@ -269,13 +269,13 @@ reset.tidyabm_env <- function(.tidyabm) {
 #'   3. re-calculate environment variables (in the order they were added)
 #'   4. check environment rules (in the order they were added)
 #'
-#' @param .tidyabm the [tidyabm_env] object
+#' @param .tidyabm the `tidyabm_env` object
 #' @param verbose if TRUE (the default), a status message is printed at the end
 #' @param visualize if TRUE, each tick ends with a visualization if this has
 #'   been implemented for the respective environment; default is FALSE
 #' @param ... further arguments to pass on to visualize
 #'
-#' @return a [tidyabm_env] object
+#' @return a `tidyabm_env` object
 #' @seealso [iterate]
 #'
 #' @examples
@@ -490,7 +490,7 @@ tick.tidyabm_env <- function(.tidyabm,
 #'   For more information on how an individual [tick] is structured, see the
 #'   documentation there.
 #'
-#' @param .tidyabm the [tidyabm_env] object
+#' @param .tidyabm the `tidyabm_env` object
 #' @param max_iterations number of iterations after which iterations stop (if
 #'   it was not stopped earlier by other means of convergence, e.g. through
 #'   environment rules).
@@ -499,7 +499,7 @@ tick.tidyabm_env <- function(.tidyabm,
 #'   been implemented for the respective environment; default is FALSE
 #' @param ... further arguments to pass on to visualize
 #'
-#' @return a [tidyabm_env] object
+#' @return a `tidyabm_env` object
 #' @seealso [tick]
 #'
 #' @examples
@@ -575,7 +575,7 @@ iterate.tidyabm_env <- function(.tidyabm,
 #'   The function returns a [ggplot2::ggplot] object, ready to be further
 #'   visualized/styled/manipulated.
 #'
-#' @param .tidyabm the [tidyabm_env] object
+#' @param .tidyabm the `tidyabm_env` object
 #' @param ... other arguments passed to particular types of environment
 #'
 #' @return a [ggplot2::ggplot] object
@@ -604,7 +604,7 @@ visualize <- function(.tidyabm, ...) {
 #'   relevant for the ODD to be written. It returns the 2020 ODD framework with
 #'   all the collected information pre-filled into the respective category.
 #'
-#' @param .tidyabm the [tidyabm_env] object
+#' @param .tidyabm the `tidyabm_env` object
 #' @param ... other arguments passed to particular types of environment
 #'
 #' @return a [tibble] of length 7 (the ODD categories)
@@ -662,12 +662,16 @@ odd.tidyabm_env <- function(.tidyabm) {
                                            '# todo'))
 }
 
+#' Check if a provided object is of type `tidyabm_env`
+#'
+#' @param x object to check
+#'
 #' @export
 is_tidyabm_env <- function(x) {
   inherits(x, 'tidyabm_env')
 }
 
-#' Convert the list of agent [tidyabm_agent] objects to a [tibble]
+#' Convert the list of agent `tidyabm_agent` objects to a [tibble]
 #'
 #' @description
 #'   Returns a tibble with all agents in the same order as the agent objects
@@ -679,7 +683,7 @@ is_tidyabm_env <- function(x) {
 #'   characteristics/variables added internally through a particular
 #'   environment are prefixed with `.`.
 #'
-#' @param .tidyabm the [tidyabm_env] object holding some agents
+#' @param .tidyabm the `tidyabm_env` object holding some agents
 #'
 #' @return a [tibble]
 #'
@@ -713,7 +717,7 @@ convert_agents_to_tibble <- function(.tidyabm) {
 
 #' Get an environment's characteristic value
 #'
-#' @param me the [tidyabm_env] environment object
+#' @param me the `tidyabm_env` environment object
 #' @param characteristic character string naming the characteristic
 #'
 #' @return the characteristic value (or NULL if not found)
@@ -733,7 +737,7 @@ get_characteristic <- function(me, characteristic) {
 
 #' Get an environment's variable value
 #'
-#' @param me the [tidyabm_env] environment object
+#' @param me the `tidyabm_env` environment object
 #' @param variable character string naming the variable
 #'
 #' @return the variable value (or NULL if variable is not found)
@@ -757,7 +761,7 @@ get_variable <- function(me, variable) {
 #' @param me if provided as an agent then the returned (random) agent will not
 #'   be this one (i.e., `me` is omitted)
 #'
-#' @return a [tidyabm_agent] object
+#' @return a `tidyabm_agent` object
 #' @family utilities
 #' @export
 get_random_agent <- function(abm,
@@ -784,7 +788,7 @@ get_random_agent <- function(abm,
 #' @param me unnecessary but provided here for ease of use
 #' @param abm the whole environment model (`abm`)
 #'
-#' @return a [tidyabm_env] object
+#' @return a `tidyabm_env` object
 #' @family utilities
 #' @export
 stop_abm <- function(me, abm) {
@@ -862,7 +866,7 @@ new_tidyabm_env <- function(data,
 
 #' Check if a given environment is ready to [tick]/[iterate]
 #'
-#' @param .tidyabm a [tidyabm_env] object
+#' @param .tidyabm a `tidyabm_env` object
 #'
 #' @return logical
 is_tickable <- function(.tidyabm) {
@@ -873,9 +877,9 @@ is_tickable <- function(.tidyabm) {
 
 #' End the simulation
 #'
-#' @param .tidyabm a [tidyabm_env] object
+#' @param .tidyabm a `tidyabm_env` object
 #'
-#' @return a [tidyabm_env] object
+#' @return a `tidyabm_env` object
 end <- function(.tidyabm) {
   stopifnot(is_tidyabm_env(.tidyabm))
   rt <- attr(.tidyabm, 'runtime')
@@ -887,7 +891,7 @@ end <- function(.tidyabm) {
 
 #' Check if a given environment has ended
 #'
-#' @param .tidyabm a [tidyabm_env] object
+#' @param .tidyabm a `tidyabm_env` object
 #'
 #' @return logical
 is_ended <- function(.tidyabm) {

@@ -1,9 +1,9 @@
-#' Only update data in an already existent [tidyabm] object
+#' Only update data in an already existent `tidyabm` object
 #'
-#' @param prior_object a [tidyabm] object
+#' @param prior_object a `tidyabm` object
 #' @param new_data a [tibble]
 #'
-#' @return a [tidyabm] object, just like `prior_object`
+#' @return a `tidyabm` object, just like `prior_object`
 retain_new_data_in_prior_object <- function(prior_object,
                                             new_data) {
   out <- structure(new_data)

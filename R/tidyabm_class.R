@@ -13,7 +13,7 @@
 #'   across a group or all of the agents), see
 #'   [distribute_characteristic_across_agents].
 #'
-#' @param .tidyabm a [tidyabm] object
+#' @param .tidyabm a `tidyabm` object
 #' @param ... <[`data-masking`][rlang::args_data_masking]> name-value pairs.
 #'   The name lets you identify the characteristic. To avoid misunderstandings
 #'   use unique names, also between agents and environments. Try to also
@@ -29,7 +29,7 @@
 #' @param .suppress_warnings if `TRUE`, `.overwrite` will not yield any
 #'   warnings; default is FALSE, though
 #'
-#' @return a [tidyabm] object
+#' @return a `tidyabm` object
 #'
 #' @examples
 #' create_grid_environment(seed = 3, size = 5) %>%
@@ -120,7 +120,7 @@ set_characteristic.tidyabm <- function(.tidyabm,
 #'   accessible throughout runtime. Compared to a characteristic, it thus
 #'   requires runtime resources but is flexibly updated at every iteration.
 #'
-#' @param .tidyabm a [tidyabm] object
+#' @param .tidyabm a `tidyabm` object
 #' @param ... <[`data-masking`][rlang::args_data_masking]> Name-value pairs.
 #'   The name gives the name of the variable. To avoid misunderstandings use
 #'   unique variable names, also between agents and environments. Try to also
@@ -139,10 +139,10 @@ set_characteristic.tidyabm <- function(.tidyabm,
 #'   every iteration of the modelling process.
 #'
 #'   For functions you may use a function which gets called at every iteration
-#'   with two arguments, `me` (which is the [tidyabm] object at that specific
-#'   point in time) and `abm` (which is the whole [tidyabm] object). Note that
-#'   for [tidyabm_env] objects these two arguments are the same but for
-#'   [tidyabm_agent] objects they are different in that the first (`me`) is
+#'   with two arguments, `me` (which is the `tidyabm` object at that specific
+#'   point in time) and `abm` (which is the whole `tidyabm` object). Note that
+#'   for `tidyabm_env` objects these two arguments are the same but for
+#'   `tidyabm_agent` objects they are different in that the first (`me`) is
 #'   the current agent and the second (`abm`) is the whole environment model.
 #'   If you write your own functions or need to provide additional arguments to
 #'   functions, use the style of anonymized functions directly in-line (through
@@ -151,7 +151,7 @@ set_characteristic.tidyabm <- function(.tidyabm,
 #' @param .overwrite if `FALSE` (the default), variables with the same name
 #'   will not be overwritten (a warning will be issued)
 #'
-#' @return a [tidyabm] object
+#' @return a `tidyabm` object
 #'
 #' @examples
 #' create_agent() %>%
@@ -225,29 +225,29 @@ add_variable.tidyabm <- function(.tidyabm,
 #'   rules or as readymade consequences) and examples, see the full
 #'   documentation, particularly per environment type.
 #'
-#' @param .tidyabm a [tidyabm] object
+#' @param .tidyabm a `tidyabm` object
 #' @param .label string describing the rule
 #' @param ... <[`data-masking`][rlang::args_data_masking]> expressions that
 #'   return a logical value and are defined in terms of all characteristics
-#'   and variables of `me` (which is the [tidyabm] object to which the rule
+#'   and variables of `me` (which is the `tidyabm` object to which the rule
 #'   was applied to). If multiple expressions are included, they are combined
 #'   with the `&` operator.
 #' @param .consequence function to be executed if all conditions apply. Use
-#'   a function with two arguments, `me` (which is the [tidyabm] object at that
-#'   specific point in time) and `abm` (which is the whole [tidyabm] object).
-#'   Note that for [tidyabm_env] objects these two arguments are the same but
-#'   for [tidyabm_agent] objects they are different in that the first (`me`) is
+#'   a function with two arguments, `me` (which is the `tidyabm` object at that
+#'   specific point in time) and `abm` (which is the whole `tidyabm` object).
+#'   Note that for `tidyabm_env` objects these two arguments are the same but
+#'   for `tidyabm_agent` objects they are different in that the first (`me`) is
 #'   the current agent and the second (`abm`) is the whole environment model.
 #'   **Importantly**, for any changes to apply the function has to return the
-#'   updated `me` (i.e., a [tidyabm_agent] object for agent rules and a
-#'   [tidyabm_env] object for environment rules). If the function misses to do
+#'   updated `me` (i.e., a `tidyabm_agent` object for agent rules and a
+#'   `tidyabm_env` object for environment rules). If the function misses to do
 #'   so, any changes will be ignored and a warning will be issued during
 #'   runtime. If you write your own functions or need to provide additional
 #'   arguments to functions, use the style of anonymized functions directly
 #'   in-line (through `function(me, abm) ... return(me)` or
 #'   `\(me, abm) ... return(me)`).
 #'
-#' @return a [tidyabm] object
+#' @return a `tidyabm` object
 #'
 #' @examples
 #' create_agent() %>%
@@ -263,8 +263,8 @@ add_variable.tidyabm <- function(.tidyabm,
 #'                return()
 #'            })
 #'
-#' create_grid_environment(seed = 1268, size = 5) %>%
-#'   add_variable(n_agents = \(me, abm) = nrow(convert_agents_to_tibble(me))) %>%
+#' create_grid_environment(seed = 1269, size = 5) %>%
+#'   add_variable(n_agents = \(me, abm) nrow(convert_agents_to_tibble(me))) %>%
 #'   add_rule('no more agents',
 #'            n_agents == 0,
 #'            .consequence = stop_abm)
@@ -302,10 +302,10 @@ add_rule.tidyabm <- function(.tidyabm,
 
 #' Remove a certain rule
 #'
-#' @param .tidyabm a [tidyabm] object
+#' @param .tidyabm a `tidyabm` object
 #' @param label string used to describe the rule
 #'
-#' @return a [tidyabm] object
+#' @return a `tidyabm` object
 #'
 #' @examples
 #'   add_rule('minors move',
@@ -320,8 +320,8 @@ add_rule.tidyabm <- function(.tidyabm,
 #'            })
 #'   remove_rule('minors move')
 #'
-#' create_grid_environment(seed = 1268, size = 5) %>%
-#'   add_variable(n_agents = \(me, abm) = nrow(convert_agents_to_tibble(me))) %>%
+#' create_grid_environment(seed = 1271, size = 5) %>%
+#'   add_variable(n_agents = \(me, abm) nrow(convert_agents_to_tibble(me))) %>%
 #'   add_rule('no more agents',
 #'            n_agents == 0,
 #'            .consequence = stop_abm) %>%
@@ -348,6 +348,10 @@ remove_rule.tidyabm <- function(.tidyabm,
   return(.tidyabm)
 }
 
+#' Check if a provided object is of type `tidyabm`
+#'
+#' @param x object to check
+#'
 #' @export
 is_tidyabm <- function(x) {
   inherits(x, 'tidyabm')
@@ -366,7 +370,7 @@ is_tidyabm <- function(x) {
 #'   particular sub class is the default)
 #' @param class_params list with parameters initially relevant to store
 #'
-#' @return a [tidyabm] object with optional subclass of `particular_sub_class`
+#' @return a `tidyabm` object with optional subclass of `particular_sub_class`
 #'   and subclass of `tidyabm_*suffix*`
 new_tidyabm <- function(data,
                         class_suffix = '',
@@ -396,12 +400,12 @@ new_tidyabm <- function(data,
 
 #' Update an actual value from a characteristic or a variable
 #'
-#' @param .tidyabm a [tidyabm] object
+#' @param .tidyabm a `tidyabm` object
 #' @param values a named list where names reference charactistics/variables
 #' @param is_characteristic if `FALSE` (the default), values are assumed to
 #'   belong to variables rather than characteristics
 #'
-#' @return a [tidyabm] object
+#' @return a `tidyabm` object
 update_values <- function(.tidyabm,
                           values,
                           is_characteristic = FALSE) {

@@ -6,7 +6,7 @@
 #'   This function is used to create agent blueprints that have to, in a
 #'   second step, be added to an environment through [add_agents].
 #'
-#' @return a [tidyabm] object of subclass `tidyabm_agent`
+#' @return a `tidyabm` object of subclass `tidyabm_agent`
 #'
 #' @examples
 #' create_agent()
@@ -18,6 +18,10 @@ create_agent <- function() {
     return()
 }
 
+#' Check if a provided object is of type `tidyabm_agent`
+#'
+#' @param x object to check
+#'
 #' @export
 is_tidyabm_agent <- function(x) {
   inherits(x, 'tidyabm_agent')

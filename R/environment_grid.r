@@ -15,7 +15,7 @@
 #' @param x numeric side length of side x (omitted if `size` is set)
 #' @param y numeric side length of side y (omitted if `size` is set)
 #'
-#' @return [tidyabm] object
+#' @return `tidyabm` object
 #'
 #' @examples
 #' create_grid_environment(seed = 42, size = 25)
@@ -325,8 +325,10 @@ grid_get_free_spots <- function(abm) {
 #'
 #' @param agent the agent for whom the neighbors should be collected (`me`)
 #' @param abm the whole environment model (`abm`)
+#' @param new_x numeric new x position
+#' @param new_y numeric new y position
 #'
-#' @return a [tidyabm_agent] object
+#' @return a `tidyabm_agent` object
 #' @family utilities
 #' @export
 grid_move <- function(agent,
@@ -365,13 +367,16 @@ grid_move <- function(agent,
 
 # Internal functions ----
 
+#' Check if a provided object is of type `tidyabm_env_grid`
+#'
+#' @param x object to check
 is_tidyabm_env_grid <- function(x) {
   inherits(x, 'tidyabm_env_grid')
 }
 
 #' Get neighbors for a given position (but inside the matrix)
 #'
-#' @param .tidyabm the [tidyabm_env_grid] object
+#' @param .tidyabm the `tidyabm_env_grid` object
 #' @param x numeric x of the middle
 #' @param y numeric y of the middle
 #'
