@@ -808,7 +808,7 @@ tbl_format_footer.tidyabm_env <- function(x, ...) {
   default_footer <- NextMethod()
 
   .tidyabm <- x
-  abm_type <- substring(class(e)[[1]], nchar('tidyabm_env_') + 1)
+  abm_type <- substring(class(x)[[1]], nchar('tidyabm_env_') + 1)
   rt <- attr(.tidyabm, 'runtime')
   cp <- attr(.tidyabm, 'class_params')
   abm_status <- ifelse(is.null(rt),
