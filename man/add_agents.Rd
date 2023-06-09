@@ -34,10 +34,10 @@ size = 3) \%>\%
 add_agents(create_agent(),
 n = 3,
 initial_position = \(me, abm) {
-coordinate_counter\link{1} <- coordinate_counter\link{1} + 1
-if (coordinate_counter\link{1} > 3) {
-coordinate_counter\link{1} <- 1
-coordinate_counter\link{2} <- coordiante_counter\link{2} + 1
+coordinate_counter[1] <- coordinate_counter[1] + 1
+if (coordinate_counter[1] > 3) {
+coordinate_counter[1] <- 1
+coordinate_counter[2] <- coordiante_counter[2] + 1
 }
 return(coordinate_counter)
 })}

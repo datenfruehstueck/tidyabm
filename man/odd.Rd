@@ -7,7 +7,7 @@
 \usage{
 odd(.tidyabm, ...)
 
-\method{odd}{tidyabm_env}(.tidyabm)
+\method{odd}{tidyabm_env}(.tidyabm, ...)
 }
 \arguments{
 \item{.tidyabm}{the \code{tidyabm_env} object}

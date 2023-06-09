@@ -7,7 +7,7 @@
 \usage{
 visualize(.tidyabm, ...)
 
-\method{visualize}{tidyabm_env_grid}(.tidyabm, color = NULL, shape = NULL)
+\method{visualize}{tidyabm_env_grid}(.tidyabm, color = NULL, shape = NULL, ...)
 }
 \arguments{
 \item{.tidyabm}{the \code{tidyabm_env} object}

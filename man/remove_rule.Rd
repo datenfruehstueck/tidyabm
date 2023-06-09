@@ -30,7 +30,7 @@ Remove a certain rule
                        new_x = spot$.x,
                        new_y = spot$.y) \%>\%
                return()
-           })
+           }) \%>\%
   remove_rule('minors move')
 
 create_grid_environment(seed = 1271, size = 5) \%>\%
