@@ -28,7 +28,8 @@ Imports:
 Suggests: 
     covr,
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat
 VignetteBuilder: knitr
 URL: https://github.com/datenfruehstueck/tidyabm
 BugReports: https://github.com/datenfruehstueck/tidyabm/issues
