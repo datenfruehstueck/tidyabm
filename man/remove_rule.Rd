@@ -21,6 +21,7 @@ a \code{tidyabm} object
 Remove a certain rule
 }
 \examples{
+create_agent() \%>\%
   add_rule('minors move',
            age >= 18,
            .consequence = \(me, abm) {

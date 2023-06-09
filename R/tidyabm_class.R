@@ -308,6 +308,7 @@ add_rule.tidyabm <- function(.tidyabm,
 #' @return a `tidyabm` object
 #'
 #' @examples
+#' create_agent() %>%
 #'   add_rule('minors move',
 #'            age >= 18,
 #'            .consequence = \(me, abm) {
