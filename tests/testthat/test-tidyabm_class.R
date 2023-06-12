@@ -33,6 +33,70 @@ test_that('class', {
               'list')
 })
 
+test_that('footer output', {
+  # environment
+  create_grid_environment(seed = 23, size = 4) %>%
+    set_characteristic(.a = 34) %>%
+    print() %>%
+    expect_output('.+0 environment characteristic.+')
+
+  create_grid_environment(seed = 23, size = 4) %>%
+    set_characteristic(a = 34) %>%
+    print() %>%
+    expect_output('.+1 environment characteristic.+')
+
+  create_grid_environment(seed = 23, size = 4) %>%
+    add_variable(.a = 34) %>%
+    print() %>%
+    expect_output('.+0 environment variable.+')
+
+  create_grid_environment(seed = 23, size = 4) %>%
+    add_variable(a = 34) %>%
+    print() %>%
+    expect_output('.+1 environment variable.+')
+
+  create_grid_environment(seed = 23, size = 4) %>%
+    add_rule('.a', .consequence = \(me, abm) me) %>%
+    print() %>%
+    expect_output('.+0 environment rule.+')
+
+  create_grid_environment(seed = 23, size = 4) %>%
+    add_rule('a', .consequence = \(me, abm) me) %>%
+    print() %>%
+    expect_output('.+1 environment rule.+')
+
+  # agent
+  create_agent() %>%
+    set_characteristic(.a = 34) %>%
+    print() %>%
+    expect_output('.+0 agent characteristic.+')
+
+  create_agent() %>%
+    set_characteristic(a = 34) %>%
+    print() %>%
+    expect_output('.+1 agent characteristic.+')
+
+  create_agent() %>%
+    add_variable(.a = 34) %>%
+    print() %>%
+    expect_output('.+0 agent variable.+')
+
+  create_agent() %>%
+    add_variable(a = 34) %>%
+    print() %>%
+    expect_output('.+1 agent variable.+')
+
+  create_agent() %>%
+    add_rule('.a', .consequence = \(me, abm) me) %>%
+    print() %>%
+    expect_output('.+0 agent rule.+')
+
+  create_agent() %>%
+    add_rule('a', .consequence = \(me, abm) me) %>%
+    print() %>%
+    expect_output('.+1 agent rule.+')
+})
+
 test_that('characteristics', {
   t <- new_tidyabm(tibble::tibble()) %>%
     set_characteristic(a = 3,
