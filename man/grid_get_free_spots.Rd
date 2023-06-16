@@ -24,6 +24,7 @@ Other utilities:
 \code{\link{grid_get_free_neighboring_spots}()},
 \code{\link{grid_get_neighbors}()},
 \code{\link{grid_move}()},
+\code{\link{network_connect}()},
 \code{\link{stop_abm}()}
 }
 \concept{utilities}
