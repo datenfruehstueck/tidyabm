@@ -30,6 +30,18 @@ test_that('add_agents', {
               'list')
   expect_length(attr(e, 'agents'),
                 100 + 50)
+
+  expect_warning(create_grid_environment(seed = 12892,
+                                         size = 10) %>%
+                   add_agents(create_agent(),
+                              n = 2.5))
+
+  expect_length(suppressWarnings(create_grid_environment(seed = 12892,
+                                                         size = 10) %>%
+                                   add_agents(create_agent(),
+                                              n = 2.5) %>%
+                                   attr('agents')),
+                3)
 })
 
 test_that('convert_agents_to_tibble', {

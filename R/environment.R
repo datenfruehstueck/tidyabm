@@ -42,6 +42,18 @@ add_agents.tidyabm_env <- function(.tidyabm,
   stopifnot(is_tidyabm_agent(agent))
   stopifnot(n > 0)
 
+  # check if provided n is (numerically) integer
+  if (grepl('[^[:digit:]]',
+            format(n,
+                   digits = 20,
+                   scientific = FALSE))) {
+    n_rounded <- round_half_up(n)
+    warning(paste0('The provided n (', n, ') is not an integer and has thus ',
+                   'been rounded to n = ', n_rounded),
+            call. = FALSE)
+    n <- n_rounded
+  }
+
   # add agent characteristic and variable names to respective vectors
   # to be easily able to generate tibbles later on
   cp <- attr(.tidyabm, 'class_params')

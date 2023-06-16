@@ -13,3 +13,19 @@ retain_new_data_in_prior_object <- function(prior_object,
   attributes(out) <- prior_attrs
   return(out)
 }
+
+#' Round to integer, but round .5 up
+#'
+#' @description
+#'  R's [round] function rounds .5 to the next even digit as specified in
+#'  `IEEE 754`. However, this is not expected here but instead .5 should always
+#'  be rounded up. See also http://andrewlandgraf.com/2012/06/15/rounding-in-r/
+#'
+#' @param n the number to round
+#'
+#' @return an integer
+round_half_up <- function(n) {
+  posneg = sign(n)
+  z = trunc(abs(n) + 0.5)
+  return(z*posneg)
+}

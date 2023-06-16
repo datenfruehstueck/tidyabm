@@ -99,6 +99,7 @@ add_agents.tidyabm_env_grid <- function(.tidyabm,
                                         initial_position = NULL,
                                         ...) {
   .tidyabm <- NextMethod()
+  n <- round_half_up(n)
 
   if (!is.null(initial_position) & typeof(initial_position) != 'closure') {
     stop('initial_position has to be either NULL (default) to position agents ',
