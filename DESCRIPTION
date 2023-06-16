@@ -17,6 +17,7 @@ RoxygenNote: 7.2.3
 Imports: 
     dplyr,
     ggplot2,
+    ggraph,
     lifecycle,
     lubridate,
     magrittr,
@@ -25,6 +26,7 @@ Imports:
     rlang,
     stats,
     tibble,
+    tidygraph,
     tidyr
 Suggests: 
     covr,
