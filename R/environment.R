@@ -95,8 +95,9 @@ add_agents.tidyabm_env <- function(.tidyabm,
 #'
 #' @param .tidyabm the `tidyabm_env` holding the (range of) agents
 #' @param .name character string representing the name of the new characteristic
-#' @param .value a vector of the same length as the range of agents or a
-#'   (anonymous) function to be called for each agent.
+#' @param .value a vector of the same length as the range of agents or a single
+#'   value (to apply to all) or a (anonymous) function to be called for each
+#'   agent.
 #'   For functions you may use a function which gets called for every agent
 #'   with three arguments: `i` (a numeric iterator ranging from 1 for the first
 #'   agent to n for the last agent), `agent` (the respective `tidyabm` agent),
@@ -115,6 +116,8 @@ add_agents.tidyabm_env <- function(.tidyabm,
 #'   with the `&` operator.
 #' @param .overwrite if `FALSE` (the default), characteristics with the same
 #'   name will not be overwritten (a warning will be issued)
+#' @param .suppress_warnings if `TRUE`, `.overwrite` will not yield any
+#'   warnings; default is FALSE, though
 #'
 #' @return `tidyabm` object
 #'
@@ -140,11 +143,14 @@ add_agents.tidyabm_env <- function(.tidyabm,
 #'   )
 #'
 #' @export
-distribute_characteristic_across_agents <- function(.tidyabm,
-                                                    .name,
-                                                    .value,
-                                                    ...,
-                                                    .overwrite = FALSE) {
+distribute_characteristic_across_agents <-
+  function(.tidyabm,
+           .name,
+           .value,
+           ...,
+           .overwrite = FALSE,
+           .suppress_warnings = FALSE) {
+
   UseMethod('distribute_characteristic_across_agents')
 }
 
@@ -155,20 +161,30 @@ distribute_characteristic_across_agents.tidyabm_env <-
            .name,
            .value,
            ...,
-           .overwrite = FALSE) {
+           .overwrite = FALSE,
+           .suppress_warnings = FALSE) {
   stopifnot(is_tidyabm_env(.tidyabm))
   stopifnot(is.character(.name))
   stopifnot(is.vector(.value) | typeof(.value) == 'closure')
   stopifnot(is.logical(.overwrite))
+  stopifnot(is.logical(.suppress_warnings))
 
   agents_filtered <- convert_agents_to_tibble(.tidyabm) %>%
     dplyr::filter(...)
 
+  if (nrow(agents_filtered) == 0) {
+    return(.tidyabm)
+  }
+
   if (is.vector(.value)) {
     if (nrow(agents_filtered) != length(.value)) {
-      stop('`.value` has size ', length(.value),
-           ' but must match the number of filtered agents which is ',
-           nrow(agents_filtered))
+      if (length(.value) == 1) {
+        .value <- rep(.value, nrow(agents_filtered))
+      } else {
+        stop('`.value` has size ', length(.value),
+             ' but must match the number of filtered agents which is ',
+             nrow(agents_filtered))
+      }
     }
   }
 
@@ -184,7 +200,8 @@ distribute_characteristic_across_agents.tidyabm_env <-
                                           agents_filtered)))
     agents[[i]] <- agents[[i]] %>%
       set_characteristic(!!.name := {{value_rendered}},
-                         .overwrite = .overwrite)
+                         .overwrite = .overwrite,
+                         .suppress_warnings = .suppress_warnings)
     counter <- counter + 1
   }
   attr(.tidyabm, 'agents') <- agents
@@ -398,7 +415,7 @@ tick.tidyabm_env <- function(.tidyabm,
   }
 
   ## prepare an intermediate .tidyabm so that environment rules can build on it
-  .tidyabm_temp <- .tidyabm %>%
+  .tidyabm <- .tidyabm %>%
     retain_new_data_in_prior_object(
       .tidyabm %>%
         dplyr::bind_rows(tibble::tibble(.tick = rt[['next_tick']]) %>%
@@ -416,12 +433,12 @@ tick.tidyabm_env <- function(.tidyabm,
     \(env_rule_label) {
       env_rule_if <- env_rules[[env_rule_label]][['if']]
       env_rule_then <- env_rules[[env_rule_label]][['then']]
-      if (nrow(dplyr::filter(.tidyabm_temp,
+      if (nrow(dplyr::filter(.tidyabm,
                              .data$.tick == rt[['next_tick']],
                              !!!env_rule_if)) == 1) {
         env_temp <- do.call(env_rule_then,
-                            list(.tidyabm_temp,
-                                 .tidyabm_temp))
+                            list(.tidyabm,
+                                 .tidyabm))
         if (is_tidyabm_env(env_temp)) {
           .tidyabm <<- env_temp
         } else {
@@ -832,7 +849,7 @@ tbl_format_footer.tidyabm_env <- function(x, ...) {
                                      ' ticks'),
                               paste0('simulating (',
                                      rt[['next_tick']] - 1,
-                                     ' ticks passed)')))
+                                     ' tick(s) passed)')))
   n_characteristics <- names(attr(.tidyabm, 'characteristics'))
   n_characteristics <- length(n_characteristics[substr(n_characteristics,
                                                        1, 1) != '.'])

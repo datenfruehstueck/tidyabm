@@ -20,14 +20,18 @@ test_that("convergence and all", {
     add_rule('share information',
              informed == TRUE,
              .consequence = \(me, abm) {
-               # todo
+               me %>%
+                 network_spread('informed',
+                                TRUE,
+                                overwrite = TRUE,
+                                suppress_warnings = TRUE) %>%
+                 return()
              })
 
-  suppressWarnings({
-    agent_b <- agent_a %>%
-      set_characteristic(informed = TRUE,
-                         .overwrite = TRUE)
-  })
+  agent_b <- agent_a %>%
+    set_characteristic(informed = TRUE,
+                       .overwrite = TRUE,
+                       .suppress_warnings = TRUE)
 
   e <- create_network_environment(seed = 5382,
                                   is_directed = TRUE) %>%
@@ -47,11 +51,11 @@ test_that("convergence and all", {
              .consequence = stop_abm) %>%
     init()
 
-  #e <- e %>%
-  #  iterate(verbose = FALSE,
-  #          max_iterations = 30)
+  e <- e %>%
+    iterate(verbose = FALSE,
+            max_iterations = 19)
 
   expect_true(is_tidyabm_env_network(e))
-  expect_true(any(e$.finished_after_tick))
-  expect_lte(length(e$.tick), 30)
+  expect_false(any(e$.finished_after_tick))
+  expect_equal(max(e$share_informed), .79)
 })

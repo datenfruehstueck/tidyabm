@@ -37,8 +37,8 @@ create_network_environment <- function(seed,
                                                   'undirected'))) %>%
     add_rule('.mirror_links',
              .consequence = rule_mirror_links) %>%
-    #add_rule('.spread',
-    #         .consequence = rule_spread) %>%
+    add_rule('.spread',
+             .consequence = rule_spread) %>%
     return()
 }
 
@@ -73,13 +73,10 @@ add_agents.tidyabm_env_network <- function(.tidyabm,
 #' @param network_ggraph_layout graphical layout to use; see package `ggraph`
 #'   for details, fittingly/usually this is one of 'kk', 'stress', 'fr', 'lgl',
 #'   or 'graphopt'
-#' @param color if set to a character-string name of an agent characteristic/
-#'   variable, then the agents will be colored as such
 #'
 #' @export
 visualize.tidyabm_env_network <- function(.tidyabm,
                                           network_ggraph_layout = 'kk',
-                                          color = NULL,
                                           ...) {
   stopifnot(is_tidyabm_env_network(.tidyabm))
 
@@ -87,8 +84,7 @@ visualize.tidyabm_env_network <- function(.tidyabm,
     convert_network_to_tidygraph() %>%
     ggraph::ggraph(layout = network_ggraph_layout)
 
-  cp <- attr(.tidyabm, 'class_params')
-  if (cp[['is_directed']]) {
+  if (is_directed(.tidyabm)) {
     g <- g +
       ggraph::geom_edge_link(show.legend = FALSE,
                              arrow = ggplot2::arrow(length = ggplot2::unit(3, 'mm')),
@@ -97,19 +93,10 @@ visualize.tidyabm_env_network <- function(.tidyabm,
     g <- g +
       ggraph::geom_edge_link(show.legend = FALSE)
   }
-
-  if (is.null(color)) {
-    g <- g +
-      ggraph::geom_node_point(size = 9,
-                              color = '#c2c2c2')
-  } else {
-    g <- g +
-      ggraph::geom_node_point(size = 9,
-                              ggplot2::aes(color = {{ color }}))
-  }
-
   g <- g +
-    ggraph::geom_node_text(ggplot2::aes(label = name),
+    ggraph::geom_node_point(size = 9,
+                            color = '#c2c2c2') +
+    ggraph::geom_node_text(ggplot2::aes(label = .data$name),
                            size = 3) +
     ggplot2::theme_void() +
     ggplot2::theme(
@@ -159,11 +146,9 @@ convert_network_to_tidygraph <- function(.tidyabm) {
     dplyr::filter(!is.na(.data$from),
                   !is.na(.data$to))
 
-  cp <- attr(.tidyabm, 'class_params')
-
   tidygraph::tbl_graph(nodes = nodes,
                        edges = edges,
-                       directed = cp[['is_directed']]) %>%
+                       directed = is_directed(.tidyabm)) %>%
     return()
 }
 
@@ -198,6 +183,68 @@ network_connect <- function(source_agent,
     return()
 }
 
+#' Spread a characteristic between source and its links
+#'
+#' @description
+#'   Spreading means that a certain information travels from the `source_agent`
+#'   to any other agents linked to this source. In an undirected environment,
+#'   this means that all agents linked to `source_agent` will receive a
+#'   characteristic with the given name (`characteristic_name`) and the given
+#'   value (`characteristic_value`). In a directed environment, by default,
+#'   only agents who point to the current `source_agent` will receive the
+#'   characteristic; this behavior can be changed via the two arguments
+#'   `spread_via_indegree_links` and `spread_via_outdegree_links`.
+#'
+#' @param source_agent the agent from whom the information should be spread
+#' @param characteristic_name character string name of the characteristic to
+#'   be set for the linked agent
+#' @param characteristic_value value of the spread information (i.e., the
+#'   characteristic to be set)
+#' @param spread_via_indegree_links only applicable in directed graphs; if true
+#'   (the default) then the information spreads via links where `source_agent`
+#'   is the target of the link (i.e., to whom others points)
+#' @param spread_via_outdegree_links only applicable in directed graphs; if true
+#'   then the information spreads via links where `source_agent` is also the
+#'   source of the link (i.e., the starting point of an arrow); default here is
+#'   false
+#' @param overwrite argument to be passed on to `set_characteristic` (default
+#'   is true meaning that the target characteristic will be overwritten)
+#' @param suppress_warning argument to be passed on to `set_characteristic`
+#'   (default is true meaning that any overwritten characteristic will be
+#'   done so silently/without raising any warnings)
+#'
+#' @return a `tidyabm_agent` object
+#' @family utilities
+#' @export
+network_spread <- function(source_agent,
+                           characteristic_name,
+                           characteristic_value,
+                           spread_via_indegree_links = TRUE,
+                           spread_via_outdegree_links = FALSE,
+                           overwrite = TRUE,
+                           suppress_warnings = TRUE) {
+
+  if (!is_tidyabm_agent(source_agent)) {
+    return(NULL)
+  }
+
+  cp <- attr(source_agent, 'class_params')
+  if (! 'spreads' %in% names(cp)) {
+    cp[['spreads']] <- list()
+  }
+
+  cp[['spreads']] <- append(cp[['spreads']],
+                            list(list(name = characteristic_name,
+                                      value = characteristic_value,
+                                      via_in = spread_via_indegree_links,
+                                      via_out = spread_via_outdegree_links,
+                                      overwrite = overwrite,
+                                      suppress = suppress_warnings)))
+
+  attr(source_agent, 'class_params') <- cp
+  return(source_agent)
+}
+
 
 
 # Internal functions ----
@@ -209,12 +256,20 @@ is_tidyabm_env_network <- function(x) {
   inherits(x, 'tidyabm_env_network')
 }
 
+#' Check if given `tidyabm_env_network` is directed
+#'
+#' @param x object to check
+is_directed <- function(x) {
+  cp <- attr(x, 'class_params')
+  return(cp[['is_directed']])
+}
+
 #' Fill up .indegree reflected on those newly set .outdegree links
 #'
-#' @param me the [tidyabm_env_network] object pushed from the .mirror_links rule
+#' @param me the `tidyabm_env_network` object pushed from the .mirror_links rule
 #' @param abm unused
 #'
-#' @return the updated [tidyabm_env_network] object
+#' @return the updated `tidyabm_env_network` object
 rule_mirror_links <- function(me, abm) {
   if (!is_tidyabm_env_network(me)) {
     return(NULL)
@@ -263,11 +318,54 @@ rule_mirror_links <- function(me, abm) {
   return(me)
 }
 
+#' Distribute information as requested by `network_spread`
+#'
+#' @param me the `tidyabm_env_network` object pushed from the .spread rule
+#' @param abm unused
+#'
+#' @return the updated `tidyabm_env_network` object
 rule_spread <- function(me, abm) {
-  # todo
-  # das zu spreadende sucht und entsprechend an andere verteilt (unterschiedliche handhabe bei directional/undirectional)
+  if (!is_tidyabm_env_network(me)) {
+    return(NULL)
+  }
 
-  # todo: version auf 0.2.0 anheben
+  purrr::map(attr(me, 'agents'), \(agent) {
+    cp <- attr(agent, 'class_params')
+    if ('spreads' %in% names(cp)) {
+      purrr::map(cp[['spreads']], \(spread) {
+        recipients <- c()
+        if (is_directed(me)) {
+          if (spread[['via_in']]) {
+            recipients <- c(recipients, unlist(agent$.indegree))
+          }
+          if (spread[['via_out']]) {
+            recipients <- c(recipients, unlist(agent$.outdegree))
+          }
+        } else {
+          recipients <- c(unlist(agent$.indegree),
+                          unlist(agent$.outdegree))
+        }
+        if (length(recipients) > 0) {
+          me <<- me %>% distribute_characteristic_across_agents(
+            .name = spread[['name']],
+            .value = spread[['value']],
+            .data$.id %in% recipients,
+            .overwrite = spread[['overwrite']],
+            .suppress_warnings = spread[['suppress']]
+          )
+        }
+      })
+    }
+  })
+
+  attr(me, 'agents') <- purrr::map(attr(me, 'agents'), \(agent) {
+    cp <- attr(agent, 'class_params')
+    if ('spreads' %in% names(cp)) {
+      cp[['spreads']] <- NULL
+      attr(agent, 'class_params') <- cp
+    }
+    return(agent)
+  })
 
   return(me)
 }
