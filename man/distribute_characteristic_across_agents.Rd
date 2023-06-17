@@ -10,7 +10,8 @@ distribute_characteristic_across_agents(
   .name,
   .value,
   ...,
-  .overwrite = FALSE
+  .overwrite = FALSE,
+  .suppress_warnings = FALSE
 )
 
 \method{distribute_characteristic_across_agents}{tidyabm_env}(
@@ -18,7 +19,8 @@ distribute_characteristic_across_agents(
   .name,
   .value,
   ...,
-  .overwrite = FALSE
+  .overwrite = FALSE,
+  .suppress_warnings = FALSE
 )
 }
 \arguments{
@@ -26,8 +28,9 @@ distribute_characteristic_across_agents(
 
 \item{.name}{character string representing the name of the new characteristic}
 
-\item{.value}{a vector of the same length as the range of agents or a
-(anonymous) function to be called for each agent.
+\item{.value}{a vector of the same length as the range of agents or a single
+value (to apply to all) or a (anonymous) function to be called for each
+agent.
 For functions you may use a function which gets called for every agent
 with three arguments: \code{i} (a numeric iterator ranging from 1 for the first
 agent to n for the last agent), \code{agent} (the respective \code{tidyabm} agent),
@@ -48,6 +51,9 @@ with the \code{&} operator.}
 
 \item{.overwrite}{if \code{FALSE} (the default), characteristics with the same
 name will not be overwritten (a warning will be issued)}
+
+\item{.suppress_warnings}{if \code{TRUE}, \code{.overwrite} will not yield any
+warnings; default is FALSE, though}
 }
 \value{
 \code{tidyabm} object

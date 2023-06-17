@@ -11,15 +11,16 @@ visualize(.tidyabm, ...)
 
 \method{visualize}{tidyabm_env_grid}(.tidyabm, color = NULL, shape = NULL, ...)
 
-\method{visualize}{tidyabm_env_network}(.tidyabm, network_ggraph_layout = "kk", color = NULL, ...)
+\method{visualize}{tidyabm_env_network}(.tidyabm, network_ggraph_layout = "kk", ...)
 }
 \arguments{
 \item{.tidyabm}{the \code{tidyabm_env} object}
 
 \item{...}{other arguments passed to particular types of environment}
 
-\item{color}{if set to a character-string name of an agent characteristic/
-variable, then the agents will be colored as such}
+\item{color}{specify an agent characteristic or variable by name to color
+agents according to this specific characteristic/variable (default is not
+to apply any colors)}
 
 \item{shape}{specify an agent characteristic or variable by name to shape
 agents according to this specific characteristic/variable (default is to

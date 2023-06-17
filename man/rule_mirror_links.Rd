@@ -7,12 +7,12 @@
 rule_mirror_links(me, abm)
 }
 \arguments{
-\item{me}{the \link{tidyabm_env_network} object pushed from the .mirror_links rule}
+\item{me}{the \code{tidyabm_env_network} object pushed from the .mirror_links rule}
 
 \item{abm}{unused}
 }
 \value{
-the updated \link{tidyabm_env_network} object
+the updated \code{tidyabm_env_network} object
 }
 \description{
 Fill up .indegree reflected on those newly set .outdegree links
