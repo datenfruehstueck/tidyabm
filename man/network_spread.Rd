@@ -35,7 +35,7 @@ false}
 \item{overwrite}{argument to be passed on to \code{set_characteristic} (default
 is true meaning that the target characteristic will be overwritten)}
 
-\item{suppress_warning}{argument to be passed on to \code{set_characteristic}
+\item{suppress_warnings}{argument to be passed on to \code{set_characteristic}
 (default is true meaning that any overwritten characteristic will be
 done so silently/without raising any warnings)}
 }
