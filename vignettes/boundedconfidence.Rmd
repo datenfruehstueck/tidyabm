@@ -1,0 +1,148 @@
+---
+title: "Deffuant et al.'s Bounded Confidence Model of Opinion Dynamics"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{''}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Read about the Bounded Confidence Model of Opinion Dynamics in the [original publication](https://doi.org/10.1142/s0219525900000078) of 2000 by Deffuant, Neau, Amblard, and Weisbuch.
+
+The version implemented here sets up 100 agents and distributes an opinion, operationalized on a normalized scale with an average (mean) of 0 and a standard deviation of 1, thus roughly ranging from -2 to +2. In each round, each agent meets with a random other agent whereby both update their opinion according to a slightly varying adaptation factor my (a random number between a lower and an upper boundary of my) if, any only if, their opinion delta is below a certain threshold.
+
+```{r setup}
+library(tidyverse)
+library(tidyabm)
+```
+
+Model configuration parameters are combined here:
+
+```{r configuration}
+n_agents <- 100
+threshold <- 2.0
+my_lower_boundary <- 0.0
+my_upper_boundary <- 0.5
+```
+
+This time, creating the agent blueprints is kind of useless. That's because we do not give agents neither an individual opinion nor an action. We do not give them an opinion because we want to give all agents together a distribution of opinions so that the initial opinions are distributed normally. We also do not give the agents their own actions because, if specified on a per-agent level, each agent would look for another one and, hence, some would end up being in multiple meetings (because they reached out to one other agent and were reached out to by one or several other agents as well). 
+
+So instead of specifying agent blueprints, here's the actual model (i.e., the environment) directly. Here, we add "empty" agents, distribute the initial opinions, and specify the meeting action between two random agents. 
+
+The most complicated part here are of course the meetings. For the meetings, specifically, we do the following (once per iteration/tick):
+
+- we create `n_agents/2` meetings and put them into a vector of `n_agents` elements so that each meeting appears twice in this list
+- we distribute all agents onto these meetings so that each agent is on exactly one meeting
+- for each meeting ...
+  - we calculate the delta between the two agents' opinions
+  - if the delta is larger than `threshold` we omit this meeting
+  - otherwise, we take a random my (between the specified lower/upper boundary) and calculate both agents' new opinion
+- finally, we iterate through the meeting results (using a quicker iteration function named `map` out of tidyverse's [purrr](https://purrr.tidyverse.org/) package) and overwrite all the agents' old opinions with their new opinions (note that, inside `map` we need to overwrite anything that is outside such as `me` with a double arrow `<<-`)
+
+For overall environment/model interpretation, we calculate pull out the highest and lowest opinion per tick for later inspection. Also note that the environment does not get an end point but will run indefinitely. Hence, you have to set the `max_iterations` in the `iterate(...)` function accordingly to when you want it to stop:
+
+```{r diffusion}
+e <- create_network_environment(seed = 13485) %>%
+  add_agents(create_agent(),
+             n = n_agents) %>%
+  distribute_characteristic_across_agents('opinion',
+                                          rnorm(n = n_agents,
+                                                mean = 0,
+                                                sd = 1)) %>% 
+  add_rule('random agent meetings',
+           .consequence = function(me, abm) {
+             meetings <- sample(rep(1:(n_agents/2), 2))
+             meeting_results <- me %>% 
+               convert_agents_to_tibble() %>% 
+               bind_cols(tibble(meeting = meetings)) %>% 
+               select(meeting, .id, opinion) %>% 
+               group_by(meeting) %>% 
+               summarize(agent_1 = first(.id),
+                         agent_2 = last(.id),
+                         opinion_1 = first(opinion),
+                         opinion_2 = last(opinion),
+                         .groups = 'drop') %>% 
+               mutate(delta = abs(opinion_1 - opinion_2)) %>% 
+               filter(delta <= threshold) %>% 
+               mutate(my = runif(n(), 
+                                 min = my_lower_boundary,
+                                 max = my_upper_boundary),
+                      opinion_new_1 = opinion_1 + my * (opinion_2 - opinion_1),
+                      opinion_new_2 = opinion_2 + my * (opinion_1 - opinion_2))
+             purrr::map(1:nrow(meeting_results),
+                        function(meeting) {
+                          me <<- me %>% 
+                            distribute_characteristic_across_agents(
+                              'opinion',
+                              meeting_results[[meeting, 'opinion_new_1']],
+                              .id == meeting_results[[meeting, 'agent_1']],
+                              .overwrite = TRUE,
+                              .suppress_warnings = TRUE) %>% 
+                            distribute_characteristic_across_agents(
+                              'opinion',
+                              meeting_results[[meeting, 'opinion_new_2']],
+                              .id == meeting_results[[meeting, 'agent_2']],
+                              .overwrite = TRUE,
+                              .suppress_warnings = TRUE)
+                        })
+             return(me)
+           }) %>% 
+  add_variable(min_opinion = function(me, abm) {
+    abm %>%
+      convert_agents_to_tibble() %>%
+      summarise(minimum = min(opinion)) %>%
+      pull(minimum) %>%
+      return()
+  }) %>%
+  add_variable(max_opinion = function(me, abm) {
+    abm %>%
+      convert_agents_to_tibble() %>%
+      summarise(maximum = max(opinion)) %>%
+      pull(maximum) %>%
+      return()
+  }) %>%
+  init()
+```
+
+Finally, iteration. This is the step that takes a while. Note that we set a maximum of 20 iterations here so the iteration ticks exactly 20 times (because there is no other way for it to stop):
+
+```{r iteration}
+e <- e %>% 
+  iterate(max_iterations = 20)
+```
+
+Let's look at the environment and also some of the agents.
+
+```{r inspection}
+e
+
+e %>% 
+  convert_agents_to_tibble()
+```
+
+Finally, let's see how the distribution of opinions has adjusted (converged) over time. We look at the mean, minimum and maximum opinion in each tick and visualize it over time. You can see the starting point that is quite (as in: normally distributed) scattered and the subsequent homogenization of opinions.
+
+```{r visualizations, out.width = '100%'}
+e %>% 
+  ggplot(aes(x = .tick,
+             ymin = min_opinion,
+             ymax = max_opinion)) +
+  geom_linerange() +
+  scale_x_continuous('Time [ticks]') +
+  scale_y_continuous('Distribution of Opinions [M with min/max]') +
+  theme_minimal() +
+  ggtitle('Opinion Dynamics over Time')
+```
+
+We can compile relevant data for any publication we're preparing through the [ODD protocol](https://doi.org/10.18564/jasss.4259):
+```{r odd}
+e %>% 
+  odd()
+```
