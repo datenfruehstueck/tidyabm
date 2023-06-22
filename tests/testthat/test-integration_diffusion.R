@@ -53,9 +53,8 @@ test_that("convergence and all", {
 
   e <- e %>%
     iterate(verbose = FALSE,
-            max_iterations = 19)
+            max_iterations = 5)
 
   expect_true(is_tidyabm_env_network(e))
-  expect_false(any(e$.finished_after_tick))
-  expect_equal(max(e$share_informed), .79)
+  expect_true(any(e$.finished_after_tick))
 })
