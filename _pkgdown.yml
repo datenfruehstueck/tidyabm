@@ -1,4 +1,60 @@
 url: https://datenfruehstueck.github.io/tidyabm/
 template:
   bootstrap: 5
-
+reference:
+- title: General Setup
+- subtitle: Agents
+  contents:
+  - create_agent
+  - is_tidyabm_agent
+  - set_characteristic
+  - add_variable
+  - add_rule
+- subtitle: Environments
+  contents:
+  - create_grid_environment
+  - create_network_environment
+  - is_tidyabm_env
+  - set_characteristic
+  - add_variable
+  - add_rule
+  - remove_rule
+  - add_agents
+  - distribute_characteristic_across_agents
+- title: Simulation
+- subtitle: Preparation
+  contents:
+  - init
+  - reset
+- subtitle: Running
+  contents:
+  - tick
+  - iterate
+  - is_ended
+  - is_tickable
+- subtitle: Reporting
+  contents:
+  - convert_agents_to_tibble
+  - visualize
+  - odd
+- title: Particular Helper Utilities
+- subtitle: Generally all Environments
+  contents:
+  - get_characteristic
+  - get_variable
+  - get_random_agent
+  - remove_agent
+  - stop_abm
+- subtitle: Grid Environments
+  contents:
+  - grid_get_free_neighboring_spots
+  - grid_get_free_spots
+  - grid_get_neighbors
+  - grid_move
+- subtitle: Network Environments
+  contents:
+  - is_directed
+  - convert_network_to_tidygraph
+  - network_connect
+  - network_get_neighbors
+  - network_spread
