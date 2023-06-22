@@ -813,9 +813,6 @@ odd.tidyabm_env <- function(.tidyabm, ...) {
                                                   'convert_agents_to_tibble()'),
                                            NA_character_,
                                            NA_character_))
-
-  # todo: raise version
-  # todo: create web page
 }
 
 #' Check if a provided object is of type `tidyabm_env`
