@@ -1,0 +1,13 @@
+pandoc: 2.19.2
+pkgdown: 2.0.7
+pkgdown_sha: ~
+articles:
+  boundedconfidence: boundedconfidence.html
+  diffusion: diffusion.html
+  segregation: segregation.html
+  voter: voter.html
+last_built: 2023-06-22T18:59Z
+urls:
+  reference: https://datenfruehstueck.github.io/tidyabm/reference
+  article: https://datenfruehstueck.github.io/tidyabm/articles
+
