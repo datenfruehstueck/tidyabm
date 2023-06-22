@@ -263,7 +263,12 @@ test_that('odd', {
                                    size = 2) %>%
     odd()
   expect_equal(dim(e_odd),
-               c(7, 2))
+               c(7, 4))
+
+  e_odd <- create_network_environment(seed = 1) %>%
+    odd()
+  expect_equal(dim(e_odd),
+               c(7, 4))
 })
 
 test_that('utils: get_random_agent', {
@@ -309,4 +314,37 @@ test_that('utils: get_variable', {
     tick(verbose = FALSE)
   expect_equal(get_variable(e, 'foo'),
                'bar')
+})
+
+test_that('utils: remove_agent', {
+  e <- create_network_environment(seed = 192837) %>%
+    add_agents(create_agent(),
+               n = 5)
+  expect_equal(nrow(convert_agents_to_tibble(e)),
+               5)
+
+  e <- e %>%
+    remove_agent('A2')
+  expect_equal(nrow(convert_agents_to_tibble(e)),
+               4)
+  expect_length(attr(e, 'agents'),
+                4)
+
+  agent_5 <- attr(e, 'agents')[[4]]
+  e <- e %>%
+    remove_agent(agent_5)
+  expect_equal(nrow(convert_agents_to_tibble(e)),
+               3)
+  expect_length(attr(e, 'agents'),
+                3)
+  expect_equal(convert_agents_to_tibble(e)$.id,
+               c('A1', 'A3', 'A4'))
+
+  e <- e %>%
+    add_agents(create_agent(),
+               n = 1)
+  expect_equal(nrow(convert_agents_to_tibble(e)),
+               4)
+  expect_equal(convert_agents_to_tibble(e)$.id,
+               c('A1', 'A3', 'A4', 'A6'))
 })

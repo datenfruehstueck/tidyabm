@@ -19,8 +19,9 @@ Read about the Bounded Confidence Model of Opinion Dynamics in the [original pub
 The version implemented here sets up 100 agents and distributes an opinion, operationalized on a normalized scale with an average (mean) of 0 and a standard deviation of 1, thus roughly ranging from -2 to +2. In each round, each agent meets with a random other agent whereby both update their opinion according to a slightly varying adaptation factor my (a random number between a lower and an upper boundary of my) if, any only if, their opinion delta is below a certain threshold.
 
 ```{r setup}
-library(tidyverse)
 library(tidyabm)
+library(dplyr)
+library(ggplot2)
 ```
 
 Model configuration parameters are combined here:
@@ -141,7 +142,57 @@ e %>%
   ggtitle('Opinion Dynamics over Time')
 ```
 
-We can compile relevant data for any publication we're preparing through the [ODD protocol](https://doi.org/10.18564/jasss.4259):
+There is an alternative way, though. One where we iterate tick by tick to collect each agent's opinion at every point in time. This also allows us to follow one particular agent over time in its dynamics of opinion formation. For that, we start over with the modeling environment (`reset` and `init`, again, and also resetting the opinions to starting values) and then loop through 20 steps in each of which we only tick the environment once and extract all agents' information. The agent information we append (`bind_rows`) to a variable/tibble that gets built with three columns, one identifying the agent, one identifying the tick, and one with the opinion of that agent after that tick. Finally, we can look at the tibble and, of course, visualize it (whereby we also color one of the agents, `A100`, blue, and all the others lightly red).
+
+```{r manual_alternative, out.width = '100%'}
+e <- e %>% 
+  reset() %>% 
+  distribute_characteristic_across_agents('opinion',
+                                          rnorm(n = n_agents,
+                                                mean = 0,
+                                                sd = 1),
+                                          .overwrite = TRUE,
+                                          .suppress_warnings = TRUE) %>% 
+  init()
+
+agent_opinions_over_time <- NULL
+
+for (i in 1:20) {
+  e <- e %>% 
+    tick()
+  agent_opinions_over_time <- agent_opinions_over_time %>% 
+    bind_rows(e %>% 
+                convert_agents_to_tibble() %>% 
+                mutate(tick = i) %>% 
+                select(agent = .id,
+                       tick,
+                       opinion))
+}
+
+# this is the environment after being ticked 20 times
+e
+
+# this is our collected variable/tibble
+agent_opinions_over_time
+
+# and this is the visualization
+agent_opinions_over_time %>% 
+  ggplot(aes(x = tick,
+             y = opinion,
+             color = agent == 'A100',
+             alpha = ifelse(agent == 'A100', 1, 1/10),
+             group = agent)) +
+  geom_point() +
+  geom_line() +
+  scale_x_continuous('Time [ticks]') +
+  scale_y_continuous('Opinion') +
+  scale_color_brewer(palette = 'Set1') +
+  theme_minimal() +
+  theme(legend.position = 'none') +
+  ggtitle('Opinion Dynamics per Agent over Time')
+```
+
+As always, we can compile relevant data for any publication we're preparing through the [ODD protocol](https://doi.org/10.18564/jasss.4259):
 ```{r odd}
 e %>% 
   odd()

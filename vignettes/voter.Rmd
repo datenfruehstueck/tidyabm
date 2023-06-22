@@ -1,0 +1,267 @@
+---
+title: "Holley and Liggett's Voter Model"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Holley/Liggett's Voter Model}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Read about Holley and Liggett's Voter model in the [original publication](https://doi.org/10.1214/aop/1176996306) of 1975 or on [Wikipedia](https://en.wikipedia.org/wiki/Voter_model).
+
+```{r setup}
+library(tidyabm)
+library(tibble)
+library(dplyr)
+library(tidygraph)
+library(ggraph)
+library(ggplot2)
+```
+
+Here, we create an undirected network environment with 100 agents where each agent feels connected to a (or no) party and each agent is connected to 0-6 other agents. Central model configuration parameters are combined here. Specifically, we use the results of the [2021 German Federal Election](https://en.wikipedia.org/wiki/2021_German_federal_election) but also factor in non-voters. Later, each agent will only change their mind given in a certain amount of times (i.e., with a probability of `p_change`). It will then take over randomly one of their neighbors' (i.e., directly connected agents) party preference but instead of just randomly drawing one of the neighbors' parties, the present party with most support among the neighbors (i.e., the [bandwagon](https://en.wikipedia.org/wiki/Bandwagon_effect)) is slightly over-preferred (by a factor of `boost_bandwagon`) and so is the present party with least support among neighbors (i.e., the [underdog](https://en.wikipedia.org/wiki/Opinion_poll#Effect_on_voters), `boost_underdog`). However, given the state of empirical research on these two boosts, the bandwagon effect is more likely to occur than the underdog effect.
+
+```{r configuration}
+n_agents_per_party_initial <- c('spd' = 20,
+                                'union' = 18,
+                                'greens' = 12,
+                                'fdp' = 9,
+                                'afd' = 8,
+                                'left' = 4,
+                                'others' = 6,
+                                'none' = 23)
+
+n_connections_min <- 0
+n_connections_max <- 6
+
+p_change <- .25
+boost_bandwagon <- 1.3
+boost_underdog <- 1.1
+```
+
+This time, although we need a couple of different agents, we only create one agent blueprint first to then (next step) create the other agents automatically. This blueprint already does the main work, though. It connects initially to others, it checks whether it should adjust its party preference at any tick, and, if so, it adjusts its party preference.
+
+```{r agents}
+agent_blueprint <- create_agent() %>%
+  set_characteristic(connected = FALSE) %>%
+  add_rule('initial connect',
+           connected == FALSE,
+           .consequence = function(me, abm) {
+             n_connections <- runif(1, 
+                                    min = n_connections_min,
+                                    max = n_connections_max)
+             if (n_connections > 0) {
+               for (i in 1:n_connections) {
+                 random_agent <- get_random_agent(abm, me)
+                 me <- network_connect(me, random_agent)
+               }
+             }
+             me %>%
+               set_characteristic(connected = TRUE,
+                                  .overwrite = TRUE,
+                                  .suppress_warnings = TRUE) %>%
+               return()
+           }) %>% 
+  add_variable(should_party_adjust = function(me, abm) {
+    return(all(me$connected == TRUE,
+               length(me$.outdegree) > 0,
+               runif(1) <= p_change))
+  }) %>%
+  add_rule('adjust party',
+           should_party_adjust == TRUE,
+           .consequence = function(me, abm) {
+             available_neighborhood_parties <-
+               network_get_neighbors(me, abm) %>% 
+               dplyr::count(party) %>% 
+               dplyr::arrange(dplyr::desc(n)) %>% 
+               dplyr::mutate(weight = 1.0)
+             n_parties <- nrow(available_neighborhood_parties)
+             if (n_parties > 1) {
+               available_neighborhood_parties[[1, 'weight']] <- 
+                 boost_bandwagon
+               available_neighborhood_parties[[n_parties, 'weight']] <-
+                 boost_underdog
+             }
+             new_party <- sample(available_neighborhood_parties$party,
+                                 size = 1,
+                                 prob = available_neighborhood_parties$weight)
+             me %>% 
+               set_characteristic(party = new_party,
+                                  .overwrite = TRUE,
+                                  .suppress_warnings = TRUE) %>% 
+               return()
+           })
+```
+
+Here's the actual model (i.e., the environment):
+
+```{r environment}
+e <- create_network_environment(seed = 1835456,
+                                is_directed = FALSE)
+
+for (party_name in names(n_agents_per_party_initial)) {
+  e <- e %>% 
+    add_agents(agent_blueprint %>% 
+                 set_characteristic(party = party_name),
+               n = n_agents_per_party_initial[[party_name]])
+}
+
+e <- e %>% 
+  init()
+```
+
+Just to make sure everything worked, we can check the agents and see if their distribution matches our initial distribution.
+
+```{r double_check_environment}
+e %>% 
+  convert_agents_to_tibble() %>% 
+  count(party) %>% 
+  arrange(desc(n))
+```
+
+Looking good, so we are ready to rumble. Let's first do one iteration so that connections are established. After that, we can try and visualize this kind-of manually to also control coloring.
+
+```{r connection_setup, out.width = '100%'}
+e <- e %>% 
+  tick()
+
+e %>% 
+  convert_network_to_tidygraph() %>%
+  ggraph(layout = 'kk') +
+  geom_edge_link(show.legend = FALSE) +
+  geom_node_point(aes(color = party),
+                  size = 9) +
+  geom_node_text(aes(label = name),
+                 color = '#FFFFFF',
+                 size = 3) +
+  scale_color_manual(values = c('spd' = '#E3000F',
+                                'union' = '#000000',
+                                'greens' = '#1AA037',
+                                'fdp' = '#FFEF00',
+                                'afd' = '#0489DB',
+                                'left' = '#E3000F',
+                                'others' = 'darkgrey',
+                                'none' = 'lightgrey')) +
+  theme_void() +
+  theme(legend.position = 'none')
+```
+
+Now we can iterate. Since we do not have a stop criterion defined, we iterate over some ticks and look at the result. The result here can be our visualization but of course it can also be the distribution of votes in our environment. Let's go 5 ticks for a start.
+
+```{r iteration_1, out.width = '100%'}
+e <- e %>% 
+  iterate(max_iterations = 5)
+
+e %>% 
+  convert_agents_to_tibble() %>% 
+  count(party) %>% 
+  arrange(desc(party))
+
+e %>% 
+  convert_network_to_tidygraph() %>%
+  ggraph(layout = 'kk') +
+  geom_edge_link(show.legend = FALSE) +
+  geom_node_point(aes(color = party),
+                  size = 9) +
+  geom_node_text(aes(label = name),
+                 color = '#FFFFFF',
+                 size = 3) +
+  scale_color_manual(values = c('spd' = '#E3000F',
+                                'union' = '#000000',
+                                'greens' = '#1AA037',
+                                'fdp' = '#FFEF00',
+                                'afd' = '#0489DB',
+                                'left' = '#E3000F',
+                                'others' = 'darkgrey',
+                                'none' = 'lightgrey')) +
+  theme_void() +
+  theme(legend.position = 'none')
+```
+
+Something has certainly changed. It could be hard to digest, though. So for the next five ticks, we also print the change/delta to the initial/seminal starting values.
+
+```{r iteration_2, out.width = '100%'}
+e <- e %>% 
+  iterate(max_iterations = 5)
+
+e %>% 
+  convert_agents_to_tibble() %>% 
+  count(party) %>% 
+  arrange(desc(party)) %>% 
+  left_join(tibble(party = names(n_agents_per_party_initial),
+                   initial_vote = n_agents_per_party_initial),
+            by = 'party') %>% 
+  mutate(delta = n - initial_vote)
+
+e %>% 
+  convert_network_to_tidygraph() %>%
+  ggraph(layout = 'kk') +
+  geom_edge_link(show.legend = FALSE) +
+  geom_node_point(aes(color = party),
+                  size = 9) +
+  geom_node_text(aes(label = name),
+                 color = '#FFFFFF',
+                 size = 3) +
+  scale_color_manual(values = c('spd' = '#E3000F',
+                                'union' = '#000000',
+                                'greens' = '#1AA037',
+                                'fdp' = '#FFEF00',
+                                'afd' = '#0489DB',
+                                'left' = '#E3000F',
+                                'others' = 'darkgrey',
+                                'none' = 'lightgrey')) +
+  theme_void() +
+  theme(legend.position = 'none')
+```
+
+That's much better. It looks as if the largest groups (parties/non-voters) seemingly lose their voters while others gain (some even significantly). Let's do a couple more rounds.
+
+
+Something has certainly changed. It could be hard to digest, though. So for the next five ticks, we also print the change/delta to the initial/seminal starting values.
+
+```{r iteration_3, out.width = '100%'}
+e <- e %>% 
+  iterate(max_iterations = 30)
+
+e %>% 
+  convert_agents_to_tibble() %>% 
+  count(party) %>% 
+  arrange(desc(party)) %>% 
+  left_join(tibble(party = names(n_agents_per_party_initial),
+                   initial_vote = n_agents_per_party_initial),
+            by = 'party') %>% 
+  mutate(delta = n - initial_vote)
+
+e %>% 
+  convert_network_to_tidygraph() %>%
+  ggraph(layout = 'kk') +
+  geom_edge_link(show.legend = FALSE) +
+  geom_node_point(aes(color = party),
+                  size = 9) +
+  geom_node_text(aes(label = name),
+                 color = '#FFFFFF',
+                 size = 3) +
+  scale_color_manual(values = c('spd' = '#E3000F',
+                                'union' = '#000000',
+                                'greens' = '#1AA037',
+                                'fdp' = '#FFEF00',
+                                'afd' = '#0489DB',
+                                'left' = '#E3000F',
+                                'others' = 'darkgrey',
+                                'none' = 'lightgrey')) +
+  theme_void() +
+  theme(legend.position = 'none')
+```
+
+Now that's a stunner. But I'll leave the interpretation to you. Of course, as always, we can compile relevant data for any publication we're preparing through the [ODD protocol](https://doi.org/10.18564/jasss.4259):
+
+```{r odd}
+e %>% 
+  odd()
+```

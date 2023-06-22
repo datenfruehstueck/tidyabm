@@ -31,7 +31,9 @@ Other utilities:
 \code{\link{grid_get_free_spots}()},
 \code{\link{grid_get_neighbors}()},
 \code{\link{network_connect}()},
+\code{\link{network_get_neighbors}()},
 \code{\link{network_spread}()},
+\code{\link{remove_agent}()},
 \code{\link{stop_abm}()}
 }
 \concept{utilities}

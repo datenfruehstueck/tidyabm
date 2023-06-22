@@ -172,7 +172,7 @@ network_connect <- function(source_agent,
   if (!is_tidyabm_agent(source_agent) | !is_tidyabm_agent(target_agent)) {
     return(NULL)
   }
-  new_outdegree <- c(source_agent$.outdegree,
+  new_outdegree <- c(unlist(source_agent$.outdegree),
                      target_agent$.id)
   new_outdegree <- new_outdegree[!sapply(new_outdegree, is.null)]
   new_outdegree <- unique(as.character(stats::na.omit(new_outdegree)))
@@ -245,6 +245,37 @@ network_spread <- function(source_agent,
   return(source_agent)
 }
 
+#' Get a [tibble] of direct neighbors
+#'
+#' @param agent the agent for whom the neighbors should be collected (`me`)
+#' @param abm the whole environment model
+#' @param only_use_outdegree if true (default in directed models) then
+#'   neighbors are only considered neighbors if `agent` points at them, not
+#'   vice versa (in undirected models, this parameter is ignored)
+#'
+#' @return a [tibble] of neighboring agents in no particular order with their
+#'   characteristics and variables set
+#' @family utilities
+#' @export
+network_get_neighbors <- function(agent,
+                                  abm,
+                                  only_use_outdegree = is_directed(abm)) {
+  if (!is_tidyabm_agent(agent) |
+      !is_tidyabm_env(abm)) {
+    return(NULL)
+  }
+
+  neighbor_ids <- unlist(agent$.outdegree)
+  if (is_directed(abm) & !only_use_outdegree) {
+    neighbor_ids <- c(neighbor_ids,
+                      unlist(agent$.indegree))
+  }
+
+  abm %>%
+    convert_agents_to_tibble() %>%
+    dplyr::filter(.data$.id %in% neighbor_ids) %>%
+    return()
+}
 
 
 # Internal functions ----

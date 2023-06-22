@@ -62,6 +62,8 @@ Other utilities:
 \code{\link{grid_get_neighbors}()},
 \code{\link{grid_move}()},
 \code{\link{network_connect}()},
+\code{\link{network_get_neighbors}()},
+\code{\link{remove_agent}()},
 \code{\link{stop_abm}()}
 }
 \concept{utilities}

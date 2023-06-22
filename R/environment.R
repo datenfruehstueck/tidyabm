@@ -71,17 +71,28 @@ add_agents.tidyabm_env <- function(.tidyabm,
     cp <- append(cp,
                  list(agent_variables = c()))
   }
-  attr(.tidyabm, 'class_params') <- cp
+
+  # also add an indicator for the last agent .id to never have duplicate ids
+  # even after removing/adding agents
+  if (!('last_agent_id' %in% names(cp))) {
+    cp <- append(cp,
+                 list(last_agent_id = 0))
+  }
 
   # add agents
   agents <- attr(.tidyabm, 'agents')
   agents_new <- purrr::map(as.list(seq(length(agents) + 1,
                                        length(agents) + n)),
                            \(i) {
+                             cp[['last_agent_id']] <<- cp[['last_agent_id']] + 1
                              agent %>%
-                               set_characteristic(.id = paste0('A', i))
+                               set_characteristic(.id = paste0(
+                                 'A',
+                                 cp[['last_agent_id']]
+                               ))
                            })
   attr(.tidyabm, 'agents') <- append(agents, agents_new)
+  attr(.tidyabm, 'class_params') <- cp
   return(.tidyabm)
 }
 
@@ -675,20 +686,117 @@ odd <- function(.tidyabm, ...) {
 odd.tidyabm_env <- function(.tidyabm, ...) {
   stopifnot(is_tidyabm_env(.tidyabm))
 
-  tibble::tibble(`ODD category` = c('Purpose and patterns',
-                                    'Entities, state variables, and scales',
-                                    'Process overview and scheduling',
+  abm_type <- substring(class(.tidyabm)[[1]], nchar('tidyabm_env_') + 1)
+  agents <- attr(.tidyabm, 'agents')
+  cp <- attr(.tidyabm, 'class_params')
+  abm_specific_info <- ifelse('footer_details' %in% names(cp),
+                              ifelse(cp[['footer_details']] == '',
+                                     '',
+                                     paste0(cp[['footer_details']], '; ')),
+                              '')
+
+
+
+  tibble::tibble(`ODD category` = c('Overview',
+                                    'Overview',
+                                    'Overview',
                                     'Design concepts',
-                                    'Initialization',
-                                    'Input data',
-                                    'Submodels'),
-                 `tidyABM information` = c('# todo',
-                                           '# todo',
-                                           '# todo',
-                                           '# todo',
-                                           '# todo',
-                                           '# todo',
-                                           '# todo'))
+                                    'Details',
+                                    'Details',
+                                    'Details'),
+                 `Element` = c('Purpose and patterns',
+                               'Entities, state variables, and scales',
+                               'Process overview and scheduling',
+                               'Design concepts',
+                               'Initialization',
+                               'Input data',
+                               'Submodels'),
+                 `Content` = c(paste0('Briefly and in humanly readable ',
+                                      'language, describe the purpose of the ',
+                                      'model and the patterns that serve as ',
+                                      'model evaluation criteria.'),
+                               paste0('List the different types of entities ',
+                                      'represented in the model, such as ',
+                                      'spatial units, agents, and the overall ',
+                                      'environment. For each entity type, the ',
+                                      'state variables that characterize it ',
+                                      'are defined. These are variables that ',
+                                      'may vary among entities of the same ',
+                                      'type or vary over time. The temporal ',
+                                      'and spatial resolution and extent of ',
+                                      'the model are also specified here.'),
+                               paste0('Provide an overview (!) of the ',
+                                      'processes in the model: Which entities ',
+                                      'do what, at what time and in what order',
+                                      ', and when are state variables updated?'),
+                               paste0('This is the lengthy part where you ',
+                                      'describe for 11 concepts important for ',
+                                      'the design of this ABM whether and how ',
+                                      'they were considered. These 11 are: \n',
+                                      '- Basic principles: relation to ',
+                                         'literature\n',
+                                      '- Emergence: which rules/mechanisms ',
+                                         'determine which model results\n',
+                                      '- Adaptation: based on what do agents ',
+                                         'take decisions\n',
+                                      '- Objectives: what main purpose/goal do ',
+                                         'agents follow\n',
+                                      '- Learning: does agent behavior change ',
+                                         'over time\n',
+                                      '- Prediction: do agents try to foresee ',
+                                         'future events and adapt to that\n',
+                                      '- Sensing: what information do agents ',
+                                         'have and how do they acquire it\n',
+                                      '- Interaction: are, and if so: how, ',
+                                         'agents interacting with each other\n',
+                                      '- Stochasticity: are any (which? why?) ',
+                                         'stochastic distributions involved\n',
+                                      '- Collectives: can agents group up and ',
+                                         'if so, how/what for\n',
+                                      '- Observation: how is overall ',
+                                         'information collected/reported'),
+                               paste0('Specifically describe how many agents ',
+                                      'were initialized and when/with what ',
+                                      'information'),
+                               paste0('Report all external information used ',
+                                      'for the setup of the model including ',
+                                      'sources (e.g., election results, ',
+                                      'study findings, survey reports ...)'),
+                               paste0('Repeat the whole ODD process for every ',
+                                      'submodel you created; also list the ',
+                                      'submodels and provide an overview of ',
+                                      'the interventions/variations you ',
+                                      'tested')),
+                 `tidyABM information` = c(NA_character_,
+                                           paste0(
+                                             'ABM ', abm_type, ' environment; ',
+                                             abm_specific_info,
+                                             length(agents), ' agents; ',
+                                             'environment state info(s): ',
+                                             paste(c(names(cp[['characteristics']]),
+                                                     names(cp[['variables']])),
+                                                   collapse = ', '), '; ',
+                                             'agent state info(s): ',
+                                             paste(c(cp[['agent_characteristics']],
+                                                     cp[['agent_variables']]),
+                                                   collapse = ', ')
+                                           ),
+                                           paste0(
+                                             'rules',
+                                             '# todo'
+                                           ),
+                                           paste0(
+                                             'development if available (i.e., .tidyabm tibble if already ran)',
+                                             '# todo'
+                                           ),
+                                           paste0('See the list of agents via ',
+                                                  'convert_agents_to_tibble()'),
+                                           NA_character_,
+                                           NA_character_))
+
+  # todo: document()
+  # todo: raise version
+  # todo: create web page
 }
 
 #' Check if a provided object is of type `tidyabm_env`
@@ -829,6 +937,35 @@ stop_abm <- function(me, abm) {
   abm %>%
     end() %>%
     return()
+}
+
+#' Remove an agent from an environment
+#'
+#' @description
+#'   The agent can either be specified as a `tidyabm_agent` object or as an
+#'   agent ID (i.e., a character string).
+#'
+#' @param abm a `tidyabm_env` object
+#' @param agent either a `tidyabm_agent` object or a character string that
+#'   specifies the agent ID (e.g., 'A2')
+#'
+#' @return a `tidyabm_env` object
+#' @family utilities
+#' @export
+remove_agent <- function(abm, agent) {
+  if (!is_tidyabm_env(abm)) {
+    return(NULL)
+  }
+  if (is_tidyabm_agent(agent)) {
+    agent <- agent$.id
+  }
+  if (!is.character(agent)) {
+    return(NULL)
+  }
+
+  attr(abm, 'agents') <- purrr::discard(attr(abm, 'agents'),
+                                        \(x) x$.id == agent)
+  return(abm)
 }
 
 # Formatting ----

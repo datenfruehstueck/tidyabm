@@ -326,6 +326,46 @@ test_that('utils: spread', {
                c(F, F, F, F, F, T, T, F, F, F, T, T))
 })
 
+test_that('utils: get_neighbors', {
+  e <- create_network_environment(seed = 13836,
+                                  is_directed = FALSE) %>%
+    add_agents(create_agent() %>%
+                 add_rule('connect',
+                          .consequence = \(me, abm) {
+                            for (i in 1:5) {
+                              random_agent <- get_random_agent(abm, me)
+                              me <- network_connect(me, random_agent)
+                            }
+                            return(me)
+                          }),
+               n = 10) %>%
+    init() %>%
+    tick(verbose = FALSE)
+
+  expect_equal(nrow(network_get_neighbors(attr(e, 'agents')[[1]], e)),
+               3)
+  expect_equal(nrow(network_get_neighbors(attr(e, 'agents')[[2]], e)),
+               3)
+  expect_equal(nrow(network_get_neighbors(attr(e, 'agents')[[3]], e)),
+               3)
+  expect_equal(nrow(network_get_neighbors(attr(e, 'agents')[[4]], e)),
+               4)
+  expect_equal(nrow(network_get_neighbors(attr(e, 'agents')[[5]], e)),
+               3)
+  expect_equal(nrow(network_get_neighbors(attr(e, 'agents')[[6]], e)),
+               5)
+  expect_equal(nrow(network_get_neighbors(attr(e, 'agents')[[7]], e)),
+               4)
+  expect_equal(nrow(network_get_neighbors(attr(e, 'agents')[[8]], e)),
+               5)
+  expect_equal(nrow(network_get_neighbors(attr(e, 'agents')[[9]], e)),
+               4)
+  expect_equal(nrow(network_get_neighbors(attr(e, 'agents')[[10]], e)),
+               3)
+
+
+})
+
 test_that('tidygraph', {
   a <- create_agent() %>%
     add_rule('connect to a random other agent',
