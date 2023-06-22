@@ -40,6 +40,7 @@ reference:
 - title: Particular Helper Utilities
 - subtitle: Generally all Environments
   contents:
+  - is_tidyabm
   - get_characteristic
   - get_variable
   - get_random_agent

@@ -12,3 +12,4 @@ is_tidyabm_env_grid(x)
 \description{
 Check if a provided object is of type \code{tidyabm_env_grid}
 }
+\keyword{internal}

@@ -26,3 +26,4 @@ a \code{tidyabm} object
 \description{
 Update an actual value from a characteristic or a variable
 }
+\keyword{internal}

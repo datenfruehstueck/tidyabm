@@ -15,3 +15,4 @@ a \code{tidyabm_env} object
 \description{
 End the simulation
 }
+\keyword{internal}

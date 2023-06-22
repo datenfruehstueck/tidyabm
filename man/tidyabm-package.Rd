@@ -12,6 +12,7 @@ tidyABM is designed to streamline the process of setting up, running, and docume
 Useful links:
 \itemize{
   \item \url{https://github.com/datenfruehstueck/tidyabm}
+  \item \url{https://datenfruehstueck.github.io/tidyabm/}
   \item Report bugs at \url{https://github.com/datenfruehstueck/tidyabm/issues}
 }
 

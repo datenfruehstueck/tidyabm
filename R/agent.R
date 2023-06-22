@@ -60,6 +60,7 @@ tbl_format_footer.tidyabm_agent <- function(x, ...) {
 # Internal functions ----
 
 #' @rdname update_values
+#' @keywords internal
 update_values.tidyabm_agent <- function(.tidyabm,
                                         values,
                                         is_characteristic = FALSE) {

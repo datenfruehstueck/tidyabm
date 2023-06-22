@@ -12,3 +12,4 @@ is_tidyabm_env_network(x)
 \description{
 Check if a provided object is of type \code{tidyabm_env_network}
 }
+\keyword{internal}

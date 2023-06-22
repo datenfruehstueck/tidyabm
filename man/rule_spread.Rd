@@ -17,3 +17,4 @@ the updated \code{tidyabm_env_network} object
 \description{
 Distribute information as requested by \code{network_spread}
 }
+\keyword{internal}

@@ -17,3 +17,4 @@ R's \link{round} function rounds .5 to the next even digit as specified in
 \verb{IEEE 754}. However, this is not expected here but instead .5 should always
 be rounded up. See also http://andrewlandgraf.com/2012/06/15/rounding-in-r/
 }
+\keyword{internal}

@@ -283,6 +283,7 @@ network_get_neighbors <- function(agent,
 #' Check if a provided object is of type `tidyabm_env_network`
 #'
 #' @param x object to check
+#' @keywords internal
 is_tidyabm_env_network <- function(x) {
   inherits(x, 'tidyabm_env_network')
 }
@@ -301,6 +302,7 @@ is_directed <- function(x) {
 #' @param abm unused
 #'
 #' @return the updated `tidyabm_env_network` object
+#' @keywords internal
 rule_mirror_links <- function(me, abm) {
   if (!is_tidyabm_env_network(me)) {
     return(NULL)
@@ -355,6 +357,7 @@ rule_mirror_links <- function(me, abm) {
 #' @param abm unused
 #'
 #' @return the updated `tidyabm_env_network` object
+#' @keywords internal
 rule_spread <- function(me, abm) {
   if (!is_tidyabm_env_network(me)) {
     return(NULL)

@@ -17,3 +17,4 @@ the updated \code{tidyabm_env_network} object
 \description{
 Fill up .indegree reflected on those newly set .outdegree links
 }
+\keyword{internal}

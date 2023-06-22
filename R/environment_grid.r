@@ -372,6 +372,7 @@ grid_move <- function(agent,
 #' Check if a provided object is of type `tidyabm_env_grid`
 #'
 #' @param x object to check
+#' @keywords internal
 is_tidyabm_env_grid <- function(x) {
   inherits(x, 'tidyabm_env_grid')
 }
@@ -385,6 +386,7 @@ is_tidyabm_env_grid <- function(x) {
 #' @return a named length-8 vector with either -1 (field does not exist), 0
 #'   (field is empty) or the index (!) of the corresponding agent (to address
 #'   them directly via `attr(.tidyabm, 'agents')[[index]]`)
+#' @keywords internal
 matrix_get_neighbors <- function(.tidyabm, x, y) {
   cp <- attr(.tidyabm, 'class_params')
   m <- convert_agents_to_padded_matrix(.tidyabm)

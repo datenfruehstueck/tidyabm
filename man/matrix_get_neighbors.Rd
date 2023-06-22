@@ -21,3 +21,4 @@ them directly via \code{attr(.tidyabm, 'agents')[[index]]})
 \description{
 Get neighbors for a given position (but inside the matrix)
 }
+\keyword{internal}

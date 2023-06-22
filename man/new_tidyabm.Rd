@@ -37,3 +37,4 @@ Output constructor for \code{tidyabm_env} objects
 
 General \code{tidyabm} output constructor
 }
+\keyword{internal}

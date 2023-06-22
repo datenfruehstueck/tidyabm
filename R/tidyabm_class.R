@@ -373,6 +373,7 @@ is_tidyabm <- function(x) {
 #'
 #' @return a `tidyabm` object with optional subclass of `particular_sub_class`
 #'   and subclass of `tidyabm_*suffix*`
+#' @keywords internal
 new_tidyabm <- function(data,
                         class_suffix = '',
                         particular_sub_class = NULL,
@@ -407,6 +408,7 @@ new_tidyabm <- function(data,
 #'   belong to variables rather than characteristics
 #'
 #' @return a `tidyabm` object
+#' @keywords internal
 update_values <- function(.tidyabm,
                           values,
                           is_characteristic = FALSE) {

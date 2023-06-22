@@ -4,6 +4,7 @@
 #' @param new_data a [tibble]
 #'
 #' @return a `tidyabm` object, just like `prior_object`
+#' @keywords internal
 retain_new_data_in_prior_object <- function(prior_object,
                                             new_data) {
   out <- structure(new_data)
@@ -24,6 +25,7 @@ retain_new_data_in_prior_object <- function(prior_object,
 #' @param n the number to round
 #'
 #' @return an integer
+#' @keywords internal
 round_half_up <- function(n) {
   posneg = sign(n)
   z = trunc(abs(n) + 0.5)

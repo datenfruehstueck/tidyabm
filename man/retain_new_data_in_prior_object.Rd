@@ -17,3 +17,4 @@ a \code{tidyabm} object, just like \code{prior_object}
 \description{
 Only update data in an already existent \code{tidyabm} object
 }
+\keyword{internal}

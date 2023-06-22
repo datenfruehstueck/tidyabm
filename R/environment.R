@@ -1038,6 +1038,7 @@ tbl_format_footer.tidyabm_env <- function(x, ...) {
 #'
 #' @param particular_suffix string to append to main class `tidyabm_env_`
 #' @rdname new_tidyabm
+#' @keywords internal
 new_tidyabm_env <- function(data,
                             particular_suffix,
                             class_params = list()) {
@@ -1075,6 +1076,7 @@ is_tickable <- function(.tidyabm) {
 #' @param .tidyabm a `tidyabm_env` object
 #'
 #' @return a `tidyabm_env` object
+#' @keywords internal
 end <- function(.tidyabm) {
   stopifnot(is_tidyabm_env(.tidyabm))
   rt <- attr(.tidyabm, 'runtime')
@@ -1095,6 +1097,7 @@ is_ended <- function(.tidyabm) {
 }
 
 #' @rdname update_values
+#' @keywords internal
 update_values.tidyabm_env <- function(.tidyabm,
                                       values,
                                       is_characteristic = FALSE) {
