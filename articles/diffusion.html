@@ -160,11 +160,11 @@ iterations for now:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">e</span> <span class="op">&lt;-</span> <span class="va">e</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="../reference/iterate.html">iterate</a></span><span class="op">(</span>max_iterations <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "Tick 1 finished in 7.757 secs:"</span></span>
+<span><span class="co">#&gt; [1] "Tick 1 finished in 10.323 secs:"</span></span>
 <span><span class="co">#&gt; [1] "  share_informed: 0.1"</span></span>
-<span><span class="co">#&gt; [1] "Tick 2 finished in 5.693 secs:"</span></span>
+<span><span class="co">#&gt; [1] "Tick 2 finished in 7.495 secs:"</span></span>
 <span><span class="co">#&gt; [1] "  share_informed: 0.74"</span></span>
-<span><span class="co">#&gt; [1] "Tick 3 finished in 7.454 secs:"</span></span>
+<span><span class="co">#&gt; [1] "Tick 3 finished in 9.644 secs:"</span></span>
 <span><span class="co">#&gt; [1] "  share_informed: 1"</span></span></code></pre></div>
 <p>It seemed to have stalled. Most likely, that’s because of the initial
 setup of the connections. Let’s take a look at it visually.</p>
@@ -178,11 +178,11 @@ it output all the agents.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">e</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 5</span></span></span>
-<span><span class="co">#&gt;   .tick share_informed .runtime      .n_agents_after_tick .finished_after_tick</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">*</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;drtn&gt;</span>                       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>               </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>     1           0.1  7.757487 secs                  100 FALSE               </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>     2           0.74 5.693285 secs                  100 FALSE               </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>     3           1    7.454075 secs                  100 TRUE                </span></span>
+<span><span class="co">#&gt;   .tick share_informed .runtime       .n_agents_after_tick .finished_after_tick</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">*</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;drtn&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>               </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>     1           0.1  10.322693 secs                  100 FALSE               </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>     2           0.74  7.495472 secs                  100 FALSE               </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>     3           1     9.643734 secs                  100 TRUE                </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ABM network environment</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">* directed, 100 agents</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">* 0 environment characteristic(s), </span></span></span>

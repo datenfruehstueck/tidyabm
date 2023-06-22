@@ -50,8 +50,14 @@
     </div>
 
     <div class="section level2">
-      <h2 id="all-functions">All functions<a class="anchor" aria-label="anchor" href="#all-functions"></a></h2>
+      <h2 id="general-setup">General Setup<a class="anchor" aria-label="anchor" href="#general-setup"></a></h2>
       
+      
+
+      
+    </div><div class="section level2">
+      
+      <h3 id="agents">Agents<a class="anchor" aria-label="anchor" href="#agents"></a></h3>
       
 
       
@@ -62,14 +68,19 @@
 
       <dl><dt>
           
-          <code><a href="add_agents.html">add_agents()</a></code> 
+          <code><a href="create_agent.html">create_agent()</a></code> 
         </dt>
-        <dd>Add agents to the environment</dd>
+        <dd>Create an agent</dd>
       </dl><dl><dt>
           
-          <code><a href="add_rule.html">add_rule()</a></code> 
+          <code><a href="is_tidyabm_agent.html">is_tidyabm_agent()</a></code> 
         </dt>
-        <dd>Add a rule (i.e., an action that is performed under certain conditions)</dd>
+        <dd>Check if a provided object is of type <code>tidyabm_agent</code></dd>
+      </dl><dl><dt>
+          
+          <code><a href="set_characteristic.html">set_characteristic()</a></code> 
+        </dt>
+        <dd>Set an initial characteristic</dd>
       </dl><dl><dt>
           
           <code><a href="add_variable.html">add_variable()</a></code> 
@@ -77,20 +88,21 @@
         <dd>Add a flexible variable</dd>
       </dl><dl><dt>
           
-          <code><a href="convert_agents_to_tibble.html">convert_agents_to_tibble()</a></code> 
+          <code><a href="add_rule.html">add_rule()</a></code> 
         </dt>
-        <dd>Convert the list of agent <code>tidyabm_agent</code> objects to a tibble</dd>
-      </dl><dl><dt>
-          
-          <code><a href="convert_network_to_tidygraph.html">convert_network_to_tidygraph()</a></code> 
-        </dt>
-        <dd>Convert current environment to tidygraph object</dd>
-      </dl><dl><dt>
-          
-          <code><a href="create_agent.html">create_agent()</a></code> 
-        </dt>
-        <dd>Create an agent</dd>
-      </dl><dl><dt>
+        <dd>Add a rule (i.e., an action that is performed under certain conditions)</dd>
+      </dl></div><div class="section level2">
+      
+      <h3 id="environments">Environments<a class="anchor" aria-label="anchor" href="#environments"></a></h3>
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
           
           <code><a href="create_grid_environment.html">create_grid_environment()</a></code> 
         </dt>
@@ -102,14 +114,145 @@
         <dd>Create a network environment</dd>
       </dl><dl><dt>
           
+          <code><a href="is_tidyabm_env.html">is_tidyabm_env()</a></code> 
+        </dt>
+        <dd>Check if a provided object is of type <code>tidyabm_env</code></dd>
+      </dl><dl><dt>
+          
+          <code><a href="set_characteristic.html">set_characteristic()</a></code> 
+        </dt>
+        <dd>Set an initial characteristic</dd>
+      </dl><dl><dt>
+          
+          <code><a href="add_variable.html">add_variable()</a></code> 
+        </dt>
+        <dd>Add a flexible variable</dd>
+      </dl><dl><dt>
+          
+          <code><a href="add_rule.html">add_rule()</a></code> 
+        </dt>
+        <dd>Add a rule (i.e., an action that is performed under certain conditions)</dd>
+      </dl><dl><dt>
+          
+          <code><a href="remove_rule.html">remove_rule()</a></code> 
+        </dt>
+        <dd>Remove a certain rule</dd>
+      </dl><dl><dt>
+          
+          <code><a href="add_agents.html">add_agents()</a></code> 
+        </dt>
+        <dd>Add agents to the environment</dd>
+      </dl><dl><dt>
+          
           <code><a href="distribute_characteristic_across_agents.html">distribute_characteristic_across_agents()</a></code> 
         </dt>
         <dd>Distribute a given characteristic across a range of agents</dd>
+      </dl></div><div class="section level2">
+      <h2 id="simulation">Simulation<a class="anchor" aria-label="anchor" href="#simulation"></a></h2>
+      
+      
+
+      
+    </div><div class="section level2">
+      
+      <h3 id="preparation">Preparation<a class="anchor" aria-label="anchor" href="#preparation"></a></h3>
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="init.html">init()</a></code> 
+        </dt>
+        <dd>Initialize the environment and prepare everything for take-off</dd>
       </dl><dl><dt>
           
-          <code><a href="end.html">end()</a></code> 
+          <code><a href="reset.html">reset()</a></code> 
         </dt>
-        <dd>End the simulation</dd>
+        <dd>Reset an already initiated environment</dd>
+      </dl></div><div class="section level2">
+      
+      <h3 id="running">Running<a class="anchor" aria-label="anchor" href="#running"></a></h3>
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="tick.html">tick()</a></code> 
+        </dt>
+        <dd>Perform one single iteration</dd>
+      </dl><dl><dt>
+          
+          <code><a href="iterate.html">iterate()</a></code> 
+        </dt>
+        <dd>Take off and iterate</dd>
+      </dl><dl><dt>
+          
+          <code><a href="is_ended.html">is_ended()</a></code> 
+        </dt>
+        <dd>Check if a given environment has ended</dd>
+      </dl><dl><dt>
+          
+          <code><a href="is_tickable.html">is_tickable()</a></code> 
+        </dt>
+        <dd>Check if a given environment is ready to tick/iterate</dd>
+      </dl></div><div class="section level2">
+      
+      <h3 id="reporting">Reporting<a class="anchor" aria-label="anchor" href="#reporting"></a></h3>
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="convert_agents_to_tibble.html">convert_agents_to_tibble()</a></code> 
+        </dt>
+        <dd>Convert the list of agent <code>tidyabm_agent</code> objects to a tibble</dd>
+      </dl><dl><dt>
+          
+          <code><a href="visualize.html">visualize()</a></code> 
+        </dt>
+        <dd>Visualize an environment's current state</dd>
+      </dl><dl><dt>
+          
+          <code><a href="odd.html">odd()</a></code> 
+        </dt>
+        <dd>Extract compact information for an ODD protocol</dd>
+      </dl></div><div class="section level2">
+      <h2 id="particular-helper-utilities">Particular Helper Utilities<a class="anchor" aria-label="anchor" href="#particular-helper-utilities"></a></h2>
+      
+      
+
+      
+    </div><div class="section level2">
+      
+      <h3 id="generally-all-environments">Generally all Environments<a class="anchor" aria-label="anchor" href="#generally-all-environments"></a></h3>
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="is_tidyabm.html">is_tidyabm()</a></code> 
+        </dt>
+        <dd>Check if a provided object is of type <code>tidyabm</code></dd>
       </dl><dl><dt>
           
           <code><a href="get_characteristic.html">get_characteristic()</a></code> 
@@ -117,15 +260,36 @@
         <dd>Get an environment's characteristic value</dd>
       </dl><dl><dt>
           
+          <code><a href="get_variable.html">get_variable()</a></code> 
+        </dt>
+        <dd>Get an environment's variable value</dd>
+      </dl><dl><dt>
+          
           <code><a href="get_random_agent.html">get_random_agent()</a></code> 
         </dt>
         <dd>Get a random agent from all agents in the environment</dd>
       </dl><dl><dt>
           
-          <code><a href="get_variable.html">get_variable()</a></code> 
+          <code><a href="remove_agent.html">remove_agent()</a></code> 
         </dt>
-        <dd>Get an environment's variable value</dd>
+        <dd>Remove an agent from an environment</dd>
       </dl><dl><dt>
+          
+          <code><a href="stop_abm.html">stop_abm()</a></code> 
+        </dt>
+        <dd>Claim a simulation to end</dd>
+      </dl></div><div class="section level2">
+      
+      <h3 id="grid-environments">Grid Environments<a class="anchor" aria-label="anchor" href="#grid-environments"></a></h3>
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
           
           <code><a href="grid_get_free_neighboring_spots.html">grid_get_free_neighboring_spots()</a></code> 
         </dt>
@@ -145,61 +309,27 @@
           <code><a href="grid_move.html">grid_move()</a></code> 
         </dt>
         <dd>Move an agent to the proposed new x/y position (if it is empty)</dd>
-      </dl><dl><dt>
-          
-          <code><a href="init.html">init()</a></code> 
-        </dt>
-        <dd>Initialize the environment and prepare everything for take-off</dd>
-      </dl><dl><dt>
+      </dl></div><div class="section level2">
+      
+      <h3 id="network-environments">Network Environments<a class="anchor" aria-label="anchor" href="#network-environments"></a></h3>
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
           
           <code><a href="is_directed.html">is_directed()</a></code> 
         </dt>
         <dd>Check if given <code>tidyabm_env_network</code> is directed</dd>
       </dl><dl><dt>
           
-          <code><a href="is_ended.html">is_ended()</a></code> 
+          <code><a href="convert_network_to_tidygraph.html">convert_network_to_tidygraph()</a></code> 
         </dt>
-        <dd>Check if a given environment has ended</dd>
-      </dl><dl><dt>
-          
-          <code><a href="is_tickable.html">is_tickable()</a></code> 
-        </dt>
-        <dd>Check if a given environment is ready to tick/iterate</dd>
-      </dl><dl><dt>
-          
-          <code><a href="is_tidyabm.html">is_tidyabm()</a></code> 
-        </dt>
-        <dd>Check if a provided object is of type <code>tidyabm</code></dd>
-      </dl><dl><dt>
-          
-          <code><a href="is_tidyabm_agent.html">is_tidyabm_agent()</a></code> 
-        </dt>
-        <dd>Check if a provided object is of type <code>tidyabm_agent</code></dd>
-      </dl><dl><dt>
-          
-          <code><a href="is_tidyabm_env.html">is_tidyabm_env()</a></code> 
-        </dt>
-        <dd>Check if a provided object is of type <code>tidyabm_env</code></dd>
-      </dl><dl><dt>
-          
-          <code><a href="is_tidyabm_env_grid.html">is_tidyabm_env_grid()</a></code> 
-        </dt>
-        <dd>Check if a provided object is of type <code>tidyabm_env_grid</code></dd>
-      </dl><dl><dt>
-          
-          <code><a href="is_tidyabm_env_network.html">is_tidyabm_env_network()</a></code> 
-        </dt>
-        <dd>Check if a provided object is of type <code>tidyabm_env_network</code></dd>
-      </dl><dl><dt>
-          
-          <code><a href="iterate.html">iterate()</a></code> 
-        </dt>
-        <dd>Take off and iterate</dd>
-      </dl><dl><dt>
-          
-          <code><a href="matrix_get_neighbors.html">matrix_get_neighbors()</a></code> 
-        </dt>
-        <dd>Get neighbors for a given position (but inside the matrix)</dd>
+        <dd>Convert current environment to tidygraph object</dd>
       </dl><dl><dt>
           
           <code><a href="network_connect.html">network_connect()</a></code> 
@@ -215,78 +345,9 @@
           <code><a href="network_spread.html">network_spread()</a></code> 
         </dt>
         <dd>Spread a characteristic between source and its links</dd>
-      </dl><dl><dt>
-          
-          <code><a href="new_tidyabm.html">new_tidyabm_env()</a></code> <code><a href="new_tidyabm.html">new_tidyabm()</a></code> 
-        </dt>
-        <dd>Output constructor for <code>tidyabm_env</code> objects</dd>
-      </dl><dl><dt>
-          
-          <code><a href="odd.html">odd()</a></code> 
-        </dt>
-        <dd>Extract compact information for an ODD protocol</dd>
-      </dl><dl><dt>
-          
-          <code><a href="remove_agent.html">remove_agent()</a></code> 
-        </dt>
-        <dd>Remove an agent from an environment</dd>
-      </dl><dl><dt>
-          
-          <code><a href="remove_rule.html">remove_rule()</a></code> 
-        </dt>
-        <dd>Remove a certain rule</dd>
-      </dl><dl><dt>
-          
-          <code><a href="reset.html">reset()</a></code> 
-        </dt>
-        <dd>Reset an already initiated environment</dd>
-      </dl><dl><dt>
-          
-          <code><a href="retain_new_data_in_prior_object.html">retain_new_data_in_prior_object()</a></code> 
-        </dt>
-        <dd>Only update data in an already existent <code>tidyabm</code> object</dd>
-      </dl><dl><dt>
-          
-          <code><a href="round_half_up.html">round_half_up()</a></code> 
-        </dt>
-        <dd>Round to integer, but round .5 up</dd>
-      </dl><dl><dt>
-          
-          <code><a href="rule_mirror_links.html">rule_mirror_links()</a></code> 
-        </dt>
-        <dd>Fill up .indegree reflected on those newly set .outdegree links</dd>
-      </dl><dl><dt>
-          
-          <code><a href="rule_spread.html">rule_spread()</a></code> 
-        </dt>
-        <dd>Distribute information as requested by <code>network_spread</code></dd>
-      </dl><dl><dt>
-          
-          <code><a href="set_characteristic.html">set_characteristic()</a></code> 
-        </dt>
-        <dd>Set an initial characteristic</dd>
-      </dl><dl><dt>
-          
-          <code><a href="stop_abm.html">stop_abm()</a></code> 
-        </dt>
-        <dd>Claim a simulation to end</dd>
-      </dl><dl><dt>
-          
-          <code><a href="tick.html">tick()</a></code> 
-        </dt>
-        <dd>Perform one single iteration</dd>
-      </dl><dl><dt>
-          
-          <code><a href="update_values.html">update_values()</a></code> 
-        </dt>
-        <dd>Update an actual value from a characteristic or a variable</dd>
-      </dl><dl><dt>
-          
-          <code><a href="visualize.html">visualize()</a></code> 
-        </dt>
-        <dd>Visualize an environment's current state</dd>
       </dl></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

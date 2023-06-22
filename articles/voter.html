@@ -230,7 +230,7 @@ visualize this kind-of manually to also control coloring.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">e</span> <span class="op">&lt;-</span> <span class="va">e</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="../reference/tick.html">tick</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "Tick 1 finished in 3.015 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 1 finished in 4.061 secs"</span></span>
 <span></span>
 <span><span class="va">e</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="../reference/convert_network_to_tidygraph.html">convert_network_to_tidygraph</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -264,11 +264,11 @@ in our environment. Let’s go 5 ticks for a start.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">e</span> <span class="op">&lt;-</span> <span class="va">e</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="../reference/iterate.html">iterate</a></span><span class="op">(</span>max_iterations <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "Tick 2 finished in 1.289 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 3 finished in 1.35 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 4 finished in 1.094 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 5 finished in 1.352 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 6 finished in 1.238 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 2 finished in 1.683 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 3 finished in 1.749 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 4 finished in 1.416 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 5 finished in 1.779 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 6 finished in 1.622 secs"</span></span>
 <span></span>
 <span><span class="va">e</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="../reference/convert_agents_to_tibble.html">convert_agents_to_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
@@ -311,11 +311,11 @@ initial/seminal starting values.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">e</span> <span class="op">&lt;-</span> <span class="va">e</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="../reference/iterate.html">iterate</a></span><span class="op">(</span>max_iterations <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "Tick 7 finished in 1.366 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 8 finished in 1.272 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 9 finished in 1.122 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 10 finished in 1.255 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 11 finished in 1.387 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 7 finished in 1.756 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 8 finished in 1.633 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 9 finished in 1.444 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 10 finished in 1.636 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 11 finished in 1.797 secs"</span></span>
 <span></span>
 <span><span class="va">e</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="../reference/convert_agents_to_tibble.html">convert_agents_to_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
@@ -365,36 +365,36 @@ initial/seminal starting values.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">e</span> <span class="op">&lt;-</span> <span class="va">e</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="../reference/iterate.html">iterate</a></span><span class="op">(</span>max_iterations <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "Tick 12 finished in 0.972 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 13 finished in 1.268 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 14 finished in 1.068 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 15 finished in 1.019 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 16 finished in 1.158 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 17 finished in 0.875 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 18 finished in 1.127 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 19 finished in 1.306 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 20 finished in 1.17 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 21 finished in 1.172 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 22 finished in 1.577 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 23 finished in 1.494 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 24 finished in 1.362 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 25 finished in 1.189 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 26 finished in 1.398 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 27 finished in 1.393 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 28 finished in 1.12 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 29 finished in 1.375 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 30 finished in 1.053 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 31 finished in 1.16 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 32 finished in 1.346 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 33 finished in 1.382 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 34 finished in 1.422 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 35 finished in 1.242 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 36 finished in 1.379 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 37 finished in 1.098 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 38 finished in 1.231 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 39 finished in 1.254 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 40 finished in 1.114 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 41 finished in 1.433 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 12 finished in 1.24 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 13 finished in 1.622 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 14 finished in 1.354 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 15 finished in 1.311 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 16 finished in 1.486 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 17 finished in 1.131 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 18 finished in 1.453 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 19 finished in 1.68 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 20 finished in 1.565 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 21 finished in 1.524 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 22 finished in 2.006 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 23 finished in 1.911 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 24 finished in 1.715 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 25 finished in 1.553 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 26 finished in 1.781 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 27 finished in 1.785 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 28 finished in 1.435 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 29 finished in 1.752 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 30 finished in 1.349 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 31 finished in 1.478 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 32 finished in 1.716 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 33 finished in 1.751 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 34 finished in 1.812 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 35 finished in 1.576 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 36 finished in 1.753 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 37 finished in 1.405 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 38 finished in 1.565 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 39 finished in 1.606 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 40 finished in 1.436 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 41 finished in 1.826 secs"</span></span>
 <span></span>
 <span><span class="va">e</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="../reference/convert_agents_to_tibble.html">convert_agents_to_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
