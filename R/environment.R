@@ -689,13 +689,28 @@ odd.tidyabm_env <- function(.tidyabm, ...) {
   abm_type <- substring(class(.tidyabm)[[1]], nchar('tidyabm_env_') + 1)
   agents <- attr(.tidyabm, 'agents')
   cp <- attr(.tidyabm, 'class_params')
+
   abm_specific_info <- ifelse('footer_details' %in% names(cp),
                               ifelse(cp[['footer_details']] == '',
                                      '',
                                      paste0(cp[['footer_details']], '; ')),
                               '')
 
-
+  agent_rules <- c()
+  purrr::map(agents, \(agent) {
+    purrr::map(names(attr(agent, 'rules')), \(rule_name) {
+      if (rule_name %in% names(agent_rules)) {
+        agent_rules[[rule_name]] <- agent_rules[[rule_name]] + 1
+      } else {
+        agent_rules[[rule_name]] <- 1
+      }
+    })
+  })
+  agent_rules_str <- paste(paste0(names(agent_rules),
+                                  ': ',
+                                  agent_rules,
+                                  ' agents'),
+                           collapse = ', ')
 
   tibble::tibble(`ODD category` = c('Overview',
                                     'Overview',
@@ -773,8 +788,10 @@ odd.tidyabm_env <- function(.tidyabm, ...) {
                                              abm_specific_info,
                                              length(agents), ' agents; ',
                                              'environment state info(s): ',
-                                             paste(c(names(cp[['characteristics']]),
-                                                     names(cp[['variables']])),
+                                             paste(c(names(attr(.tidyabm,
+                                                                'characteristics')),
+                                                     names(attr(.tidyabm,
+                                                                'variables'))),
                                                    collapse = ', '), '; ',
                                              'agent state info(s): ',
                                              paste(c(cp[['agent_characteristics']],
@@ -782,19 +799,21 @@ odd.tidyabm_env <- function(.tidyabm, ...) {
                                                    collapse = ', ')
                                            ),
                                            paste0(
-                                             'rules',
-                                             '# todo'
+                                             'environment rules: ',
+                                             paste(names(attr(.tidyabm,
+                                                              'rules')),
+                                                   collapse = ', '),
+                                             '; agent rules: ',
+                                             agent_rules_str
                                            ),
-                                           paste0(
-                                             'development if available (i.e., .tidyabm tibble if already ran)',
-                                             '# todo'
-                                           ),
+                                           ifelse(is_ended(.tidyabm),
+                                                  tibble::as_tibble(.tidyabm),
+                                                  'Model has not yet finished'),
                                            paste0('See the list of agents via ',
                                                   'convert_agents_to_tibble()'),
                                            NA_character_,
                                            NA_character_))
 
-  # todo: document()
   # todo: raise version
   # todo: create web page
 }
