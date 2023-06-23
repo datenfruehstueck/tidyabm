@@ -222,9 +222,6 @@ e %>%
 
 That's much better. It looks as if the largest groups (parties/non-voters) seemingly lose their voters while others gain (some even significantly). Let's do a couple more rounds.
 
-
-Something has certainly changed. It could be hard to digest, though. So for the next five ticks, we also print the change/delta to the initial/seminal starting values.
-
 ```{r iteration_3, out.width = '100%'}
 e <- e %>% 
   iterate(max_iterations = 30)
