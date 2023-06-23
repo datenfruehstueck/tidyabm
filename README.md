@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# tidyABM
+# tidyABM <a href="https://datenfruehstueck.github.io/tidyabm/"><img src="man/figures/logo.svg" align="right" height="139" alt="tidyabm website" /></a>
 
 <!-- badges: start -->
 
@@ -138,7 +138,7 @@ one tick).
 ``` r
 e <- e %>% 
   tick()
-#> [1] "Tick 1 finished in 0.498 secs:"
+#> [1] "Tick 1 finished in 0.426 secs:"
 #> [1] "  share_unhappy: 0.3"
 ```
 
@@ -154,23 +154,23 @@ e <- e %>%
           visualize = TRUE,
           color = agent_group,
           shape = is_unhappy)
-#> [1] "Tick 2 finished in 0.366 secs:"
+#> [1] "Tick 2 finished in 0.342 secs:"
 #> [1] "  share_unhappy: 0.25"
 ```
 
 <img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
 
-    #> [1] "Tick 3 finished in 0.285 secs:"
+    #> [1] "Tick 3 finished in 0.273 secs:"
     #> [1] "  share_unhappy: 0.05"
 
 <img src="man/figures/README-unnamed-chunk-9-2.png" width="100%" />
 
-    #> [1] "Tick 4 finished in 0.291 secs:"
+    #> [1] "Tick 4 finished in 0.272 secs:"
     #> [1] "  share_unhappy: 0.05"
 
 <img src="man/figures/README-unnamed-chunk-9-3.png" width="100%" />
 
-    #> [1] "Tick 5 finished in 0.31 secs:"
+    #> [1] "Tick 5 finished in 0.255 secs:"
     #> [1] "  share_unhappy: 0"
 
 <img src="man/figures/README-unnamed-chunk-9-4.png" width="100%" />
@@ -183,13 +183,13 @@ include some meta information as well.
 ``` r
 e
 #> # A tibble: 5 × 5
-#>   .tick .runtime       .n_agents_after_tick .finished_after_tick share_unhappy
-#> * <dbl> <drtn>                        <int> <lgl>                        <dbl>
-#> 1     1 0.4980071 secs                   20 FALSE                         0.3 
-#> 2     2 0.3659480 secs                   20 FALSE                         0.25
-#> 3     3 0.2851899 secs                   20 FALSE                         0.05
-#> 4     4 0.2908959 secs                   20 FALSE                         0.05
-#> 5     5 0.3095770 secs                   20 TRUE                          0   
+#>   .tick share_unhappy .runtime       .n_agents_after_tick .finished_after_tick
+#> * <dbl>         <dbl> <drtn>                        <int> <lgl>               
+#> 1     1          0.3  0.4255121 secs                   20 FALSE               
+#> 2     2          0.25 0.3423042 secs                   20 FALSE               
+#> 3     3          0.05 0.2730961 secs                   20 FALSE               
+#> 4     4          0.05 0.2719679 secs                   20 FALSE               
+#> 5     5          0    0.2552781 secs                   20 TRUE                
 #> # ABM grid environment
 #> * 10x10, 20 agents
 #> * 0 environment characteristic(s), 
