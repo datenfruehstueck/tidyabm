@@ -638,7 +638,7 @@ visualize <- function(.tidyabm, ...) {
 #' @description
 #'   ODD (Overview, Design concepts and Details) protocols are a suggested
 #'   standard for describing agent-based models (Grimm et al. 2006, 2010, 2020).
-#'   As Grimm et al. (2020) state, "ODD model descriptions [...] are based on
+#'   As Grimm et al. (2020) state, "ODD model descriptions (...) are based on
 #'   written text and intended to be read by humans." This function provides all
 #'   the details the environment and agent specifications contain that might be
 #'   relevant for the ODD to be written. It returns the 2020 ODD framework with
@@ -696,21 +696,36 @@ odd.tidyabm_env <- function(.tidyabm, ...) {
                                      paste0(cp[['footer_details']], '; ')),
                               '')
 
+  env_rules_str <- '-'
+  env_rules <- names(attr(.tidyabm,
+                          'rules'))
+  env_rules <- env_rules[!grepl('.', env_rules, fixed = TRUE)]
+  if (length(env_rules) > 0) {
+    env_rules_str <- paste(env_rules,
+                           collapse = ', ')
+  }
+
   agent_rules <- c()
   purrr::map(agents, \(agent) {
     purrr::map(names(attr(agent, 'rules')), \(rule_name) {
       if (rule_name %in% names(agent_rules)) {
-        agent_rules[[rule_name]] <- agent_rules[[rule_name]] + 1
+        agent_rules[[rule_name]] <<- agent_rules[[rule_name]] + 1
       } else {
-        agent_rules[[rule_name]] <- 1
+        agent_rule_temp <- c(1)
+        names(agent_rule_temp) <- c(rule_name)
+        agent_rules <<- append(agent_rules,
+                               agent_rule_temp)
       }
     })
   })
-  agent_rules_str <- paste(paste0(names(agent_rules),
-                                  ': ',
-                                  agent_rules,
-                                  ' agents'),
-                           collapse = ', ')
+  agent_rules_str <- '-'
+  if (length(agent_rules) > 0) {
+    agent_rules_str <- paste(paste0(names(agent_rules),
+                                    ': ',
+                                    agent_rules,
+                                    ' agents'),
+                             collapse = ', ')
+  }
 
   tibble::tibble(`ODD category` = c('Overview',
                                     'Overview',
@@ -799,15 +814,12 @@ odd.tidyabm_env <- function(.tidyabm, ...) {
                                                    collapse = ', ')
                                            ),
                                            paste0(
-                                             'environment rules: ',
-                                             paste(names(attr(.tidyabm,
-                                                              'rules')),
-                                                   collapse = ', '),
-                                             '; agent rules: ',
-                                             agent_rules_str
+                                             'environment rules: ', env_rules_str,
+                                             'agent rules: ', agent_rules_str
                                            ),
-                                           ifelse(is_ended(.tidyabm),
-                                                  tibble::as_tibble(.tidyabm),
+                                           ifelse(is_ended(.tidyabm), paste0(
+                                                  'see the iteration info by',
+                                                  ' just calling the environment'),
                                                   'Model has not yet finished'),
                                            paste0('See the list of agents via ',
                                                   'convert_agents_to_tibble()'),

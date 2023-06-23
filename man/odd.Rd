@@ -20,7 +20,7 @@ a \link{tibble} of length 7 (the ODD categories)
 \description{
 ODD (Overview, Design concepts and Details) protocols are a suggested
 standard for describing agent-based models (Grimm et al. 2006, 2010, 2020).
-As Grimm et al. (2020) state, "ODD model descriptions \link{...} are based on
+As Grimm et al. (2020) state, "ODD model descriptions (...) are based on
 written text and intended to be read by humans." This function provides all
 the details the environment and agent specifications contain that might be
 relevant for the ODD to be written. It returns the 2020 ODD framework with
