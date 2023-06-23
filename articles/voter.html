@@ -7,12 +7,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="description" content="tidyabm">
 <title>Holley and Liggett's Voter Model • tidyabm</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Holley and Liggett's Voter Model">
 <meta property="og:description" content="tidyabm">
+<meta property="og:image" content="https://datenfruehstueck.github.io/tidyabm/logo.svg">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -26,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">tidyabm</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,7 +78,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="" class="logo" alt=""><h1>Holley and Liggett's Voter Model</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Holley and Liggett's Voter Model</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/datenfruehstueck/tidyabm/blob/HEAD/vignettes/voter.Rmd" class="external-link"><code>vignettes/voter.Rmd</code></a></small>
@@ -230,7 +237,7 @@ visualize this kind-of manually to also control coloring.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">e</span> <span class="op">&lt;-</span> <span class="va">e</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="../reference/tick.html">tick</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "Tick 1 finished in 4.061 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 1 finished in 4.106 secs"</span></span>
 <span></span>
 <span><span class="va">e</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="../reference/convert_network_to_tidygraph.html">convert_network_to_tidygraph</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -265,10 +272,10 @@ in our environment. Let’s go 5 ticks for a start.</p>
 <code class="sourceCode R"><span><span class="va">e</span> <span class="op">&lt;-</span> <span class="va">e</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="../reference/iterate.html">iterate</a></span><span class="op">(</span>max_iterations <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "Tick 2 finished in 1.683 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 3 finished in 1.749 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 4 finished in 1.416 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 5 finished in 1.779 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 6 finished in 1.622 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 3 finished in 1.75 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 4 finished in 1.414 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 5 finished in 1.742 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 6 finished in 1.591 secs"</span></span>
 <span></span>
 <span><span class="va">e</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="../reference/convert_agents_to_tibble.html">convert_agents_to_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
@@ -311,11 +318,11 @@ initial/seminal starting values.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">e</span> <span class="op">&lt;-</span> <span class="va">e</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="../reference/iterate.html">iterate</a></span><span class="op">(</span>max_iterations <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "Tick 7 finished in 1.756 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 8 finished in 1.633 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 9 finished in 1.444 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 10 finished in 1.636 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 11 finished in 1.797 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 7 finished in 1.752 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 8 finished in 1.614 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 9 finished in 1.433 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 10 finished in 1.604 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 11 finished in 1.755 secs"</span></span>
 <span></span>
 <span><span class="va">e</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="../reference/convert_agents_to_tibble.html">convert_agents_to_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
@@ -359,42 +366,39 @@ initial/seminal starting values.</p>
 <p>That’s much better. It looks as if the largest groups
 (parties/non-voters) seemingly lose their voters while others gain (some
 even significantly). Let’s do a couple more rounds.</p>
-<p>Something has certainly changed. It could be hard to digest, though.
-So for the next five ticks, we also print the change/delta to the
-initial/seminal starting values.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">e</span> <span class="op">&lt;-</span> <span class="va">e</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="../reference/iterate.html">iterate</a></span><span class="op">(</span>max_iterations <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "Tick 12 finished in 1.24 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 13 finished in 1.622 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 14 finished in 1.354 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 15 finished in 1.311 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 16 finished in 1.486 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 17 finished in 1.131 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 18 finished in 1.453 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 19 finished in 1.68 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 20 finished in 1.565 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 21 finished in 1.524 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 22 finished in 2.006 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 23 finished in 1.911 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 24 finished in 1.715 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 25 finished in 1.553 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 26 finished in 1.781 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 27 finished in 1.785 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 28 finished in 1.435 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 29 finished in 1.752 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 30 finished in 1.349 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 31 finished in 1.478 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 32 finished in 1.716 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 33 finished in 1.751 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 34 finished in 1.812 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 35 finished in 1.576 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 36 finished in 1.753 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 37 finished in 1.405 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 12 finished in 1.235 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 13 finished in 1.598 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 14 finished in 1.323 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 15 finished in 1.283 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 16 finished in 1.467 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 17 finished in 1.122 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 18 finished in 1.433 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 19 finished in 1.655 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 20 finished in 1.477 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 21 finished in 1.48 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 22 finished in 1.974 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 23 finished in 1.883 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 24 finished in 1.707 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 25 finished in 1.501 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 26 finished in 1.767 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 27 finished in 1.751 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 28 finished in 1.426 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 29 finished in 1.74 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 30 finished in 1.335 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 31 finished in 1.473 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 32 finished in 1.712 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 33 finished in 1.863 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 34 finished in 1.858 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 35 finished in 1.611 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 36 finished in 1.751 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 37 finished in 1.392 secs"</span></span>
 <span><span class="co">#&gt; [1] "Tick 38 finished in 1.565 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 39 finished in 1.606 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 40 finished in 1.436 secs"</span></span>
-<span><span class="co">#&gt; [1] "Tick 41 finished in 1.826 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 39 finished in 1.603 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 40 finished in 1.424 secs"</span></span>
+<span><span class="co">#&gt; [1] "Tick 41 finished in 1.799 secs"</span></span>
 <span></span>
 <span><span class="va">e</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="../reference/convert_agents_to_tibble.html">convert_agents_to_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
@@ -444,7 +448,7 @@ we’re preparing through the <a href="https://doi.org/10.18564/jasss.4259" clas
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Overview        Purpose and patterns             <span style="color: #949494;">"</span>Brief… <span style="color: #BB0000;">NA</span>                   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Overview        Entities, state variables, and … <span style="color: #949494;">"</span>List … ABM network environm…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Overview        Process overview and scheduling  <span style="color: #949494;">"</span>Provi… environment rules: .…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Overview        Process overview and scheduling  <span style="color: #949494;">"</span>Provi… environment rules: -…</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Design concepts Design concepts                  <span style="color: #949494;">"</span>This … Model has not yet fi…</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Details         Initialization                   <span style="color: #949494;">"</span>Speci… See the list of agen…</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Details         Input data                       <span style="color: #949494;">"</span>Repor… <span style="color: #BB0000;">NA</span>                   </span></span>
